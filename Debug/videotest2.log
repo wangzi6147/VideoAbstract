@@ -1,0 +1,10 @@
+﻿Build started 7/1/2014 7:06:45 PM.
+     1>Project "D:\C++\VS2012\videotest0623\videotest2\videotest2.vcxproj" on node 2 (Clean target(s)).
+       Project file contains ToolsVersion="12.0". This toolset may be unknown or missing, in which case you may be able to resolve this by installing the appropriate version of MSBuild, or the build may have been forced to a particular ToolsVersion for policy reasons. Treating the project as if it had ToolsVersion="4.0". For more information, please see http://go.microsoft.com/fwlink/?LinkId=291333.
+     1>_PrepareForClean:
+         Deleting file "Debug\videotest2.lastbuildstate".
+     1>Done Building Project "D:\C++\VS2012\videotest0623\videotest2\videotest2.vcxproj" (Clean target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.18
