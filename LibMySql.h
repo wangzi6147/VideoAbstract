@@ -293,6 +293,7 @@ public:
 	int FindOrigFrameFromNewTraceTable(CString newTraceTable,CvRect rect);	                            ///<从new trace表中根据ROI信息找到原始视频帧数
 	int FindOrigFrameFromVideoFGTable(CString VideoFGTable,int origPara);	                            ///<从videofg表中根据段号找到原始视频帧数
 	int FindOrigParaFromFGTraceTable(CString FGTraceTable, CvRect rect);	                            ///<从FGTrace表中根据ROI信息找到原始视频段号
+	int FindSegIDFromFGTraceTable(CString FGTraceTable,int nOldPara);	                            ///<从new trace表中根据ROI信息找到原始视频帧数
 	bool FindTimePositionFromNewTraceTable(int NewFrame,vector <CvPoint> *m_Point,vector<int> *origFrame,CString tableName);
 	///
 	///NewToOldParaTable表的相关函数

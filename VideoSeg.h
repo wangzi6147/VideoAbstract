@@ -115,6 +115,7 @@ private:
 	IplImage *m_pBGFrame;           ///<背景图片(3通道)
 	IplImage *m_pBGFinal[10];       ///<提取到的背景图片(3通道)
 	IplImage *m_pNewFrame;          ///<融合后的新视频帧(3通道)
+	IplImage* m_pCombineSegsImage;   //@by Qf
 
 	CvVideoWriter *m_pVideoWriter4seg;   ///<视频分割写指针
 	CvVideoWriter *m_pVideoWriter4fusion;///<视频融合写指针

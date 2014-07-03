@@ -78,7 +78,6 @@ void Cvideotest2Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_INPUT_FRAME_NO, m_wndEditInputFrameNo1);
 	DDX_Control(pDX, IDC_EDIT_INPUT_nPara_NO, m_wndEditInput_nPara);
 	
-	//DDX_Control(pDX, IDC_OCX1, m_player);
 }
 
 BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
@@ -91,7 +90,6 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_GENERATE_ABS, &Cvideotest2Dlg::OnBnClickedBtnGenerateAbs)
 
 	
-	//ON_EN_CHANGE(IDC_EDIT3, &Cvideotest2Dlg::OnEnChangeEdit3)
 	ON_BN_CLICKED(IDC_BTN_exit, &Cvideotest2Dlg::OnBnClickedBtnexit)
 	ON_BN_CLICKED(IDC_BTN_VIEW_ABS, &Cvideotest2Dlg::OnBnClickedBtnViewAbs)
 	ON_BN_CLICKED(IDC_BTN1_play, &Cvideotest2Dlg::OnBnClickedBtn1play)
@@ -170,7 +168,7 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	SetTimer(2, 200, NULL);
 	SetTimer(3, 500, NULL);
 	SetTimer(4, 100, NULL);
-	//SetTimer(5, 100, NULL);
+
 	If_playpiece=FALSE;
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -229,16 +227,8 @@ HCURSOR Cvideotest2Dlg::OnQueryDragIcon()
 void Cvideotest2Dlg::OnBnClickedOpen()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	/*char szFileFilter[]="Mp3   File(*.mp3)|*.mp3|"
-		"Wma   File(*.wma)|*.wma|"
-		"Video   File(*.dat)|*.dat|"
-		"Wave   File(*.wav)|*.wav|"
-		"AVI   File(*.avi)|*.avi|"
-		"Movie   File(*.mov)|*.mov|"
-		"Media   File(*.mmm)|*.mmm|"
-		"Mid   File(*.mid;*,rmi)|*.mid;*.rmi|"
-		"MPEG   File(*.mpeg)|*.mpeg|"
-		"All   File(*.*)|*.*|| ";//文件类型过滤*/
+	
+	//文件类型过滤*/
 	CFileDialog dlg(TRUE, NULL, NULL,OFN_HIDEREADONLY,_T("Files (*.mp3 *.wma *.dat *.wmv *.avi *.mov *.mmm *.mid *.mpeg)|*.mp3;*.wma;*.dat;*.wmv;*.avi;*.mov;*.mmm;*.mid;*.mpeg|All Files (*.*)|*.*||"),NULL);
 	if(dlg.DoModal()==IDOK)
 	{
@@ -290,40 +280,12 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 	{
 		m_videoPro->m_IfContinue = true;
 		m_ifStartPro = true;
-		//m_processingCameraName = m_currentCameraName;
-		//m_processingCaseName = m_currentCaseName;
-		//m_videoPro->DoProcessing((LPSTR)(LPCTSTR)"E:/CIAS/Video/BJ5.avi");
-
 	
 		PathName.Replace(*m, *n);
 		m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
 	}
 }
 
-
-
-
-
-
-
-//void Cvideotest2Dlg::DrawPicToHDC(IplImage *img, UINT ID)
-//{
-//CDC *pDC = GetDlgItem(ID)->GetDC();
-//HDC hDC= pDC->GetSafeHdc();
-//CRect rect;
-//GetDlgItem(ID)->GetClientRect(&rect);
-//int rw = rect.right - rect.left; // 求出图片控件的宽和高   
-//int rh = rect.bottom - rect.top;   
-////int iw = img->width; // 读取图片的宽和高   
-////int ih = img->height;   
-//int tx = rect.left; // 使图片的显示位置正好在控件的正中   
-//int ty = rect.top;   
-//SetRect( rect, tx, ty, tx+rw, ty+rh );   
-//CvvImage cimg;
-//cimg.CopyOf( img ); // 复制图片
-//cimg.DrawToHDC( hDC, &rect ); // 将图片绘制到显示控件的指定区域内
-//ReleaseDC( pDC );
-//}
 
 
 ///@brief 计时器函数，用于刷新进度条和时间显示
@@ -334,8 +296,6 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 ///@retval BOOL
 ///@post NULL
 
-//vector<CvPoint> TimePosition;
-//vector<int> Time;
 void Cvideotest2Dlg::OnTimer(UINT nIDEvent)
 {
 	switch (nIDEvent)
@@ -570,7 +530,6 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 			return;
 		}
 		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
-		//player1.stopPlay();
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
 		m_CSliderPlayer2Ctrl.SetPos(0);
 
@@ -763,7 +722,6 @@ void Cvideotest2Dlg::OnBnClickedBtnGotoPara()
 
 	int m_ParaStartFrame = m_MysqlVideoParaSearchHandle->FindStartFrameFromVideoFGTable(m_nPara, m_videoPro->m_tableParams.VideoFGTableName);		
 	int m_ParaEndFrame = m_MysqlVideoParaSearchHandle->FindEndFrameFromVideoFGTable(m_nPara, m_videoPro->m_tableParams.VideoFGTableName);		
-	//m_tableParams.VideoFGTableName.Format("%s_VideoFGTable",m_tmpFileName2);
 		
 	if (m_ParaStartFrame == -1)  
 	{
@@ -773,12 +731,10 @@ void Cvideotest2Dlg::OnBnClickedBtnGotoPara()
 	else
 	{
 			player1.m_startFrameNO = MAX(0,m_ParaStartFrame - 50);          ///<未能从数据库中读取帧号，则默认播放前500和后1000帧
-			player1.m_endFrameNO   = m_ParaEndFrame + 300;
-			//player1.m_endFrameNO   = m_ParaEndFrame;
-	}
-			//player1.m_filePath = absOriNameTansf(player2.m_filePath);	///<为原始视频播放器写入视频路径			
+			player1.m_endFrameNO   = m_ParaEndFrame + 300;		
+	}					
 			player1.playPiece();												///<更改原始播放器的播放状态
-			//}	 
+				 
 			If_playpiece=TRUE;
 			player1.m_gotCVlclick = FALSE; 
 

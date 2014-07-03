@@ -2919,6 +2919,30 @@ int CDataMySql::FindOrigParaFromFGTraceTable(CString FGTraceTable, CvRect rect)
 	return params;
 }
 
+int CDataMySql::FindSegIDFromFGTraceTable(CString FGTraceTable,int origPara)	                            ///<从new trace表中根据ROI信息找到原始视频帧数
+{
+	CString m_strSql;
+	m_strSql.Format("select segID from %s where nOldPara =\'%d\' ", FGTraceTable, origPara);
+	MYSQL_RES *m_result;
+	MYSQL_ROW m_sqlRow;
+	int segIDnum = -1;
+	if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
+	{ 
+		print_error(&m_mysql,"error message");
+	}
+	else
+	{
+		m_result=mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
+		if (m_result)
+		{
+			m_sqlRow=mysql_fetch_row(m_result);///<获得所有结果字符串
+			segIDnum = atoi(m_sqlRow[0]);
+		}
+		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+	}
+	return segIDnum;
+}
+
 int CDataMySql::FindOrigFrameFromVideoFGTable(CString VideoFGTable, int origPara)
 {
 

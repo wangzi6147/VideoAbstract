@@ -1050,6 +1050,11 @@ void CVideo::VideoFusionProcessing()
 	GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
 	m_frameName = "..\\"+ m_tmpFileName2 +"\\new_%d.jpg";
 
+	m_pCombineSegsImage = cvCreateImage(cvSize(m_nVideoW, m_nVideoH), IPL_DEPTH_8U, 3);///<新建图像，存所有目标
+	cvCopy(m_pBGFinal[0], m_pCombineSegsImage);///<初始化新视频帧图像为当前背景图片
+			
+			
+
 	const int m_nPara4Fusion = 3;
 	
 	
@@ -1072,6 +1077,8 @@ void CVideo::VideoFusionProcessing()
 			m_ProcessingSpeed = 4.0+(double)(m_VideoFGParam.nOldPara+1)/(double)FGPara_Count;///<计算处理进度
 		}
 		cvReleaseImage(&m_pNewFrame);///<释放新视频帧图像空间
+
+
 
 		for (int Fus_sample = 1;Fus_sample<m_nPara4Fusion;Fus_sample++)
 		{
@@ -1120,6 +1127,9 @@ void CVideo::VideoFusionProcessing()
 		FusFrame_Count = m_FusionParam;///<记录视频融合总帧数
 	}
 	///结束视频融合
+	cvSaveImage("..\\"+ m_tmpFileName2 +"\\All.jpg", m_pCombineSegsImage);///<保存新视频帧图像
+	cvReleaseImage(&m_pCombineSegsImage);///<释放新视频帧图像空间
+
 }
 ///@brief CVideo类的创建新视频帧函数
 /// 
@@ -1157,6 +1167,7 @@ void CVideo::CreateNewFrame()
 	///开始创建新视频帧
 	while (m_IfContinue)
 	{
+		//0702 needs improve
 		m_pOriFrame = cvQueryFrame(m_pCapture);///<获取当前帧图像
 		if (!m_pOriFrame)///<获取帧图像失败，退出循环
 			return;
@@ -1180,10 +1191,6 @@ void CVideo::CreateNewFrame()
 					///当前帧为待融合的原始帧
 					m_IfFindStart = false;
 					///读取运动目标信息
-					/*r.x = m_traceTab.nLeft;
-					r.y = m_traceTab.nTop;
-					r.width = m_traceTab.nRight - m_traceTab.nLeft;
-					r.height = m_traceTab.nBottom - m_traceTab.nTop;*/
 					r.x = m_traceTab.nX;
 					r.y = m_traceTab.nY;
 					r.width = m_traceTab.nWidth;
@@ -1194,6 +1201,19 @@ void CVideo::CreateNewFrame()
 					cvAddWeighted(m_pProcessFrame, 0.8, m_pNewFrame, 0.2, 0, m_pNewFrame);
 					cvResetImageROI(m_pProcessFrame);
 					cvResetImageROI(m_pNewFrame);
+					
+					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
+					
+					if( m_segIDParam == (temp +1))
+					{
+								/////将前景目标图像嵌入对应位置的新视频帧图像中
+						cvSetImageROI(m_pCombineSegsImage,     r);
+						cvSetImageROI(m_pProcessFrame, r);
+						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						cvResetImageROI(m_pProcessFrame);
+						cvResetImageROI(m_pCombineSegsImage);
+					}
+
 					if (m_New2OldFrameParam.origFrame!=m_traceTab.origFrame)
 					{
 						m_New2OldFrameParam.origFrame = m_traceTab.origFrame;
@@ -1231,10 +1251,6 @@ void CVideo::CreateNewFrame()
 				if ((int)m_nCurrentFrame == m_traceTab.origFrame)
 				{
 					///当前帧为待融合的原始帧，读取运动目标信息
-					/*r.x = m_traceTab.nLeft;
-					r.y = m_traceTab.nTop;
-					r.width = m_traceTab.nRight - m_traceTab.nLeft;
-					r.height = m_traceTab.nBottom - m_traceTab.nTop;*/
 					r.x = m_traceTab.nX;
 					r.y = m_traceTab.nY;
 					r.width = m_traceTab.nWidth;
@@ -1245,6 +1261,17 @@ void CVideo::CreateNewFrame()
 					cvAddWeighted(m_pProcessFrame, 0.8, m_pNewFrame, 0.2, 0, m_pNewFrame);
 					cvResetImageROI(m_pProcessFrame);
 					cvResetImageROI(m_pNewFrame);
+					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
+					
+					if( m_segIDParam == (temp +1))
+					{
+								/////将前景目标图像嵌入对应位置的新视频帧图像中
+						cvSetImageROI(m_pCombineSegsImage,     r);
+						cvSetImageROI(m_pProcessFrame, r);
+						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						cvResetImageROI(m_pProcessFrame);
+						cvResetImageROI(m_pCombineSegsImage);
+					}
 					if (m_New2OldFrameParam.origFrame!=m_traceTab.origFrame)
 					{
 						m_New2OldFrameParam.origFrame = m_traceTab.origFrame;
@@ -1348,10 +1375,6 @@ void CVideo::FusionNewFrame()
 					///当前帧为待融合的原始帧
 					m_IfFindStart = false;
 					///读取运动目标信息
-					/*r.x = m_traceTab.nLeft;
-					r.y = m_traceTab.nTop;
-					r.width = m_traceTab.nRight - m_traceTab.nLeft;
-					r.height = m_traceTab.nBottom - m_traceTab.nTop;*/
 					r.x = m_traceTab.nX;
 					r.y = m_traceTab.nY;
 					r.width = m_traceTab.nWidth;
@@ -1362,6 +1385,19 @@ void CVideo::FusionNewFrame()
 					cvAddWeighted(m_pProcessFrame, 0.8, m_pNewFrame, 0.2, 0, m_pNewFrame);
 					cvResetImageROI(m_pProcessFrame);
 					cvResetImageROI(m_pNewFrame);
+
+					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
+					
+					if( m_segIDParam == (temp +1))
+					{
+								/////将前景目标图像嵌入对应位置的新视频帧图像中
+						cvSetImageROI(m_pCombineSegsImage,     r);
+						cvSetImageROI(m_pProcessFrame, r);
+						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						cvResetImageROI(m_pProcessFrame);
+						cvResetImageROI(m_pCombineSegsImage);
+					}
+
 					if (m_New2OldFrameParam.origFrame!=m_traceTab.origFrame)
 					{
 						m_New2OldFrameParam.origFrame = m_traceTab.origFrame;
@@ -1411,6 +1447,19 @@ void CVideo::FusionNewFrame()
 					cvAddWeighted(m_pProcessFrame, 0.8, m_pNewFrame, 0.2, 0, m_pNewFrame);
 					cvResetImageROI(m_pProcessFrame);
 					cvResetImageROI(m_pNewFrame);
+
+					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
+					
+					if( m_segIDParam == (temp +1))
+					{
+								/////将前景目标图像嵌入对应位置的新视频帧图像中
+						cvSetImageROI(m_pCombineSegsImage,     r);
+						cvSetImageROI(m_pProcessFrame, r);
+						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						cvResetImageROI(m_pProcessFrame);
+						cvResetImageROI(m_pCombineSegsImage);
+					}
+
 					if (m_New2OldFrameParam.origFrame!=m_traceTab.origFrame)
 					{
 						m_New2OldFrameParam.origFrame = m_traceTab.origFrame;
