@@ -1,39 +1,8 @@
-﻿Build started 7/6/2014 2:59:42 PM.
-     1>Project "D:\C++\VS2012\videotest0706\videotest2\videotest2.vcxproj" on node 2 (Build target(s)).
+﻿Build started 7/6/2014 3:10:29 PM.
+     1>Project "D:\C++\VS2012\videotest0706\videotest2\videotest2.vcxproj" on node 2 (Clean target(s)).
        Project file contains ToolsVersion="12.0". This toolset may be unknown or missing, in which case you may be able to resolve this by installing the appropriate version of MSBuild, or the build may have been forced to a particular ToolsVersion for policy reasons. Treating the project as if it had ToolsVersion="4.0". For more information, please see http://go.microsoft.com/fwlink/?LinkId=291333.
-     1>InitializeBuildStatus:
-         Creating "Debug\videotest2.unsuccessfulbuild" because "AlwaysCreate" was specified.
-       ClCompile:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I..\PublicHeader /I..\PublicHeader\opencv2 /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\videotest2.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt videotest2Dlg.cpp
-         videotest2Dlg.cpp
-     1>d:\c++\vs2012\videotest0706\publicheader\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files\microsoft visual studio 11.0\vc\include\stdio.h(218) : see declaration of 'fopen'
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(18): warning C4005: 'new' : macro redefinition
-                 d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(12) : see previous definition of 'new'
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(315): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(394): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(435): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(443): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>d:\c++\vs2012\videotest0706\videotest2\videotest2dlg.cpp(687): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-       ResourceCompile:
-         All outputs are up-to-date.
-       Link:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\C++\VS2012\videotest0706\Debug\videotest2.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\PublicHeader\Lib /LIBPATH:..\PublicHeader\Lib\mysql libmysql.lib opencv_core244d.lib opencv_contrib244d.lib opencv_photo244d.lib opencv_videostab244d.lib opencv_nonfree244d.lib opencv_highgui244d.lib opencv_imgproc244d.lib opencv_objdetect244d.lib opencv_video244d.lib opencv_calib3d244d.lib opencv_features2d244d.lib opencv_flann244d.lib opencv_legacy244d.lib opencv_ts244d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\C++\VS2012\videotest0706\Debug\videotest2.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\C++\VS2012\videotest0706\Debug\videotest2.lib" /MACHINE:X86 Debug\videotest2.res
-         Debug\CvvImage.obj
-         Debug\DisplayFrame.obj
-         Debug\GlobalFunctions.obj
-         Debug\LibMySql.obj
-         Debug\stdafx.obj
-         Debug\VideoSeg.obj
-         Debug\videotest2.obj
-         Debug\videotest2Dlg.obj
-         Debug\vidPlayer.obj
-         videotest2.vcxproj -> D:\C++\VS2012\videotest0706\Debug\videotest2.exe
-       FinalizeBuildStatus:
-         Deleting file "Debug\videotest2.unsuccessfulbuild".
-         Touching "Debug\videotest2.lastbuildstate".
-     1>Done Building Project "D:\C++\VS2012\videotest0706\videotest2\videotest2.vcxproj" (Build target(s)).
+     1>Done Building Project "D:\C++\VS2012\videotest0706\videotest2\videotest2.vcxproj" (Clean target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:04.14
+Time Elapsed 00:00:00.01
