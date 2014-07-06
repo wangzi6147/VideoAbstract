@@ -529,6 +529,23 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 			AfxMessageBox("找不到文件");
 			return;
 		}
+
+		//IplImage* image = NULL;
+		// // Read the file
+		//image=cvLoadImage("D:\C++\VS2012\videotest0623\00015_H\All.jpg",-1);
+		//if(image == NULL ) // Check for invalid input
+		//{
+		//	cout << "Could not open or find the image" << std::endl ;
+		//}
+		//else
+		//{
+		//	ShowImage(image,IDC_STATIC_ABS2);
+		//}
+		//
+		//if(image != NULL ) // Check for invalid input
+		//{
+		//	delete image;
+		//}
 		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
 		m_CSliderPlayer2Ctrl.SetPos(0);
@@ -539,6 +556,27 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		player2.timeshow=FALSE;
 }
 
+//void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
+//{
+//    CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
+//    HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
+//
+//    CRect rect;
+//    GetDlgItem(ID) ->GetClientRect( &rect );
+//    int rw = rect.right - rect.left;            // 求出图片控件的宽和高
+//    int rh = rect.bottom - rect.top;
+//    int iw = img->width;                        // 读取图片的宽和高
+//    int ih = img->height;
+//    int tx = (int)(rw - iw)/2;                    // 使图片的显示位置正好在控件的正中
+//    int ty = (int)(rh - ih)/2;
+//    SetRect( rect, tx, ty, tx+iw, ty+ih );
+//
+//    CvvImage cimg;
+//    cimg.CopyOf( img );                            // 复制图片
+//    cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
+//
+//    ReleaseDC( pDC );
+//}
 
 void Cvideotest2Dlg::OnBnClickedBtn1play()
 {
@@ -757,3 +795,6 @@ void Cvideotest2Dlg::OnBnClickedCheck1()
 	}
 	
 }
+
+
+

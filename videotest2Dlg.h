@@ -60,7 +60,7 @@ public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnEnChangeEdit3();
 	void OnAppExit();
-
+//	void ShowImage( IplImage* img, UINT ID );    // ID ÊÇPicture Control¿Ø¼þµÄIDºÅ
 	afx_msg void OnBnClickedBtnexit();
 	afx_msg void OnBnClickedBtnViewAbs();
 	afx_msg void OnBnClickedBtn1play();
