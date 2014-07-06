@@ -172,6 +172,10 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	If_playpiece=FALSE;
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
+//void Cvideotest2Dlg::InitialPictureControl()
+//{
+//
+//}
 
 void Cvideotest2Dlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -484,6 +488,80 @@ void Cvideotest2Dlg::OnTimer(UINT nIDEvent)
 				player2.m_gotCVlclick = FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
 			}
 		}
+		//case 5://摘要图片的左键单击
+		//{
+		//	CString m_windowName = "displayWindow3"; //当前进程控制的CV窗口名
+		//	pointForCvMouse mousePosInCVwmd;
+		//	CPoint m_clickPosInCVWnd;///<记录左键单击的点
+		//	CPoint m_lBtnUpPosInCVWnd;///<记录左键弹起的点
+		//	int para = 5;
+		//	cvSetMouseCallback(m_windowName, cvMouseHandler, &para);
+
+		//	m_clickPosInCVWnd.x = mousePosInCVwmd.x;
+		//	m_clickPosInCVWnd.y = mousePosInCVwmd.y;
+		//	m_lBtnUpPosInCVWnd.x = mousePosInCVwmd.x1;
+		//	m_lBtnUpPosInCVWnd.y = mousePosInCVwmd.y1;
+		//	//m_gotCVlclick = mousePosInCVwmd.clickInCVwnd;//cv窗口得到点击参数便传出
+
+		//	m_clickedObjRecPosInVec = -1;
+		//	double clickPosXInImg = double(m_lBtnUpPosInCVWnd.x);
+		//	double clickPosYInImg = double(m_lBtnUpPosInCVWnd.y);///<注意此时的点击位置已经是原始帧尺寸的坐标
+		//	m_distanceToRecCenter = 1000000;
+
+		//	m_objectRectVector.clear();
+		//	///<从数据库中读取ROI信息
+		//	if(!m_MysqlVideoParaSearchHandle->FindROIFromNewTraceTable(player2.m_currentFrameNO,&m_objectRectVector,m_videoPro->m_tableParams.NewTraceTable))//////"00015_h_NewTraceTable"
+		//	{
+		//			AfxMessageBox("数据库出错");
+		//			return;
+		//	}
+
+		//	for (int i=0; i<m_objectRectVector.size(); i++)///<遍历所有ROI目标框
+		//	{
+		//			if (clickPosXInImg < m_objectRectVector[i].x+m_objectRectVector[i].width && clickPosXInImg > m_objectRectVector[i].x///<判断点击是否在当前框内
+		//				&& clickPosYInImg < m_objectRectVector[i].y+m_objectRectVector[i].height && clickPosYInImg > m_objectRectVector[i].y)
+		//			{
+		//				int tempDistance = (clickPosXInImg - (m_objectRectVector[i].x+m_objectRectVector[i].width/2))*
+		//					(clickPosXInImg - (m_objectRectVector[i].x+m_objectRectVector[i].width/2))+
+		//					(clickPosYInImg - (m_objectRectVector[i].y+m_objectRectVector[i].height/2))*
+		//					(clickPosYInImg - (m_objectRectVector[i].y+m_objectRectVector[i].height/2));///<计算点击位置与当前ROI中心的距离
+
+		//				if (tempDistance < m_distanceToRecCenter)
+		//				{
+		//					m_distanceToRecCenter = tempDistance;///<当前距离小于记录的最小距离，则更新这个最小距离
+		//					m_clickedObjRecPosInVec = i;         ///<并记录当前ROI在向量中的下标值
+		//				}
+		//			}
+		//	}
+		//	if(m_clickedObjRecPosInVec==-1)
+		//	{
+		//			return;
+		//	}
+		//		/*if (m_theObjRecClicked != m_objectRectVector[m_clickedObjRecPosInVec])
+		//		{*/
+		//	m_theObjRecClicked = m_objectRectVector[m_clickedObjRecPosInVec];
+		//	int m_theorigFrame=0;
+		//	if (m_videoPro!=NULL)
+		//	{
+		//		int m_origPara = m_MysqlVideoParaSearchHandle->FindOrigParaFromFGTraceTable(m_videoPro->m_tableParams.FGTraceTableName,m_theObjRecClicked);
+		//		m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromVideoFGTable(m_videoPro->m_tableParams.VideoFGTableName,m_origPara);//m_videoPro->m_tableParams.NewTraceTable
+		//			
+		//				//m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromNewTraceTable(m_videoPro->m_tableParams.NewTraceTable,m_theObjRecClicked);//m_videoPro->m_tableParams.NewTraceTable
+		//	}
+		//			
+		//	if (m_theorigFrame == -1)  
+		//	{
+		//				MessageBox("数据库有误");
+		//				player2.m_gotCVlclick = FALSE;     
+		//				return;
+		//	};
+		//					
+		//	player1.m_currentFrameNO=m_theorigFrame;                                 ///<初始化原始视频播放器
+		//	
+		//	If_playpiece=TRUE;
+		//	player2.m_gotCVlclick = FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
+		//}
+
 		default:
 			break;
 	}
@@ -538,6 +616,8 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 			ShowImage(image,IDC_STATIC_ABS2);
 			cvReleaseImage(&image);
 		}
+
+		SetTimer(4, 600, NULL); //新加载的Picture Control的计时器
 
 		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
