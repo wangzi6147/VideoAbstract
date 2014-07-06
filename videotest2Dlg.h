@@ -60,7 +60,7 @@ public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnEnChangeEdit3();
 	void OnAppExit();
-//	void ShowImage( IplImage* img, UINT ID );    // ID 是Picture Control控件的ID号
+	void ShowImage( IplImage* img, UINT ID );    // ID 是Picture Control控件的ID号
 	afx_msg void OnBnClickedBtnexit();
 	afx_msg void OnBnClickedBtnViewAbs();
 	afx_msg void OnBnClickedBtn1play();

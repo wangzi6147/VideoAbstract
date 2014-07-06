@@ -76,7 +76,7 @@ void Cvideotest2Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_PLAYER2,m_CSliderPlayer2Ctrl);
 	DDX_Control(pDX, IDC_EDIT_FRAME_NO, m_wndEditFrameNo1);	
 	DDX_Control(pDX, IDC_EDIT_INPUT_FRAME_NO, m_wndEditInputFrameNo1);
-	DDX_Control(pDX, IDC_EDIT_INPUT_nPara_NO, m_wndEditInput_nPara);
+	//DDX_Control(pDX, IDC_EDIT_INPUT_nPara_NO, m_wndEditInput_nPara);
 	
 }
 
@@ -100,7 +100,7 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN2_stop, &Cvideotest2Dlg::OnBnClickedBtn2stop)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &Cvideotest2Dlg::OnNMCustomdrawProgress1)
 	ON_BN_CLICKED(IDC_BTN_GOTO_FRAME, &Cvideotest2Dlg::OnBnClickedBtnGotoFrame)
-	ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
+	//ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
 	ON_BN_CLICKED(IDC_CHECK1, &Cvideotest2Dlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
@@ -530,22 +530,15 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 			return;
 		}
 
-		//IplImage* image = NULL;
-		// // Read the file
-		//image=cvLoadImage("D:\C++\VS2012\videotest0623\00015_H\All.jpg",-1);
-		//if(image == NULL ) // Check for invalid input
-		//{
-		//	cout << "Could not open or find the image" << std::endl ;
-		//}
-		//else
-		//{
-		//	ShowImage(image,IDC_STATIC_ABS2);
-		//}
-		//
-		//if(image != NULL ) // Check for invalid input
-		//{
-		//	delete image;
-		//}
+		 // Read the file
+		IplImage* image= NULL;
+		image = cvLoadImage("D://C++//VS2012//videotest0623//00015_H//All.jpg",1);
+		if(image != NULL ) // Check for invalid input
+		{
+			ShowImage(image,IDC_STATIC_ABS2);
+			cvReleaseImage(&image);
+		}
+
 		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
 		m_CSliderPlayer2Ctrl.SetPos(0);
@@ -556,27 +549,29 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		player2.timeshow=FALSE;
 }
 
-//void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
-//{
-//    CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
-//    HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
-//
-//    CRect rect;
-//    GetDlgItem(ID) ->GetClientRect( &rect );
-//    int rw = rect.right - rect.left;            // 求出图片控件的宽和高
-//    int rh = rect.bottom - rect.top;
-//    int iw = img->width;                        // 读取图片的宽和高
-//    int ih = img->height;
-//    int tx = (int)(rw - iw)/2;                    // 使图片的显示位置正好在控件的正中
-//    int ty = (int)(rh - ih)/2;
-//    SetRect( rect, tx, ty, tx+iw, ty+ih );
-//
-//    CvvImage cimg;
-//    cimg.CopyOf( img );                            // 复制图片
-//    cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
-//
-//    ReleaseDC( pDC );
-//}
+void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
+{
+    CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
+    HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
+
+    CRect rect;
+    GetDlgItem(ID) ->GetClientRect( &rect );
+    int rw = rect.right - rect.left;            // 求出图片控件的宽和高
+    int rh = rect.bottom - rect.top;
+    int iw = img->width;                        // 读取图片的宽和高
+    int ih = img->height;
+	
+	rw = (int)(iw*rh/ih);		//应显示按比例的宽度
+	int tx = rect.left;
+	int ty = rect.top;
+    SetRect( rect, tx, ty, tx+rw, ty+rh );
+
+    CvvImage cimg;
+    cimg.CopyOf( img );                            // 复制图片
+    cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
+
+    ReleaseDC( pDC );
+}
 
 void Cvideotest2Dlg::OnBnClickedBtn1play()
 {
