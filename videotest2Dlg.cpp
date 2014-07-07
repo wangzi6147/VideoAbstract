@@ -67,7 +67,9 @@ Cvideotest2Dlg::~Cvideotest2Dlg()
 	
 {
 	  delete m_MysqlVideoParaSearchHandle;			   ///<删除数据库操作指针
+	  m_MysqlVideoParaSearchHandle = NULL;
 	  delete m_videoPro;
+	  m_videoPro = NULL;
 }
 
 void Cvideotest2Dlg::DoDataExchange(CDataExchange* pDX)
