@@ -322,6 +322,12 @@ public:
 	int FindEndFrameFromVideoBGTable(int bkgID,CString tableName);                                       ///<找到某一前景段的结束帧号
 	int FindStartFrameFromVideoBGTable(int bkgID,CString TableName);                                     ///<找到某一前景段的起始帧号
 
+	///
+	///CombineSegsTable里面用到的表的相关函数
+	///
+	bool CreateCombineSegsTable(CString CombineSegsTableName);											///建表
+	bool InsertData2CombineSegsTable(OrigTraceTable traceTab, CString CombineSegsTableName);			///插入数据
+	bool FindROIFromCombineSegsTable(vector <CvRect> *m_ROI, CString tableName);						///获得所有ROI
 
 	///
 	///VidAbstract用到的表的相关函数
@@ -348,4 +354,6 @@ public:
 	
 	bool GetFrameidFromObjectTable(int objectID,CString ObjectTableName,vector<int>* frameID);              ///<获取某一运动目标的frameID集合
 	bool GetObjectInfoFromObjectTable(int objectID,CString ObjectTableName,objectInfo* tempInfo);           ///<获取某一运动目标的运动信息
+
+
 };

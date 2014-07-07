@@ -178,7 +178,7 @@ bool CDataMySql::CreateOrigTraceTable(CString OrigTraceTableName)
 bool CDataMySql::CreateNewToOldParaTable(CString NewToOldParaTableName)
 {
 	CString m_strSql;///<mysql查询语句
-	m_strSql.Format("create table %s(nOldPara int primary key,nNewPara int not Null)",NewToOldParaTableName);
+	m_strSql.Format("create table %s(nOldPara int primary key ,nNewPara int not Null)",NewToOldParaTableName);
 	if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
 	{ 
 		print_error(&m_mysql,"error message");
@@ -204,6 +204,56 @@ bool CDataMySql::CreateNewToOldFrameTable(CString NewToOldFrameTableName)
 	if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
 	{ 
 		print_error(&m_mysql,"error message");
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+///@brief CDataMySql类的建立合成前景图信息表函数
+/// 
+///创建一个名为参数的合成前景图信息表，列及其属性为(nOldPara int,segID int not null, nX smallint(3) not null,\
+		nY smallint(3) not null,nWidth smallint(3) not null,nHeight smallint(3) not null)
+///@param[in|out] CombineSegsTableName 要创建的表名|NULL
+///@pre  NULL
+///@return NULL
+///@retval BOOL 返回操作是否成功
+///@post NULL
+bool CDataMySql::CreateCombineSegsTable(CString CombineSegsTableName)
+{
+	CString m_strSql;///<mysql查询语句
+	m_strSql.Format("create table %s(nOldPara int,segID int not null, nX smallint(3) not null,\
+		nY smallint(3) not null,nWidth smallint(3) not null,nHeight smallint(3) not null)", CombineSegsTableName);
+	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
+	{
+		print_error(&m_mysql, "error message");
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+///@brief CDataMySql类的插入数据到合成前景图信息表函数
+/// 
+///将一条记录插入到表中
+///@param[in|out] traceTab 前景信息; CombineSegsTableName 表名|NULL
+///@pre  NULL
+///@return NULL
+///@retval BOOL 返回操作是否成功
+///@post NULL
+bool CDataMySql::InsertData2CombineSegsTable(OrigTraceTable traceTab, CString CombineSegsTableName)
+{
+	CString m_strSql;///<mysql查询语句
+	m_strSql.Format("insert into %s(nOldPara, segID, nX, nY, nWidth, nHeight)\
+		values(\'%d\',\'%d\',\'%d\',\'%d\',\'%d\',\'%d\')",\
+		CombineSegsTableName, traceTab.nOldPara, traceTab.segID, traceTab.nX, traceTab.nY, traceTab.nWidth, traceTab.nHeight);
+	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
+	{
+		print_error(&m_mysql, "error message");
 		return false;
 	}
 	else
@@ -1028,6 +1078,44 @@ bool CDataMySql::FindROIFromNewTraceTable(int NewFrame,vector <CvRect> *m_ROI,CS
 			m_ROI->push_back(r);
 		}
 		if(m_result!=NULL)mysql_free_result(m_result);///<释放结果资源
+		return true;
+	}
+}
+
+///@brief CDataMySql类的获得合成前景图中所有运动目标的ROI的函数
+/// 
+///在Combine表中获得所有运动目标的ROI
+///@param[in|out] newFrame 新帧号;tableName 要查找的新trace表|m_ROI 保存查找到的该帧中的物体的ROI
+///@pre  NULL
+///@return NULL
+///@retval BOOL 返回操作是否成功
+///@post NULL
+bool CDataMySql::FindROIFromCombineSegsTable( vector <CvRect> *m_ROI, CString tableName)
+{
+	CString m_strSql;
+	MYSQL_RES *m_result;
+	MYSQL_ROW m_sqlRow;
+	m_strSql.Format("select nX,nY,nWidth,nHeight from %s ", tableName);
+	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
+	{
+		m_result = NULL;///<出错
+		print_error(&m_mysql, "error message");
+		return false;
+	}
+	else
+	{
+		m_result = mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
+		for (int i = 0; i<m_result->row_count; i++)
+		{
+			m_sqlRow = mysql_fetch_row(m_result);///<获得所有结果字符串
+			CvRect r;
+			r.x = atoi(m_sqlRow[0]);
+			r.y = atoi(m_sqlRow[1]);
+			r.width = atoi(m_sqlRow[2]);
+			r.height = atoi(m_sqlRow[3]);
+			m_ROI->push_back(r);
+		}
+		if (m_result != NULL)mysql_free_result(m_result);///<释放结果资源
 		return true;
 	}
 }

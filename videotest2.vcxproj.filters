@@ -22,6 +22,7 @@
     <None Include="res\videotest2.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="videotest2.h">

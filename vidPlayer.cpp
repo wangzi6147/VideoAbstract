@@ -133,8 +133,14 @@ UINT vidPlayer::playProcess()
 						int TargetVedioMinute=TargetTimeInSecond/60-TargetVedioHour*60;
 						int TargetVedioSecond=TargetTimeInSecond-TargetVedioHour*3600-TargetVedioMinute*60;
 
+						//int VedioHour= videoTimeInSecond/3600;
+						//int VedioMinute= videoTimeInSecond/60-VedioHour*60;
+						//int VedioSecond= videoTimeInSecond-VedioHour*3600-VedioMinute*60;
+
 						str_TargetVideoTime.Format(" %d:%d:%d",TargetVedioHour,TargetVedioMinute,TargetVedioSecond);
+						//m_pShowTimeWnd->SetWindowText(CurVideoTime);
 						
+						//s.Format("%d",Time[i]);
 						cvPutText(m_curFrame,str_TargetVideoTime,TimePosition[i], &font, CV_RGB(255, 255, 255));//TimePosition[i]
 						i++;
 					}

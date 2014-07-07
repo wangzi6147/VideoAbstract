@@ -60,7 +60,7 @@ public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnEnChangeEdit3();
 	void OnAppExit();
-
+	void ShowImage( IplImage* img, UINT ID );    // ID 是Picture Control控件的ID号
 	afx_msg void OnBnClickedBtnexit();
 	afx_msg void OnBnClickedBtnViewAbs();
 	afx_msg void OnBnClickedBtn1play();
@@ -101,4 +101,7 @@ public:
 	int  nHitItem;                                      ///<当前选中的行的索引
 	int preHitItem;                                     ///<上一次选中的行的索引
 	afx_msg void OnBnClickedCheck1();
+	
 };
+
+void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param);
