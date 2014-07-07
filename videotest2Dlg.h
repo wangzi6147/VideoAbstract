@@ -101,4 +101,7 @@ public:
 	int  nHitItem;                                      ///<当前选中的行的索引
 	int preHitItem;                                     ///<上一次选中的行的索引
 	afx_msg void OnBnClickedCheck1();
+	
 };
+
+void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param);

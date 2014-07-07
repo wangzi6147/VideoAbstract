@@ -35,6 +35,7 @@ typedef struct _TableParams
 	CString FGTraceTableName;       ///<运动物体轨迹表名
 	CString NewToOldFrameTableName; ///<新旧视频帧对照表名
 	CString NewTraceTable;          ///<目标轨迹信息表名
+	CString CombineSegsTableName;	///<合成前景图信息表名
 }TableParams;
 
 ///@brief 定义视频融合类

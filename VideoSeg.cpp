@@ -412,7 +412,7 @@ void CVideo::InitTableParam()
 	m_tableParams.FGTraceTableName.Format("%s_FGTraceTable",m_tmpFileName2);
 	m_tableParams.NewToOldFrameTableName.Format("%s_New2OldFrameTable",m_tmpFileName2);
 	m_tableParams.NewTraceTable.Format("%s_NewTraceTable",m_tmpFileName2);
-
+	m_tableParams.CombineSegsTableName.Format("%s_CombineSegsTable", m_tmpFileName2);
 
 	///创建前景段信息表
 	if(!m_MysqlSegHandle->DropTable(m_tableParams.VideoFGTableName))
@@ -463,6 +463,17 @@ void CVideo::InitTableParam()
 	}
 	m_MysqlSegHandle->CleanTable(m_tableParams.NewTraceTable);
 	
+	///创建合成前景图信息表
+	if (!m_MysqlSegHandle->DropTable(m_tableParams.CombineSegsTableName))
+	{
+		AfxMessageBox("删除Combine表错误");
+		return;
+	}
+	if (!m_MysqlSegHandle->CreateCombineSegsTable(m_tableParams.CombineSegsTableName))
+	{
+		AfxMessageBox("建Combine表错误");
+		return;
+	}
 	///创建暂存融合图像的文件夹
 	CFileFind m_find;
 	if (!m_find.FindFile("..\\"+m_tmpFileName2))///<FindFile在当前目录及其子目录下查询
@@ -1206,10 +1217,15 @@ void CVideo::CreateNewFrame()
 					
 					if( m_segIDParam == (temp +1))
 					{
-								/////将前景目标图像嵌入对应位置的新视频帧图像中
+								/////将前景目标图像嵌入对应位置的新视频帧图像中1
 						cvSetImageROI(m_pCombineSegsImage,     r);
 						cvSetImageROI(m_pProcessFrame, r);
 						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						if (m_IfContinue &&!m_MysqlSegHandle->InsertData2CombineSegsTable(m_traceTab, m_tableParams.CombineSegsTableName))
+						{
+							AfxMessageBox("合成前景图信息表插入错误");
+							return;
+						}
 						cvResetImageROI(m_pProcessFrame);
 						cvResetImageROI(m_pCombineSegsImage);
 					}
@@ -1265,10 +1281,15 @@ void CVideo::CreateNewFrame()
 					
 					if( m_segIDParam == (temp +1))
 					{
-								/////将前景目标图像嵌入对应位置的新视频帧图像中
+								/////将前景目标图像嵌入对应位置的新视频帧图像中2
 						cvSetImageROI(m_pCombineSegsImage,     r);
 						cvSetImageROI(m_pProcessFrame, r);
 						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						if (m_IfContinue &&!m_MysqlSegHandle->InsertData2CombineSegsTable(m_traceTab, m_tableParams.CombineSegsTableName))
+						{
+							AfxMessageBox("合成前景图信息表插入错误");
+							return;
+						}
 						cvResetImageROI(m_pProcessFrame);
 						cvResetImageROI(m_pCombineSegsImage);
 					}
@@ -1394,6 +1415,11 @@ void CVideo::FusionNewFrame()
 						cvSetImageROI(m_pCombineSegsImage,     r);
 						cvSetImageROI(m_pProcessFrame, r);
 						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						if (m_IfContinue &&!m_MysqlSegHandle->InsertData2CombineSegsTable(m_traceTab, m_tableParams.CombineSegsTableName))
+						{
+							AfxMessageBox("合成前景图信息表插入错误");
+							return;
+						}
 						cvResetImageROI(m_pProcessFrame);
 						cvResetImageROI(m_pCombineSegsImage);
 					}
@@ -1456,6 +1482,11 @@ void CVideo::FusionNewFrame()
 						cvSetImageROI(m_pCombineSegsImage,     r);
 						cvSetImageROI(m_pProcessFrame, r);
 						cvAddWeighted(m_pProcessFrame, 0.5, m_pCombineSegsImage, 0.5, 0, m_pCombineSegsImage);
+						if (m_IfContinue &&!m_MysqlSegHandle->InsertData2CombineSegsTable(m_traceTab, m_tableParams.CombineSegsTableName))
+						{
+							AfxMessageBox("合成前景图信息表插入错误");
+							return;
+						}
 						cvResetImageROI(m_pProcessFrame);
 						cvResetImageROI(m_pCombineSegsImage);
 					}
