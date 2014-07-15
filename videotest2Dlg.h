@@ -13,6 +13,7 @@
 #include "VideoSeg.h"
 #include "Resource.h"
 #include "vidPlayer.h"
+#include "ObjectViewDlg.h"
 
 
 // Cvideotest2Dlg 对话框
@@ -101,7 +102,9 @@ public:
 	int  nHitItem;                                      ///<当前选中的行的索引
 	int preHitItem;                                     ///<上一次选中的行的索引
 	afx_msg void OnBnClickedCheck1();
-	
+
+	CObjectViewDlg ObjectDlg;//逐一显示前景对象的窗口
+	afx_msg void OnBnClickedButtonObject();//逐一显示前景对象按钮
 };
 
 void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param);

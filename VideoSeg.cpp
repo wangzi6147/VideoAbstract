@@ -389,8 +389,6 @@ void CVideo::InitGaussParam()
 	//m_pGaussParams->variance_init = 30*30;	//高斯分布的初始方差
 	//m_pGaussParams->minArea       = 15;		 //最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
 	//m_pGaussParams->n_gauss       = 3;		//高斯分布函数的个数
-	// m_pBGSubMOG2 = new cv::BackgroundSubtractorMOG2;
-	//m_pGaussBGModel     = (CvGaussBGModel*)cvCreateGaussianBGModel(m_pGrayResizeFrame, m_pGaussParams);
 }
 ///@brief CVideo类的初始化数据库表函数
 /// 
@@ -563,10 +561,8 @@ void CVideo::VideoParaProcessing()
 				cvtColor(m_ResizeFrameMat, m_GrayResizeFrameMat, CV_BGR2GRAY,1); ///<灰度化
 			
 				m_pBGSubMOG2.operator()(m_GrayResizeFrameMat, foregroundMat, 0.001);						
-				//cvUpdateBGStatModel(m_pGrayResizeFrame, (CvBGStatModel*)m_pGaussBGModel);///<高斯背景更新
-				
 				m_GrayResizeFrameMat = foregroundMat; //?????
-				//cvCopy(m_pGaussBGModel->foreground, m_pGrayResizeFrame);     ///<提取前景		
+				
 				this->ParaSegmentation();///<视频分段算法
 			}
 			if (m_nCurrentFrame >= m_nTotalFrameToDo)///<当前帧为总处理帧号，视频分段处理完成，退出循环

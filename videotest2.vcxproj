@@ -109,6 +109,7 @@
     <ClInclude Include="DisplayFrame.h" />
     <ClInclude Include="GlobalFunctions.h" />
     <ClInclude Include="LibMySql.h" />
+    <ClInclude Include="ObjectViewDlg.h" />
     <ClInclude Include="publicheader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="DisplayFrame.cpp" />
     <ClCompile Include="GlobalFunctions.cpp" />
     <ClCompile Include="LibMySql.cpp" />
+    <ClCompile Include="ObjectViewDlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="VideoSeg.cpp" />
     <ClCompile Include="videotest2.cpp" />

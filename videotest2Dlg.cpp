@@ -105,6 +105,7 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_GOTO_FRAME, &Cvideotest2Dlg::OnBnClickedBtnGotoFrame)
 	//ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
 	ON_BN_CLICKED(IDC_CHECK1, &Cvideotest2Dlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON_OBJECT, &Cvideotest2Dlg::OnBnClickedButtonObject)
 END_MESSAGE_MAP()
 
 
@@ -568,6 +569,16 @@ void Cvideotest2Dlg::OnTimer(UINT nIDEvent)
 					mousePosInPic.clickInCVwnd=FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
 				}
 		}
+		case 6://监视显示对象的子对话框
+		{
+			if (ObjectDlg.UserClick==TRUE)
+			{
+				player1.m_currentFrameNO=ObjectDlg.OriFrame;
+				If_playpiece=TRUE;
+				ObjectDlg.UserClick=FALSE;
+			}
+		}
+
 
 		default:
 			break;
@@ -617,7 +628,12 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 
 		 // Read the file
 		IplImage* image= NULL;
-		image = cvLoadImage("D://C++//VS2012//videotest0707//00015_H//All.jpg",1);
+		CString m_tmpFileName0 = player1.m_filePath;
+		CString m_tmpFileName1, m_tmpFileName2;
+		GetVideoNameFromAbsolutePath1(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
+		GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
+	
+		image = cvLoadImage("../"+ m_tmpFileName2 +"/All.jpg",1);
 		if(image != NULL ) // Check for invalid input
 		{
 			ShowImage(image,IDC_STATIC_ABS2);
@@ -922,3 +938,28 @@ void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param)
 
 
 
+
+
+void Cvideotest2Dlg::OnBnClickedButtonObject()
+{
+	CString m_strSql;
+	MYSQL_RES *m_result;
+	m_strSql.Format("select * from %s",m_videoPro->m_tableParams.CombineSegsTableName) ;//00015_h_combinesegstable
+	int i=mysql_real_query(&m_MysqlVideoParaSearchHandle->m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength());
+	if(i!=0)
+	{
+		AfxMessageBox("请先点击生成摘要");
+		return;
+	}
+	else
+	{
+		m_result=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+		ObjectDlg.oriPlayer=player1;
+		ObjectDlg.m_MysqlVideoHandle=m_MysqlVideoParaSearchHandle;
+		ObjectDlg.videoPro=m_videoPro;
+		SetTimer(6, 100, NULL);
+		ObjectDlg.DoModal();
+		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+		ObjectDlg.Generated=FALSE;
+	}
+}

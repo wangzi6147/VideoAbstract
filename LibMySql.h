@@ -171,10 +171,9 @@ typedef struct _SearchSegIDParams
 ///记录手动目标检索中一个目标的信息的结构体
 typedef struct  
 {
-	int objectID;
-	int firstFrameID;
-	int lastFrameID;
-	CRect roi;
+	int nOldPara;
+	int OriFrameID;
+	CvRect roi;
 }objectInfo;
 
 
@@ -328,6 +327,7 @@ public:
 	bool CreateCombineSegsTable(CString CombineSegsTableName);											///建表
 	bool InsertData2CombineSegsTable(OrigTraceTable traceTab, CString CombineSegsTableName);			///插入数据
 	bool FindROIFromCombineSegsTable(vector <CvRect> *m_ROI, CString tableName);						///获得所有ROI
+	bool GetObjectInfoFromObjectTable(vector<objectInfo> *objDetectedInfos,CString ObjectTableName);       ///<获取所有运动目标的信息
 
 	///
 	///VidAbstract用到的表的相关函数
@@ -353,7 +353,6 @@ public:
 	int  GetObjectIDFromObjectTable(int frameID,CRect rect,CString ObjectTableName);                       ///<获取某一帧特殊位置的物体ID
 	
 	bool GetFrameidFromObjectTable(int objectID,CString ObjectTableName,vector<int>* frameID);              ///<获取某一运动目标的frameID集合
-	bool GetObjectInfoFromObjectTable(int objectID,CString ObjectTableName,objectInfo* tempInfo);           ///<获取某一运动目标的运动信息
 
 
 };
