@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	//ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
 	ON_BN_CLICKED(IDC_CHECK1, &Cvideotest2Dlg::OnBnClickedCheck1)
 	ON_BN_CLICKED(IDC_BUTTON_OBJECT, &Cvideotest2Dlg::OnBnClickedButtonObject)
+	ON_COMMAND(ID_ABOUT, &Cvideotest2Dlg::OnAbout)
 END_MESSAGE_MAP()
 
 
@@ -962,4 +963,13 @@ void Cvideotest2Dlg::OnBnClickedButtonObject()
 		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
 		ObjectDlg.Generated=FALSE;
 	}
+}
+
+
+void Cvideotest2Dlg::OnAbout()
+{
+	// TODO: Add your command handler code here
+	//MessageBox("This is a test！");
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
 }

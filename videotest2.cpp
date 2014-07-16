@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "videotest2.h"
 #include "videotest2Dlg.h"
+#include "ChangeIniFileDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,7 +15,8 @@
 // Cvideotest2App
 
 BEGIN_MESSAGE_MAP(Cvideotest2App, CWinApp)
-	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
+	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)	
+	ON_COMMAND(ID_MENU_CHANGEINIFILE, &Cvideotest2App::OnMenuChangeinifile)
 END_MESSAGE_MAP()
 
 
@@ -92,3 +94,21 @@ BOOL Cvideotest2App::InitInstance()
 	return FALSE;
 }
 
+
+
+int Cvideotest2App::ExitInstance()
+{
+	//TODO: 处理可能已添加的附加资源
+	AfxOleTerm(FALSE);
+
+	return CWinApp::ExitInstance();
+}
+
+
+
+void Cvideotest2App::OnMenuChangeinifile()
+{
+	// TODO: Add your command handler code here
+	ChangeIniFileDlg m_ChangeIniDlg;
+	m_ChangeIniDlg.DoModal();
+}

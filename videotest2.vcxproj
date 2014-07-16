@@ -105,6 +105,7 @@
     <None Include="res\videotest2.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChangeIniFileDlg.h" />
     <ClInclude Include="CvvImage.h" />
     <ClInclude Include="DisplayFrame.h" />
     <ClInclude Include="GlobalFunctions.h" />
@@ -120,6 +121,7 @@
     <ClInclude Include="vidPlayer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChangeIniFileDlg.cpp" />
     <ClCompile Include="CvvImage.cpp" />
     <ClCompile Include="DisplayFrame.cpp" />
     <ClCompile Include="GlobalFunctions.cpp" />

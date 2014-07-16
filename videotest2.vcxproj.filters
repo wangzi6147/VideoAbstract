@@ -63,6 +63,9 @@
     <ClInclude Include="ObjectViewDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ChangeIniFileDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="videotest2.cpp">
@@ -93,6 +96,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ObjectViewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeIniFileDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

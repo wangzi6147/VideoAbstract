@@ -105,6 +105,7 @@ public:
 
 	CObjectViewDlg ObjectDlg;//逐一显示前景对象的窗口
 	afx_msg void OnBnClickedButtonObject();//逐一显示前景对象按钮
+	afx_msg void OnAbout();
 };
 
 void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param);

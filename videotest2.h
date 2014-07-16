@@ -24,10 +24,12 @@ public:
 // ÷ÿ–¥
 public:
 	virtual BOOL InitInstance();
-
+	virtual int ExitInstance();
 //  µœ÷
 
 	DECLARE_MESSAGE_MAP()
+	
+	afx_msg void OnMenuChangeinifile();
 };
 
 extern Cvideotest2App theApp;
