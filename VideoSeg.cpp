@@ -268,7 +268,7 @@ int  CVideo::Initialization(const char *pVideoPath)
 		return -1;              ///<初始化压缩参数失败，返回-1
 	
 	InitStorage();	  ///<初始化图像数据，分配空间
-	InitGaussParam();   ///<初始化高斯模型
+//	InitGaussParam();   ///<初始化高斯模型
 	InitTableParam();   ///<初始化数据库表
 	InitAbstractVideo(pVideoPath);///<初始化摘要视频参数
 
@@ -293,8 +293,23 @@ int CVideo::InitSampleSetting()
 	ratio = MAX(ratioH,ratioW);
 
 	m_nProcessingRatio   = (int)ceil(ratio);///<初始化视频帧大小处理比例
-	m_nCompressionRatioH = 16;///<初始化高度压缩比
-	m_nCompressionRatioW = 16;///<初始化宽度压缩比
+	
+	//读取配置文件my.ini @by QiFeng
+	int m_CompressionRatio = ::GetPrivateProfileInt(TEXT("InitSampleSetting"), 
+                              TEXT("m_nCompressionRatioH"), 
+                              0,   //如果没读到会被设置成0
+							  TEXT("..\\my.ini"));
+	if (m_CompressionRatio != 0)
+	{
+		m_nCompressionRatioH = m_CompressionRatio;///<初始化高度压缩比
+		m_nCompressionRatioW = m_CompressionRatio;///<初始化宽度压缩比
+	}
+	else
+	{
+		m_nCompressionRatioH = 16;///<初始化高度压缩比
+		m_nCompressionRatioW = 16;///<初始化宽度压缩比
+	}
+	
 	m_nSamplingRate      = m_nFps/2;///<初始化采样帧数间隔
 	m_nSampleTime        = 5;///<初始化采样时间间隔
 	m_nTotalFrameToDo    = m_nTotalFrame - m_nFps;///<初始化总测试帧数
@@ -331,7 +346,19 @@ void CVideo::InitStorage()
 	m_nVideoResizeH   = m_nVideoH / m_nCompressionRatioH;///<初始化视频帧压碎后高度
 	m_nVideoResizeW   = m_nVideoW / m_nCompressionRatioW;///<初始化视频帧压碎后高度
 	m_nMaxTargetArea  = m_nVideoH * m_nVideoW / 4;  ///<初始化运动目标最大面积
-	m_nMinTargetArea  = m_nVideoH * m_nVideoW / 400;///<初始化运动目标最小面积
+	//读取配置文件my.ini @by QiFeng
+	int m_MinTargetArea = ::GetPrivateProfileInt(TEXT("InitStorage"), 
+                              TEXT("m_nMinTargetArea"), 
+                              0,   //如果没读到会被设置成0
+							  TEXT("..\\my.ini"));
+	if(m_MinTargetArea != 0)
+	{
+		m_nMinTargetArea = m_MinTargetArea;  ///<初始化运动目标最小面积
+	}
+	else
+	{
+		m_nMinTargetArea  = m_nVideoH * m_nVideoW / 400;///<初始化运动目标最小面积
+	}
 
 	m_pProcessFrame   = cvCreateImage(cvSize(m_nVideoW, m_nVideoH), IPL_DEPTH_8U, 3);///<初始化处理图像帧，分配空间
 	m_pGrayFrame      = cvCreateImage(cvSize(m_nVideoW, m_nVideoH), IPL_DEPTH_8U, 1);///<初始化灰度图像帧，分配空间
@@ -371,25 +398,7 @@ void CVideo::InitStorage()
 	cvConvert(m_pGrayFrame,    m_pGrayBGMat);
 	cvConvert(m_pGrayFrame,    m_pGrayFGMat);
 }
-///@brief CVideo类的初始化高斯模型函数
-/// 
-///@param[in|out] NULL
-///@pre  NULL
-///@return NULL
-///@retval NULL
-///@post NULL
-void CVideo::InitGaussParam()
-{
-	///新建高斯模型并初始化相关参数
-	//m_pGaussParams = new CvGaussBGStatModelParams;
-	//m_pGaussParams->win_size      = 300;	// 初始化阶段的帧数；用户自定义模型学 习率a=1/win_size;
-	//m_pGaussParams->bg_threshold  = 0.65;	//和其中一个高斯模型匹配时的阈值
-	//m_pGaussParams->std_threshold = 3.5;	//是否为背景的的阈值
-	//m_pGaussParams->weight_init   = 0.05;	//高斯分布的初始权值
-	//m_pGaussParams->variance_init = 30*30;	//高斯分布的初始方差
-	//m_pGaussParams->minArea       = 15;		 //最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
-	//m_pGaussParams->n_gauss       = 3;		//高斯分布函数的个数
-}
+
 ///@brief CVideo类的初始化数据库表函数
 /// 
 ///@param[in|out] NULL

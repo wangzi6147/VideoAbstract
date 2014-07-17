@@ -92,13 +92,13 @@
     <ClCompile Include="DisplayFrame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CvvImage.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectViewDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ChangeIniFileDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CvvImage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
