@@ -20,9 +20,11 @@
 
 CDataMySql *m_MysqlHandle;         ///<数据库外部指针变量
 pointForCvMouse mousePosInPic;
-//bool m_gotCVlclick = FALSE;
-// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
+BOOL ifinitDisplay3=FALSE;	//窗口3初始化标识符
 
+
+
+// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -289,7 +291,7 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 	{
 		m_videoPro->m_IfContinue = true;
 		m_ifStartPro = true;
-	
+
 		PathName.Replace(*m, *n);
 		m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
 	}
@@ -605,6 +607,7 @@ void Cvideotest2Dlg::OnBnClickedBtnexit()
 
 void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 {
+	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
 	// TODO: 在此添加控件通知处理程序代码
 	//if(PathName)
 	if (m_ifStartPro)
@@ -617,10 +620,10 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		{
 			player2.stopPlay();
 		}
-		CString path=PathName;
-		path.Replace("avi","AVI");
-		path = path+"_fusion.avi";
-		player2.m_filePath = path;
+	CString path=PathName;
+	path.Replace("avi","AVI");
+	path = path+"_fusion.avi";
+	player2.m_filePath = path;
 		if(_access(path,0)==-1)
 		{
 			AfxMessageBox("找不到文件");
@@ -631,13 +634,21 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		IplImage* image= NULL;
 		CString m_tmpFileName0 = player1.m_filePath;
 		CString m_tmpFileName1, m_tmpFileName2;
-		GetVideoNameFromAbsolutePath1(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
+		GetVideoNameFromAbsolutePath1(&m_tmpFileName0, &m_tmpFileName1);///<获取文件名(包含后缀)
 		GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
 	
 		image = cvLoadImage("../"+ m_tmpFileName2 +"/All.jpg",1);
+		if (!ifinitDisplay3){
+			CRect rect;
+			GetDlgItem(IDC_STATIC_ABS2)->GetClientRect(&rect);
+			disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_ABS2), "displayWindow3",
+				rect.Width(), rect.Height());
+			ifinitDisplay3 = true;
+		}
 		if(image != NULL ) // Check for invalid input
 		{
-			ShowImage(image,IDC_STATIC_ABS2);
+			disPlayImage.ShowPicture("displayWindow3",image);
+			//ShowImage(image,IDC_STATIC_ABS2);
 			cvReleaseImage(&image);
 		}
 
@@ -653,34 +664,34 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		player2.timeshow=FALSE;
 }
 
-void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
-{
-	CWnd *m_pWnd = GetDlgItem(ID);
-    CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
-    HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
-	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
-	
-    CRect rect;
-    GetDlgItem(ID) ->GetClientRect( &rect );
-    int rw = rect.right - rect.left;            // 求出图片控件的宽和高
-    int rh = rect.bottom - rect.top;
-    int iw = img->width;                        // 读取图片的宽和高
-    int ih = img->height;
-	
-	rw = (int)(iw*rh/ih);		//应显示按比例的宽度
-	int tx = rect.left;
-	int ty = rect.top;
-    SetRect( rect, tx, ty, tx+rw, ty+rh );
-
-    //CvvImage cimg;
-    //cimg.CopyOf( img );                            // 复制图片
-    //cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
-	disPlayImage.SetOpenCVWindow(m_pWnd, "displayWindow3",
-		rect.Width(), rect.Height());
-	disPlayImage.ShowPicture("displayWindow3", img);
-
-    ReleaseDC( pDC );
-}
+//void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
+//{
+//	CWnd *m_pWnd = GetDlgItem(ID);
+//    //CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
+//    //HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
+//	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
+//	
+//    CRect rect;
+//	m_pWnd->GetClientRect(&rect);
+// //   int rw = rect.right - rect.left;            // 求出图片控件的宽和高
+// //   int rh = rect.bottom - rect.top;
+// //   int iw = img->width;                        // 读取图片的宽和高
+// //   int ih = img->height;
+//	//
+//	//rw = (int)(iw*rh/ih);		//应显示按比例的宽度
+//	//int tx = rect.left;
+//	//int ty = rect.top;
+// //   SetRect( rect, tx, ty, tx+rw, ty+rh );
+//
+//    //CvvImage cimg;
+//    //cimg.CopyOf( img );                            // 复制图片
+//    //cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
+//	disPlayImage.SetOpenCVWindow(m_pWnd, "displayWindow3",
+//		rect.Width(), rect.Height());
+//	disPlayImage.ShowPicture("displayWindow3", img);
+//
+//    //ReleaseDC( pDC );
+//}
 
 void Cvideotest2Dlg::OnBnClickedBtn1play()
 {
