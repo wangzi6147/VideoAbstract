@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #define new new( _CLIENT_BLOCK, __FILE__, __LINE__)
+
+#define OBJECT_MARGIN 20
 ///@brief CVideo类的标准构造函数
 /// 
 ///@param[in|out] NULL
@@ -637,12 +639,9 @@ void CVideo::VideoBGProcessing()
 				{
 					m_ProcessingSpeed = 2.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
 					cvResize(m_pOriFrame, m_pProcessFrame);///<压缩
-					//cvConvert(m_pProcessFrame, m_pFrameMat);///<类型转换：Iplimage转为cvMat
 					m_FrameMat = m_pProcessFrame; //<类型转换：Iplimage转为Mat
 					//cvRunningAvg(m_pFrameMat, m_pBGMat, 0.03, 0);///<更新移动平均
-					//cvCopy(m_pFrameMat,m_pBGMat);
 					m_BGMat = m_FrameMat.clone();  //复制图像Mat
-					//cvConvert(m_pBGMat, m_pBGFrame);///<类型转换：cvMat转为Iplimage
 					*m_pBGFrame = m_BGMat;       //<类型转换：Mat转为Iplimage
 					if (m_IfInitBGFinal)
 					{
@@ -788,7 +787,7 @@ void CVideo::ParaSegmentation()
 	double k_ratio = (double)k/(double)(m_nVideoResizeW*m_nVideoResizeH);
 	if (k_ratio <=0.01)
 		return;
-	if (k_ratio/m_rFGSegThreshold > 1.5 || k_ratio/m_rFGSegThreshold < 0.67)
+	if (k_ratio/m_rFGSegThreshold > 1.5 || k_ratio/m_rFGSegThreshold < 0.79)
 		m_rFGSegThreshold = k_ratio;
 	
 	///检测到运动视频段
@@ -867,9 +866,9 @@ void CVideo::FGSegmentation()
 			m_traceTab.nTop   = r.y;
 			m_traceTab.nBottom= (r.y+r.height);*/
 			m_traceTab.nX= r.x;
-			m_traceTab.nY = r.y;
-			m_traceTab.nHeight   = r.height;
-			m_traceTab.nWidth= r.width;
+			m_traceTab.nY = MAX(r.y - OBJECT_MARGIN, 0) ;
+			m_traceTab.nHeight   = r.height + OBJECT_MARGIN;
+			m_traceTab.nWidth= r.width + OBJECT_MARGIN;  //in case of losing part
 			m_traceTab.origFrame = (int)m_nCurrentFrame; 
 			m_traceTab.nOldPara = m_VideoFGParam.nOldPara;
 			ratio = (float)r.width*r.height/m_nVideoH/m_nVideoW;
@@ -971,7 +970,7 @@ void CVideo::VideoConnection()
 void CVideo::TimeLineRestructed()
 {
 	///时间轴重构参数初始化
-	if (m_segIDCount<10)
+	if (m_segIDCount<5)
 	{
 		m_nParaFinal[m_VideoFGParam.nOldPara] = -1;///<动态段运动物体过少，判断为噪点
 		return;///<返回，不作处理
@@ -987,7 +986,7 @@ void CVideo::TimeLineRestructed()
 		m_New2OldParaParam.nOldPara = m_VideoFGParam.nOldPara;
 		m_nParaFinal[m_VideoFGParam.nOldPara] = m_New2OldParaParam.nNewPara;///<保存新旧视频段对照信息
 		m_FusionParam++;///<视频融合参数自增一
-		if (m_FusionParam >=6)
+		if (m_FusionParam >=4)
 		//if (m_FusionParam >=8)
 		{///融合为同一段视频的段总数超出范围
 			m_segIDParam = 1;///<重置segID参数
@@ -1116,6 +1115,7 @@ void CVideo::VideoFusionProcessing()
 			sprintf_s(m_strName,m_frameName,k);
 			m_pNewFrame = cvLoadImage(m_strName);            ///<获取融合后新视频帧图像
 			cvWriteFrame(m_pVideoWriter4fusion, m_pNewFrame);///<写入融合视频(也即摘要视频)
+			cvReleaseImage(&m_pNewFrame);///<释放新视频帧图像空间
 		}
 	}
 	if (m_VideoFGParam.nOldPara >= FGPara_Count)
@@ -1220,7 +1220,7 @@ void CVideo::CreateNewFrame()
 					
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp + m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中1
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1284,7 +1284,7 @@ void CVideo::CreateNewFrame()
 					cvResetImageROI(m_pNewFrame);
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中2
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1414,7 +1414,7 @@ void CVideo::FusionNewFrame()
 
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1481,7 +1481,7 @@ void CVideo::FusionNewFrame()
 
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中
 						cvSetImageROI(m_pCombineSegsImage,     r);
