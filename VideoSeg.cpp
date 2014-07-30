@@ -501,13 +501,18 @@ void CVideo::InitTableParam()
 ///@post NULL
 void CVideo::InitAbstractVideo(const char* pVideoPath)
 {
-	strSegVideoNewName    = pVideoPath;
-	strFusionVideoNewName = pVideoPath;
+	///对视频路径做处理
+	CString m_tmpFileName0 = m_strFilePath.c_str();
+    CString m_tmpFileName1, m_tmpFileName2;
+	GetVideoNameFromAbsolutePath(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
+	GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
+	/*strSegVideoNewName    = pVideoPath;
+	strFusionVideoNewName = pVideoPath;*/
 	///初始化分割视频路径，新建分割视频写指针
-	strSegVideoNewName    = strSegVideoNewName + "_newcut.avi";
+	strSegVideoNewName = "..\\" + m_tmpFileName2 + "\\" + m_tmpFileName2 + "_newcut.avi";
 	m_pVideoWriter4seg    = cvCreateVideoWriter(strSegVideoNewName.c_str(), CV_FOURCC('D','I','V','X'), m_nFps/2,cvSize(m_nVideoW, m_nVideoH));
 	///初始化融合视频路径，新建融合视频写指针
-	strFusionVideoNewName = strFusionVideoNewName + "_fusion.avi";
+	strFusionVideoNewName = "..\\" + m_tmpFileName2 + "\\" + m_tmpFileName2 + "_fusion.avi";
 	m_pVideoWriter4fusion = cvCreateVideoWriter(strFusionVideoNewName.c_str(), CV_FOURCC('D','I','V','X'), m_nFps/2,cvSize(m_nVideoW, m_nVideoH));
 }
 ///@brief CVideo类的视频分段函数
@@ -867,8 +872,8 @@ void CVideo::FGSegmentation()
 			m_traceTab.nBottom= (r.y+r.height);*/
 			m_traceTab.nX= r.x;
 			m_traceTab.nY = MAX(r.y - OBJECT_MARGIN, 0) ;
-			m_traceTab.nHeight   = r.height + OBJECT_MARGIN;
-			m_traceTab.nWidth= r.width + OBJECT_MARGIN;  //in case of losing part
+ 			m_traceTab.nHeight   = r.height + OBJECT_MARGIN;
+ 			m_traceTab.nWidth= r.width + OBJECT_MARGIN;  //in case of losing part
 			m_traceTab.origFrame = (int)m_nCurrentFrame; 
 			m_traceTab.nOldPara = m_VideoFGParam.nOldPara;
 			ratio = (float)r.width*r.height/m_nVideoH/m_nVideoW;

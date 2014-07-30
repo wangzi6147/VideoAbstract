@@ -7,6 +7,7 @@
 #include "videotest2Dlg.h"
 #include "afxdialogex.h"
 #include "afxdlgs.h"
+#include "ifRebuildDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -134,6 +135,9 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 	player2.m_currentFrameNO = player2.m_startFrameNO = 0;		
 	player2.m_endFrameNO=3000;
+
+
+
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -289,11 +293,36 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 	}
 	if (PathName != "")
 	{
-		m_videoPro->m_IfContinue = true;
-		m_ifStartPro = true;
-
-		PathName.Replace(*m, *n);
-		m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
+		CString m_tmpFileName1, m_tmpFileName2;
+		GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+		GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+		CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+		//通过文件名判断摘要是否已经生成
+		if (_access(path, 0) == -1)
+		{
+			m_videoPro->m_IfContinue = true;
+			m_videoPro->m_IfDoneFus = false;
+			m_ifStartPro = true;
+			player2.stopPlay();
+			PathName.Replace(*m, *n);
+			m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
+			return;
+		}
+		else{
+			m_videoPro->m_IfDoneFus = true;
+			ifRebuildDlg Dlg;	//提示是否重新生成
+			Dlg.DoModal();
+			if (Dlg.ifrebuild){
+				m_videoPro->m_IfContinue = true;
+				m_videoPro->m_IfDoneFus = false;
+				m_ifStartPro = true;
+				player2.stopPlay();
+				PathName.Replace(*m, *n);
+				m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
+			}
+			return;
+		}
+	
 	}
 }
 
@@ -620,10 +649,11 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		{
 			player2.stopPlay();
 		}
-	CString path=PathName;
-	path.Replace("avi","AVI");
-	path = path+"_fusion.avi";
-	player2.m_filePath = path;
+	CString m_tmpFileName1, m_tmpFileName2;
+	GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+	GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+	CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+		player2.m_filePath = path;
 		if(_access(path,0)==-1)
 		{
 			AfxMessageBox("找不到文件");
@@ -633,8 +663,7 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		 // Read the file
 		IplImage* image= NULL;
 		CString m_tmpFileName0 = player1.m_filePath;
-		CString m_tmpFileName1, m_tmpFileName2;
-		GetVideoNameFromAbsolutePath1(&m_tmpFileName0, &m_tmpFileName1);///<获取文件名(包含后缀)
+		GetVideoNameFromAbsolutePath1(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
 		GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
 	
 		image = cvLoadImage("../"+ m_tmpFileName2 +"/All.jpg",1);
