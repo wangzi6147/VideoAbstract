@@ -303,7 +303,8 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 			m_videoPro->m_IfContinue = true;
 			m_videoPro->m_IfDoneFus = false;
 			m_ifStartPro = true;
-			player2.stopPlay();
+			//player2.stop();///停止播放
+			player2.stopPlay();///关闭进程
 			PathName.Replace(*m, *n);
 			m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
 			return;
@@ -316,7 +317,8 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 				m_videoPro->m_IfContinue = true;
 				m_videoPro->m_IfDoneFus = false;
 				m_ifStartPro = true;
-				player2.stopPlay();
+				//player2.stop();///停止播放
+				player2.stopPlay();///关闭进程
 				PathName.Replace(*m, *n);
 				m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
 			}
@@ -768,6 +770,10 @@ void Cvideotest2Dlg::OnBnClickedBtn1stop()
 void Cvideotest2Dlg::OnBnClickedBtn2play()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	if(player2.m_filePath!="")
 	{
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);///<滑动条初始化
@@ -794,6 +800,10 @@ void Cvideotest2Dlg::OnBnClickedBtn2play()
 void Cvideotest2Dlg::OnBnClickedBtn2pause()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	player2.pause();
 	/*GetDlgItem(IDC_BUTTON2_pause)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON2_play)->EnableWindow(TRUE);
@@ -804,6 +814,10 @@ void Cvideotest2Dlg::OnBnClickedBtn2pause()
 void Cvideotest2Dlg::OnBnClickedBtn2stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	player2.stop();
 }
 
