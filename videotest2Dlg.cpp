@@ -638,6 +638,7 @@ void Cvideotest2Dlg::OnBnClickedBtnexit()
 
 void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 {
+	//test
 	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
 	// TODO: 在此添加控件通知处理程序代码
 	//if(PathName)
