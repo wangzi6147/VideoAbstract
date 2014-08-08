@@ -272,6 +272,7 @@ void Cvideotest2Dlg::OnBnClickedOpen()
 
 void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 {
+	//testgit
 	CString a = "\\";
 	LPCTSTR m = a;
 	CString b = "/";
