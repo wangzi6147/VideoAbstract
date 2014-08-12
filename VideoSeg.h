@@ -68,7 +68,7 @@ public:
 	int Initialization(const char *pVideoPath);///<视频参数初始化
 	int InitSampleSetting();     ///<初始化压缩参数
 	void InitStorage();          ///<初始化图像数据，分配空间
-	void InitGaussParam();       ///<初始化高斯模型
+	//void InitGaussParam();       ///<初始化高斯模型
 	void InitTableParam();       ///<初始化数据库表
 	void InitAbstractVideo(const char* pVideoPath);///<初始化摘要视频参数
 

@@ -7,6 +7,7 @@
 #include "videotest2Dlg.h"
 #include "afxdialogex.h"
 #include "afxdlgs.h"
+#include "ifRebuildDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,9 +21,11 @@
 
 CDataMySql *m_MysqlHandle;         ///<数据库外部指针变量
 pointForCvMouse mousePosInPic;
-//bool m_gotCVlclick = FALSE;
-// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
+BOOL ifinitDisplay3=FALSE;	//窗口3初始化标识符
 
+
+
+// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -67,7 +70,9 @@ Cvideotest2Dlg::~Cvideotest2Dlg()
 	
 {
 	  delete m_MysqlVideoParaSearchHandle;			   ///<删除数据库操作指针
+	  m_MysqlVideoParaSearchHandle = NULL;
 	  delete m_videoPro;
+	  m_videoPro = NULL;
 }
 
 void Cvideotest2Dlg::DoDataExchange(CDataExchange* pDX)
@@ -103,6 +108,8 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_GOTO_FRAME, &Cvideotest2Dlg::OnBnClickedBtnGotoFrame)
 	//ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
 	ON_BN_CLICKED(IDC_CHECK1, &Cvideotest2Dlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON_OBJECT, &Cvideotest2Dlg::OnBnClickedButtonObject)
+	ON_COMMAND(ID_ABOUT, &Cvideotest2Dlg::OnAbout)
 END_MESSAGE_MAP()
 
 
@@ -128,6 +135,9 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 	player2.m_currentFrameNO = player2.m_startFrameNO = 0;		
 	player2.m_endFrameNO=3000;
+
+
+
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -272,7 +282,6 @@ void Cvideotest2Dlg::OnBnClickedOpen()
 
 void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 {
-	//testgit
 	CString a = "\\";
 	LPCTSTR m = a;
 	CString b = "/";
@@ -284,11 +293,38 @@ void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
 	}
 	if (PathName != "")
 	{
-		m_videoPro->m_IfContinue = true;
-		m_ifStartPro = true;
+		CString m_tmpFileName1, m_tmpFileName2;
+		GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+		GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+		CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+		//通过文件名判断摘要是否已经生成
+		if (_access(path, 0) == -1)
+		{
+			m_videoPro->m_IfContinue = true;
+			m_videoPro->m_IfDoneFus = false;
+			m_ifStartPro = true;
+			//player2.stop();///停止播放
+			player2.stopPlay();///关闭进程
+			PathName.Replace(*m, *n);
+			m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
+			return;
+		}
+		else{
+			m_videoPro->m_IfDoneFus = true;
+			ifRebuildDlg Dlg;	//提示是否重新生成
+			Dlg.DoModal();
+			if (Dlg.ifrebuild){
+				m_videoPro->m_IfContinue = true;
+				m_videoPro->m_IfDoneFus = false;
+				m_ifStartPro = true;
+				//player2.stop();///停止播放
+				player2.stopPlay();///关闭进程
+				PathName.Replace(*m, *n);
+				m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
+			}
+			return;
+		}
 	
-		PathName.Replace(*m, *n);
-		m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
 	}
 }
 
@@ -567,6 +603,16 @@ void Cvideotest2Dlg::OnTimer(UINT nIDEvent)
 					mousePosInPic.clickInCVwnd=FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
 				}
 		}
+		case 6://监视显示对象的子对话框
+		{
+			if (ObjectDlg.UserClick==TRUE)
+			{
+				player1.m_currentFrameNO=ObjectDlg.OriFrame;
+				If_playpiece=TRUE;
+				ObjectDlg.UserClick=FALSE;
+			}
+		}
+
 
 		default:
 			break;
@@ -592,6 +638,7 @@ void Cvideotest2Dlg::OnBnClickedBtnexit()
 
 void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 {
+	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
 	// TODO: 在此添加控件通知处理程序代码
 	//if(PathName)
 	if (m_ifStartPro)
@@ -604,9 +651,10 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		{
 			player2.stopPlay();
 		}
-		CString path=PathName;
-		path.Replace("avi","AVI");
-		path = path+"_fusion.avi";
+	CString m_tmpFileName1, m_tmpFileName2;
+	GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+	GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+	CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
 		player2.m_filePath = path;
 		if(_access(path,0)==-1)
 		{
@@ -616,14 +664,26 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 
 		 // Read the file
 		IplImage* image= NULL;
-		image = cvLoadImage("F://video project//videotest//015_H//All.jpg",1);
+		CString m_tmpFileName0 = player1.m_filePath;
+		GetVideoNameFromAbsolutePath1(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
+		GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
+	
+		image = cvLoadImage("../"+ m_tmpFileName2 +"/All.jpg",1);
+		if (!ifinitDisplay3){
+			CRect rect;
+			GetDlgItem(IDC_STATIC_ABS2)->GetClientRect(&rect);
+			disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_ABS2), "displayWindow3",
+				rect.Width(), rect.Height());
+			ifinitDisplay3 = true;
+		}
 		if(image != NULL ) // Check for invalid input
 		{
-			ShowImage(image,IDC_STATIC_ABS2);
+			disPlayImage.ShowPicture("displayWindow3",image);
+			//ShowImage(image,IDC_STATIC_ABS2);
 			cvReleaseImage(&image);
 		}
 
-		SetTimer(4, 600, NULL); //新加载的Picture Control的计时器
+		SetTimer(5, 600, NULL); //新加载的Picture Control的计时器
 
 		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
@@ -635,34 +695,34 @@ void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
 		player2.timeshow=FALSE;
 }
 
-void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
-{
-	CWnd *m_pWnd = GetDlgItem(ID);
-    CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
-    HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
-	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
-	
-    CRect rect;
-    GetDlgItem(ID) ->GetClientRect( &rect );
-    int rw = rect.right - rect.left;            // 求出图片控件的宽和高
-    int rh = rect.bottom - rect.top;
-    int iw = img->width;                        // 读取图片的宽和高
-    int ih = img->height;
-	
-	rw = (int)(iw*rh/ih);		//应显示按比例的宽度
-	int tx = rect.left;
-	int ty = rect.top;
-    SetRect( rect, tx, ty, tx+rw, ty+rh );
-
-    //CvvImage cimg;
-    //cimg.CopyOf( img );                            // 复制图片
-    //cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
-	disPlayImage.SetOpenCVWindow(m_pWnd, "displayWindow3",
-		rect.Width(), rect.Height());
-	disPlayImage.ShowPicture("displayWindow3", img);
-
-    ReleaseDC( pDC );
-}
+//void Cvideotest2Dlg::ShowImage( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
+//{
+//	CWnd *m_pWnd = GetDlgItem(ID);
+//    //CDC* pDC = GetDlgItem( ID ) ->GetDC();        // 获得显示控件的 DC
+//    //HDC hDC = pDC ->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
+//	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
+//	
+//    CRect rect;
+//	m_pWnd->GetClientRect(&rect);
+// //   int rw = rect.right - rect.left;            // 求出图片控件的宽和高
+// //   int rh = rect.bottom - rect.top;
+// //   int iw = img->width;                        // 读取图片的宽和高
+// //   int ih = img->height;
+//	//
+//	//rw = (int)(iw*rh/ih);		//应显示按比例的宽度
+//	//int tx = rect.left;
+//	//int ty = rect.top;
+// //   SetRect( rect, tx, ty, tx+rw, ty+rh );
+//
+//    //CvvImage cimg;
+//    //cimg.CopyOf( img );                            // 复制图片
+//    //cimg.DrawToHDC( hDC, &rect );                // 将图片绘制到显示控件的指定区域内
+//	disPlayImage.SetOpenCVWindow(m_pWnd, "displayWindow3",
+//		rect.Width(), rect.Height());
+//	disPlayImage.ShowPicture("displayWindow3", img);
+//
+//    //ReleaseDC( pDC );
+//}
 
 void Cvideotest2Dlg::OnBnClickedBtn1play()
 {
@@ -710,6 +770,10 @@ void Cvideotest2Dlg::OnBnClickedBtn1stop()
 void Cvideotest2Dlg::OnBnClickedBtn2play()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	if(player2.m_filePath!="")
 	{
 		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);///<滑动条初始化
@@ -736,6 +800,10 @@ void Cvideotest2Dlg::OnBnClickedBtn2play()
 void Cvideotest2Dlg::OnBnClickedBtn2pause()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	player2.pause();
 	/*GetDlgItem(IDC_BUTTON2_pause)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON2_play)->EnableWindow(TRUE);
@@ -746,6 +814,10 @@ void Cvideotest2Dlg::OnBnClickedBtn2pause()
 void Cvideotest2Dlg::OnBnClickedBtn2stop()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (m_ifStartPro){
+		AfxMessageBox("生在生成摘要，请稍后操作");
+		return;
+	}
 	player2.stop();
 }
 
@@ -921,3 +993,37 @@ void cvMouseHandlerInPic(int eventType, int x, int y, int flags, void *param)
 
 
 
+
+
+void Cvideotest2Dlg::OnBnClickedButtonObject()
+{
+	CString m_strSql;
+	MYSQL_RES *m_result;
+	m_strSql.Format("select * from %s",m_videoPro->m_tableParams.CombineSegsTableName) ;//00015_h_combinesegstable
+	int i=mysql_real_query(&m_MysqlVideoParaSearchHandle->m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength());
+	if(i!=0)
+	{
+		AfxMessageBox("请先点击生成摘要");
+		return;
+	}
+	else
+	{
+		m_result=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+		ObjectDlg.oriPlayer=player1;
+		ObjectDlg.m_MysqlVideoHandle=m_MysqlVideoParaSearchHandle;
+		ObjectDlg.videoPro=m_videoPro;
+		SetTimer(6, 100, NULL);
+		ObjectDlg.DoModal();
+		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+		ObjectDlg.Generated=FALSE;
+	}
+}
+
+
+void Cvideotest2Dlg::OnAbout()
+{
+	// TODO: Add your command handler code here
+	//MessageBox("This is a test！");
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
+}

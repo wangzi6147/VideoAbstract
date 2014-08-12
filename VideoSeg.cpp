@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #define new new( _CLIENT_BLOCK, __FILE__, __LINE__)
+
+#define OBJECT_MARGIN 20
 ///@brief CVideo类的标准构造函数
 /// 
 ///@param[in|out] NULL
@@ -268,7 +270,7 @@ int  CVideo::Initialization(const char *pVideoPath)
 		return -1;              ///<初始化压缩参数失败，返回-1
 	
 	InitStorage();	  ///<初始化图像数据，分配空间
-	InitGaussParam();   ///<初始化高斯模型
+//	InitGaussParam();   ///<初始化高斯模型
 	InitTableParam();   ///<初始化数据库表
 	InitAbstractVideo(pVideoPath);///<初始化摘要视频参数
 
@@ -293,8 +295,23 @@ int CVideo::InitSampleSetting()
 	ratio = MAX(ratioH,ratioW);
 
 	m_nProcessingRatio   = (int)ceil(ratio);///<初始化视频帧大小处理比例
-	m_nCompressionRatioH = 16;///<初始化高度压缩比
-	m_nCompressionRatioW = 16;///<初始化宽度压缩比
+	
+	//读取配置文件my.ini @by QiFeng
+	int m_CompressionRatio = ::GetPrivateProfileInt(TEXT("InitSampleSetting"), 
+                              TEXT("m_nCompressionRatioH"), 
+                              0,   //如果没读到会被设置成0
+							  TEXT("..\\my.ini"));
+	if (m_CompressionRatio != 0)
+	{
+		m_nCompressionRatioH = m_CompressionRatio;///<初始化高度压缩比
+		m_nCompressionRatioW = m_CompressionRatio;///<初始化宽度压缩比
+	}
+	else
+	{
+		m_nCompressionRatioH = 16;///<初始化高度压缩比
+		m_nCompressionRatioW = 16;///<初始化宽度压缩比
+	}
+	
 	m_nSamplingRate      = m_nFps/2;///<初始化采样帧数间隔
 	m_nSampleTime        = 5;///<初始化采样时间间隔
 	m_nTotalFrameToDo    = m_nTotalFrame - m_nFps;///<初始化总测试帧数
@@ -331,7 +348,19 @@ void CVideo::InitStorage()
 	m_nVideoResizeH   = m_nVideoH / m_nCompressionRatioH;///<初始化视频帧压碎后高度
 	m_nVideoResizeW   = m_nVideoW / m_nCompressionRatioW;///<初始化视频帧压碎后高度
 	m_nMaxTargetArea  = m_nVideoH * m_nVideoW / 4;  ///<初始化运动目标最大面积
-	m_nMinTargetArea  = m_nVideoH * m_nVideoW / 400;///<初始化运动目标最小面积
+	//读取配置文件my.ini @by QiFeng
+	int m_MinTargetArea = ::GetPrivateProfileInt(TEXT("InitStorage"), 
+                              TEXT("m_nMinTargetArea"), 
+                              0,   //如果没读到会被设置成0
+							  TEXT("..\\my.ini"));
+	if(m_MinTargetArea != 0)
+	{
+		m_nMinTargetArea = m_MinTargetArea;  ///<初始化运动目标最小面积
+	}
+	else
+	{
+		m_nMinTargetArea  = m_nVideoH * m_nVideoW / 400;///<初始化运动目标最小面积
+	}
 
 	m_pProcessFrame   = cvCreateImage(cvSize(m_nVideoW, m_nVideoH), IPL_DEPTH_8U, 3);///<初始化处理图像帧，分配空间
 	m_pGrayFrame      = cvCreateImage(cvSize(m_nVideoW, m_nVideoH), IPL_DEPTH_8U, 1);///<初始化灰度图像帧，分配空间
@@ -371,27 +400,7 @@ void CVideo::InitStorage()
 	cvConvert(m_pGrayFrame,    m_pGrayBGMat);
 	cvConvert(m_pGrayFrame,    m_pGrayFGMat);
 }
-///@brief CVideo类的初始化高斯模型函数
-/// 
-///@param[in|out] NULL
-///@pre  NULL
-///@return NULL
-///@retval NULL
-///@post NULL
-void CVideo::InitGaussParam()
-{
-	///新建高斯模型并初始化相关参数
-	//m_pGaussParams = new CvGaussBGStatModelParams;
-	//m_pGaussParams->win_size      = 300;	// 初始化阶段的帧数；用户自定义模型学 习率a=1/win_size;
-	//m_pGaussParams->bg_threshold  = 0.65;	//和其中一个高斯模型匹配时的阈值
-	//m_pGaussParams->std_threshold = 3.5;	//是否为背景的的阈值
-	//m_pGaussParams->weight_init   = 0.05;	//高斯分布的初始权值
-	//m_pGaussParams->variance_init = 30*30;	//高斯分布的初始方差
-	//m_pGaussParams->minArea       = 15;		 //最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
-	//m_pGaussParams->n_gauss       = 3;		//高斯分布函数的个数
-	// m_pBGSubMOG2 = new cv::BackgroundSubtractorMOG2;
-	//m_pGaussBGModel     = (CvGaussBGModel*)cvCreateGaussianBGModel(m_pGrayResizeFrame, m_pGaussParams);
-}
+
 ///@brief CVideo类的初始化数据库表函数
 /// 
 ///@param[in|out] NULL
@@ -492,13 +501,18 @@ void CVideo::InitTableParam()
 ///@post NULL
 void CVideo::InitAbstractVideo(const char* pVideoPath)
 {
-	strSegVideoNewName    = pVideoPath;
-	strFusionVideoNewName = pVideoPath;
+	///对视频路径做处理
+	CString m_tmpFileName0 = m_strFilePath.c_str();
+    CString m_tmpFileName1, m_tmpFileName2;
+	GetVideoNameFromAbsolutePath(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
+	GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
+	/*strSegVideoNewName    = pVideoPath;
+	strFusionVideoNewName = pVideoPath;*/
 	///初始化分割视频路径，新建分割视频写指针
-	strSegVideoNewName    = strSegVideoNewName + "_newcut.avi";
+	strSegVideoNewName = "..\\" + m_tmpFileName2 + "\\" + m_tmpFileName2 + "_newcut.avi";
 	m_pVideoWriter4seg    = cvCreateVideoWriter(strSegVideoNewName.c_str(), CV_FOURCC('D','I','V','X'), m_nFps/2,cvSize(m_nVideoW, m_nVideoH));
 	///初始化融合视频路径，新建融合视频写指针
-	strFusionVideoNewName = strFusionVideoNewName + "_fusion.avi";
+	strFusionVideoNewName = "..\\" + m_tmpFileName2 + "\\" + m_tmpFileName2 + "_fusion.avi";
 	m_pVideoWriter4fusion = cvCreateVideoWriter(strFusionVideoNewName.c_str(), CV_FOURCC('D','I','V','X'), m_nFps/2,cvSize(m_nVideoW, m_nVideoH));
 }
 ///@brief CVideo类的视频分段函数
@@ -563,10 +577,8 @@ void CVideo::VideoParaProcessing()
 				cvtColor(m_ResizeFrameMat, m_GrayResizeFrameMat, CV_BGR2GRAY,1); ///<灰度化
 			
 				m_pBGSubMOG2.operator()(m_GrayResizeFrameMat, foregroundMat, 0.001);						
-				//cvUpdateBGStatModel(m_pGrayResizeFrame, (CvBGStatModel*)m_pGaussBGModel);///<高斯背景更新
-				
 				m_GrayResizeFrameMat = foregroundMat; //?????
-				//cvCopy(m_pGaussBGModel->foreground, m_pGrayResizeFrame);     ///<提取前景		
+				
 				this->ParaSegmentation();///<视频分段算法
 			}
 			if (m_nCurrentFrame >= m_nTotalFrameToDo)///<当前帧为总处理帧号，视频分段处理完成，退出循环
@@ -632,12 +644,9 @@ void CVideo::VideoBGProcessing()
 				{
 					m_ProcessingSpeed = 2.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
 					cvResize(m_pOriFrame, m_pProcessFrame);///<压缩
-					//cvConvert(m_pProcessFrame, m_pFrameMat);///<类型转换：Iplimage转为cvMat
 					m_FrameMat = m_pProcessFrame; //<类型转换：Iplimage转为Mat
 					//cvRunningAvg(m_pFrameMat, m_pBGMat, 0.03, 0);///<更新移动平均
-					//cvCopy(m_pFrameMat,m_pBGMat);
 					m_BGMat = m_FrameMat.clone();  //复制图像Mat
-					//cvConvert(m_pBGMat, m_pBGFrame);///<类型转换：cvMat转为Iplimage
 					*m_pBGFrame = m_BGMat;       //<类型转换：Mat转为Iplimage
 					if (m_IfInitBGFinal)
 					{
@@ -783,7 +792,7 @@ void CVideo::ParaSegmentation()
 	double k_ratio = (double)k/(double)(m_nVideoResizeW*m_nVideoResizeH);
 	if (k_ratio <=0.01)
 		return;
-	if (k_ratio/m_rFGSegThreshold > 1.5 || k_ratio/m_rFGSegThreshold < 0.67)
+	if (k_ratio/m_rFGSegThreshold > 1.5 || k_ratio/m_rFGSegThreshold < 0.79)
 		m_rFGSegThreshold = k_ratio;
 	
 	///检测到运动视频段
@@ -862,9 +871,9 @@ void CVideo::FGSegmentation()
 			m_traceTab.nTop   = r.y;
 			m_traceTab.nBottom= (r.y+r.height);*/
 			m_traceTab.nX= r.x;
-			m_traceTab.nY = r.y;
-			m_traceTab.nHeight   = r.height;
-			m_traceTab.nWidth= r.width;
+			m_traceTab.nY = MAX(r.y - OBJECT_MARGIN, 0) ;
+ 			m_traceTab.nHeight   = r.height + OBJECT_MARGIN;
+ 			m_traceTab.nWidth= r.width + OBJECT_MARGIN;  //in case of losing part
 			m_traceTab.origFrame = (int)m_nCurrentFrame; 
 			m_traceTab.nOldPara = m_VideoFGParam.nOldPara;
 			ratio = (float)r.width*r.height/m_nVideoH/m_nVideoW;
@@ -966,7 +975,7 @@ void CVideo::VideoConnection()
 void CVideo::TimeLineRestructed()
 {
 	///时间轴重构参数初始化
-	if (m_segIDCount<10)
+	if (m_segIDCount<5)
 	{
 		m_nParaFinal[m_VideoFGParam.nOldPara] = -1;///<动态段运动物体过少，判断为噪点
 		return;///<返回，不作处理
@@ -982,7 +991,7 @@ void CVideo::TimeLineRestructed()
 		m_New2OldParaParam.nOldPara = m_VideoFGParam.nOldPara;
 		m_nParaFinal[m_VideoFGParam.nOldPara] = m_New2OldParaParam.nNewPara;///<保存新旧视频段对照信息
 		m_FusionParam++;///<视频融合参数自增一
-		if (m_FusionParam >=6)
+		if (m_FusionParam >=4)
 		//if (m_FusionParam >=8)
 		{///融合为同一段视频的段总数超出范围
 			m_segIDParam = 1;///<重置segID参数
@@ -1111,6 +1120,7 @@ void CVideo::VideoFusionProcessing()
 			sprintf_s(m_strName,m_frameName,k);
 			m_pNewFrame = cvLoadImage(m_strName);            ///<获取融合后新视频帧图像
 			cvWriteFrame(m_pVideoWriter4fusion, m_pNewFrame);///<写入融合视频(也即摘要视频)
+			cvReleaseImage(&m_pNewFrame);///<释放新视频帧图像空间
 		}
 	}
 	if (m_VideoFGParam.nOldPara >= FGPara_Count)
@@ -1215,7 +1225,7 @@ void CVideo::CreateNewFrame()
 					
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp + m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中1
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1279,7 +1289,7 @@ void CVideo::CreateNewFrame()
 					cvResetImageROI(m_pNewFrame);
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中2
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1409,7 +1419,7 @@ void CVideo::FusionNewFrame()
 
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中
 						cvSetImageROI(m_pCombineSegsImage,     r);
@@ -1476,7 +1486,7 @@ void CVideo::FusionNewFrame()
 
 					int temp = m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara);
 					
-					if( m_segIDParam == (temp +1))
+					if( m_segIDParam == (temp +m_nSampleTime))
 					{
 								/////将前景目标图像嵌入对应位置的新视频帧图像中
 						cvSetImageROI(m_pCombineSegsImage,     r);

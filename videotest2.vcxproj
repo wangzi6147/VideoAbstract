@@ -100,16 +100,18 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="ReadMe.txt" />
     <None Include="res\videotest2.ico" />
     <None Include="res\videotest2.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChangeIniFileDlg.h" />
     <ClInclude Include="CvvImage.h" />
     <ClInclude Include="DisplayFrame.h" />
     <ClInclude Include="GlobalFunctions.h" />
+    <ClInclude Include="ifRebuildDlg.h" />
     <ClInclude Include="LibMySql.h" />
+    <ClInclude Include="ObjectViewDlg.h" />
     <ClInclude Include="publicheader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -120,10 +122,13 @@
     <ClInclude Include="vidPlayer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChangeIniFileDlg.cpp" />
     <ClCompile Include="CvvImage.cpp" />
     <ClCompile Include="DisplayFrame.cpp" />
     <ClCompile Include="GlobalFunctions.cpp" />
+    <ClCompile Include="ifRebuildDlg.cpp" />
     <ClCompile Include="LibMySql.cpp" />
+    <ClCompile Include="ObjectViewDlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="VideoSeg.cpp" />
     <ClCompile Include="videotest2.cpp" />

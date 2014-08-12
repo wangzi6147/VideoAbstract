@@ -22,7 +22,6 @@
     <None Include="res\videotest2.ico">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="videotest2.h">
@@ -61,6 +60,15 @@
     <ClInclude Include="DisplayFrame.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectViewDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeIniFileDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ifRebuildDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="videotest2.cpp">
@@ -87,7 +95,16 @@
     <ClCompile Include="DisplayFrame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectViewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeIniFileDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="CvvImage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ifRebuildDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

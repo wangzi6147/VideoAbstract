@@ -225,7 +225,7 @@ bool CDataMySql::CreateCombineSegsTable(CString CombineSegsTableName)
 {
 	CString m_strSql;///<mysql查询语句
 	m_strSql.Format("create table %s(nOldPara int,segID int not null, nX smallint(3) not null,\
-		nY smallint(3) not null,nWidth smallint(3) not null,nHeight smallint(3) not null)", CombineSegsTableName);
+		nY smallint(3) not null,nWidth smallint(3) not null,nHeight smallint(3) not null,origFrame int not Null)", CombineSegsTableName);
 	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
 	{
 		print_error(&m_mysql, "error message");
@@ -248,9 +248,9 @@ bool CDataMySql::CreateCombineSegsTable(CString CombineSegsTableName)
 bool CDataMySql::InsertData2CombineSegsTable(OrigTraceTable traceTab, CString CombineSegsTableName)
 {
 	CString m_strSql;///<mysql查询语句
-	m_strSql.Format("insert into %s(nOldPara, segID, nX, nY, nWidth, nHeight)\
-		values(\'%d\',\'%d\',\'%d\',\'%d\',\'%d\',\'%d\')",\
-		CombineSegsTableName, traceTab.nOldPara, traceTab.segID, traceTab.nX, traceTab.nY, traceTab.nWidth, traceTab.nHeight);
+	m_strSql.Format("insert into %s(nOldPara, segID, nX, nY, nWidth, nHeight,origFrame)\
+		values(\'%d\',\'%d\',\'%d\',\'%d\',\'%d\',\'%d\',\'%d\')",\
+		CombineSegsTableName, traceTab.nOldPara, traceTab.segID, traceTab.nX, traceTab.nY, traceTab.nWidth, traceTab.nHeight,traceTab.origFrame);
 	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
 	{
 		print_error(&m_mysql, "error message");
@@ -2364,45 +2364,72 @@ bool CDataMySql::GetFrameidFromObjectTable(int objectID,CString ObjectTableName,
 ///@return NULL
 ///@retval BOOL 数据库操作是否成功
 ///@post NULL
-bool CDataMySql::GetObjectInfoFromObjectTable(int objectID,CString ObjectTableName,objectInfo* tempInfo)
+bool CDataMySql::GetObjectInfoFromObjectTable(vector<objectInfo> *objDetectedInfos,CString ObjectTableName)
 {
+	objDetectedInfos->clear();
 	CString m_strSql;
 	MYSQL_RES *m_result;
 	MYSQL_ROW m_sqlRow;
-	m_strSql.Format("select objectID,frameID,nTop,nBottom,nLeft,nRight from %s where objectID=\'%d\'",ObjectTableName,objectID);
-	if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
-	{ 
-		print_error(&m_mysql,"error message");
+	m_strSql.Format("select nOldPara,nX,nY,nWidth,nHeight,origFrame from %s",ObjectTableName);
+	if (mysql_real_query(&m_mysql, (char*)(LPCTSTR)m_strSql, (UINT)m_strSql.GetLength()) != 0)
+	{
+		m_result = NULL;///<出错
+		print_error(&m_mysql, "error message");
 		return false;
 	}
 	else
 	{
-		m_result=mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
-		if (m_result)
+		m_result = mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
+		for (int i = 0; i<m_result->row_count; i++)
 		{
-			m_sqlRow=mysql_fetch_row(m_result);///<获得所有结果字符串
-			if(m_sqlRow)
-			{
-				tempInfo->objectID		= atoi(m_sqlRow[0]);
-				tempInfo->firstFrameID  = atoi(m_sqlRow[1]);
-				tempInfo->lastFrameID	= atoi(m_sqlRow[1]);
-				tempInfo->roi.top		= atoi(m_sqlRow[2]);
-				tempInfo->roi.bottom	= atoi(m_sqlRow[3]);
-				tempInfo->roi.left		= atoi(m_sqlRow[4]);
-				tempInfo->roi.right		= atoi(m_sqlRow[5]);
-			}
-			while (m_sqlRow)
-			{
-				if (tempInfo->lastFrameID < atoi(m_sqlRow[1]))
-				{
-					tempInfo->lastFrameID = atoi(m_sqlRow[1]);
-				}
-				m_sqlRow=mysql_fetch_row(m_result);
-			}
+			m_sqlRow = mysql_fetch_row(m_result);///<获得所有结果字符串
+			objectInfo temp;
+			temp.nOldPara	= atoi(m_sqlRow[0]);
+			temp.roi.x		= atoi(m_sqlRow[1]);
+			temp.roi.y		= atoi(m_sqlRow[2]);
+			temp.roi.width	= atoi(m_sqlRow[3]);
+			temp.roi.height	= atoi(m_sqlRow[4]);
+			temp.OriFrameID	= atoi(m_sqlRow[5]);
+			objDetectedInfos->push_back(temp);
 		}
-		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+		if (m_result != NULL)mysql_free_result(m_result);///<释放结果资源
 		return true;
 	}
+
+
+
+	//CString m_strSql;
+	//MYSQL_RES *m_result;
+	//MYSQL_ROW m_sqlRow;
+	//m_strSql.Format("select nOldPara,nX,nY,nWidth,nHeight,origFrame from %s where nOldPara=\'%d\'",ObjectTableName,nOldPara);
+	//if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
+	//{ 
+	//	print_error(&m_mysql,"error message");
+	//	return false;
+	//}
+	//else
+	//{
+	//	m_result=mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
+	//	if (m_result)
+	//	{
+	//		m_sqlRow=mysql_fetch_row(m_result);///<获得所有结果字符串
+	//		if(m_sqlRow)
+	//		{
+	//			tempInfo->nOldPara		= atoi(m_sqlRow[0]);
+	//			tempInfo->roi.x		    = atoi(m_sqlRow[1]);
+	//			tempInfo->roi.y			= atoi(m_sqlRow[2]);
+	//			tempInfo->roi.width		= atoi(m_sqlRow[3]);
+	//			tempInfo->roi.height	= atoi(m_sqlRow[4]);
+	//			tempInfo->OriFrameID	= atoi(m_sqlRow[5]);
+	//		}
+	//		while (m_sqlRow)
+	//		{
+	//			m_sqlRow=mysql_fetch_row(m_result);
+	//		}
+	//	}
+	//	if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+	//	return true;
+	//}
 	
 
 }
