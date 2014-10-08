@@ -19,10 +19,12 @@ vidPlayer::vidPlayer()
 	m_playState = PLAY_STATE_STOP;
 	m_CurrentTimeInSecond=0;
 	bEditIsChange = false;
+	m_MysqlObjHandle = new CDataMySql;
 }
 
 vidPlayer::~vidPlayer()
 {
+	delete m_MysqlObjHandle;
 }
 
 ///@brief vidPlayer类的播放初始化，用来初始化视频参数
@@ -115,6 +117,8 @@ UINT vidPlayer::playProcess()
 				if (!m_curFrame)
 					continue;
 
+				playInDrawDetection();///<手绘目标检测
+
 				if(timeshow==TRUE)//显示时间
 				{
 					TimePosition.clear();
@@ -198,7 +202,7 @@ UINT vidPlayer::playProcess()
 			m_lBtnUpPosInCVWnd.y = mousePosInCVwmd.y1;
 			m_gotCVlclick = mousePosInCVwmd.clickInCVwnd;//cv窗口得到点击参数便传出
 
-			//pauseInDrawDetection();///<手绘目标检测
+			pauseInDrawDetection();///<手绘目标检测
 			cvWaitKey(1);          //20130313陆鹏改 防刷新太快
 			Sleep(m_timeGap);///<延时处理
 		}
@@ -316,9 +320,14 @@ BOOL vidPlayer::play()
 		threadRunOrNot = TRUE;
 		CRect rec;
 		m_pWnd->GetClientRect(rec);
-
-		disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName, 
-			rec.Height()*m_size.width/m_size.height, rec.Height());
+		if (rec.Height()*m_size.width / m_size.height <= rec.Width())
+		{
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
+				rec.Height()*m_size.width / m_size.height, rec.Height());
+		}
+		else
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
+			rec.Width(), rec.Width()*m_size.height / m_size.width);
 		m_threadControl = ::AfxBeginThread(RunPlayProcess,this);
 	}
 	m_playState = PLAY_STATE_PLAY;
@@ -395,33 +404,33 @@ UINT RunPlayProcess(LPVOID controlNO)
 	return 0;
 }
 
-BOOL vidPlayer::drawROI(vector <CRect> rect, CvScalar rectColor, int thickness)//用于绘制目标框
-{
-	int rectCount = rect.size();
-	cvCopy(m_curFrame, m_curFrameCopy);
-	CvPoint point1, point2;
-	for (int i = 0; i<rectCount; i++)
-	{
-		point1.x = rect[i].left; point1.y = rect[i].top;
-		point2.x = rect[i].left; point2.y = rect[i].bottom;
-		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//左边
-
-		point1.x = rect[i].left; point1.y = rect[i].top;
-		point2.x = rect[i].right; point2.y = rect[i].top;
-		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//上边
-
-		point1.x = rect[i].right; point1.y = rect[i].bottom;
-		point2.x = rect[i].left; point2.y = rect[i].bottom;
-		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//下边
-
-		point1.x = rect[i].right; point1.y = rect[i].top;
-		point2.x = rect[i].right; point2.y = rect[i].bottom;
-		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//右边		
-	}
-	disPlayImage.ShowPicture(m_windowName, m_curFrameCopy);
-
-	return TRUE;
-}
+//BOOL vidPlayer::drawROI(vector <CRect> rect, CvScalar rectColor, int thickness)//用于绘制目标框
+//{
+//	int rectCount = rect.size();
+//	cvCopy(m_curFrame, m_curFrameCopy);
+//	CvPoint point1, point2;
+//	for (int i = 0; i<rectCount; i++)
+//	{
+//		point1.x = rect[i].left; point1.y = rect[i].top;
+//		point2.x = rect[i].left; point2.y = rect[i].bottom;
+//		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//左边
+//
+//		point1.x = rect[i].left; point1.y = rect[i].top;
+//		point2.x = rect[i].right; point2.y = rect[i].top;
+//		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//上边
+//
+//		point1.x = rect[i].right; point1.y = rect[i].bottom;
+//		point2.x = rect[i].left; point2.y = rect[i].bottom;
+//		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//下边
+//
+//		point1.x = rect[i].right; point1.y = rect[i].top;
+//		point2.x = rect[i].right; point2.y = rect[i].bottom;
+//		cvLine(m_curFrameCopy, point1, point2, rectColor, thickness);//右边		
+//	}
+//	disPlayImage.ShowPicture(m_windowName, m_curFrameCopy);
+//
+//	return TRUE;
+//}
 
 
 
@@ -454,6 +463,7 @@ void cvMouseHandler(int eventType,int x,int y,int flags, void *param)
 			mousePosInCVwmd.y1 = y;
 			mousePosInCVwmd.clickInCVwnd = TRUE;
 			mousePosInCVwmd.lBtnUp = FALSE;
+			mousePosInCVwmd.canDraw = 111;
 		}
 		break;
 	case CV_EVENT_LBUTTONUP:///左键弹起
@@ -497,4 +507,344 @@ CString absOriNameTansf(CString nameIn)
 		}
 	}
 	return nameOut;
+}
+
+
+inline BOOL vidPlayer::playInDrawDetection()
+{
+	CvPoint point1, point2;
+	CRect rect;
+	//cvCopy(m_curFrame, frameCopyForDraw);///<复制当前图像帧
+	frameCopyForDraw=m_curFrame; //停止后重新播放崩，改成=后正常
+	switch(m_drawDetectFlag)
+	{
+	case 0:///未处理状态
+		break;
+	case 1:///画线状态
+	case 2:///画框状态
+		if (m_IfStartDetect == true)///开始检测
+		{
+			UpdatePlayData(m_drawDetectFlag);///<vector显示数据更新
+			for (int i = 0; i<RectToShow.size() ; i++)
+			{///遍历运动目标Rect集合并画黄框
+				rect = RectToShow.at(i);
+				point1.x = rect.left;  point1.y = rect.top;
+				point2.x = rect.right; point2.y = rect.bottom;
+				cvRectangle(frameCopyForDraw, point1, point2, cvScalar(0,200,200), 2);
+			}
+		}
+		else if (mousePosInCVwmd.canDraw == 111)
+		{///未开始检测且有鼠标点击时，记录鼠标画框位置
+			pointsToShow.swap(vector<CPoint>());
+			m_clickPosInCVWnd.x = mousePosInCVwmd.x;
+			m_clickPosInCVWnd.y = mousePosInCVwmd.y;
+			pointsToShow.push_back(m_clickPosInCVWnd);
+			m_lBtnUpPosInCVWnd.x = mousePosInCVwmd.x1;
+			m_lBtnUpPosInCVWnd.y = mousePosInCVwmd.y1;
+			pointsToShow.push_back(m_lBtnUpPosInCVWnd);
+		}
+		break;
+	case 5:///手绘检测结果视频播放状态
+		if (m_clickObjectID != -1)
+		{
+			int m_ObjID = m_clickObjectID;///<记录鼠标点击位置的运动目标物体ID
+			m_clickObjectID = -1;
+			pointsToShow.swap(vector<CPoint>());
+			RectToShow.swap(vector<CRect>());
+			pointsToShow.push_back(CPoint(-1,-1));
+			pointsToShow.push_back(CPoint(-1,-1));
+			m_MysqlObjHandle->GetSingleTraceFromObjectTable(m_ObjID,objtablename,&RectToShow,&pointsToShow);///<获取某一运动目标物体的Rect集合和轨迹点集合，分别存入RectToShow和pointToShow
+		}
+		if(m_currentFrameNO-m_startFrameNO< RectToShow.size() )///获取指定物体Rect信息(右边窗口Rect信息是一次获取的，可以直接显示)
+		{///读取对应帧号下物体Rect并画黄框
+			rect = RectToShow.at(m_currentFrameNO-m_startFrameNO);
+			point1.x = rect.left;   point1.y = rect.top;
+			point2.x = rect.right;  point2.y = rect.bottom;
+			cvRectangle(frameCopyForDraw, point1, point2, cvScalar(0,200,200), 2);	
+		}
+		break;
+	}
+	drawDetection(pointsToShow, frameCopyForDraw, m_drawDetectFlag);///<图像帧画线/框/轨迹
+	disPlayImage.ShowPicture(m_windowName, frameCopyForDraw);///<显示图像帧
+
+	return TRUE;
+}
+
+
+inline BOOL vidPlayer::pauseInDrawDetection()
+{
+	CvPoint point1, point2;
+	CRect rect;
+	frameCopyForDraw = m_curFrame;///<复制当前图像帧
+	switch(m_drawDetectFlag)
+	{
+	case 3:///画线
+	case 4:///画框
+		if (m_IfStartDetect)///开始检测
+		{
+			for (int i = 0; i<RectToShow.size() ; i++)
+			{///遍历运动目标Rect集合并画黄框
+				rect = RectToShow.at(i);
+				point1.x = rect.left;   point1.y = rect.top;
+				point2.x = rect.right;  point2.y = rect.bottom;
+				cvRectangle(frameCopyForDraw, point1, point2, cvScalar(0,200,200), 2);
+			}
+			if (m_gotCVlclick)
+			{
+				UpdatePauseData();///<有鼠标点击操作时，vector显示数据更新
+			}
+			drawDetection(pointsToShow, frameCopyForDraw, m_drawDetectFlag);///<图像帧画蓝色轨迹
+		}
+		break;
+	case 5:///手绘检测结果视频暂停状态
+		if (m_clickObjectID != -1)
+		{
+			int m_ObjID = m_clickObjectID;///<记录鼠标点击位置的运动目标物体ID
+			m_clickObjectID = -1;
+			pointsToShow.swap(vector<CPoint>());
+			RectToShow.swap(vector<CRect>());
+			pointsToShow.push_back(CPoint(-1,-1));
+			pointsToShow.push_back(CPoint(-1,-1));
+			m_MysqlObjHandle->GetSingleTraceFromObjectTable(m_ObjID,objtablename,&RectToShow,&pointsToShow);///<获取某一运动目标物体的Rect集合和轨迹点集合，分别存入RectToShow和pointToShow
+		}
+		if ((m_currentFrameNO - m_startFrameNO)< RectToShow.size())///获取指定物体Rect信息(右边窗口Rect信息是一次获取的，可以直接显示)
+		{///读取对应帧号下物体Rect并画黄框
+			rect = RectToShow.at(m_currentFrameNO - m_startFrameNO);
+			point1.x = rect.left;   point1.y = rect.top;
+			point2.x = rect.right;  point2.y = rect.bottom;
+			cvRectangle(frameCopyForDraw, point1, point2, cvScalar(0,200,200), 2);
+		}
+		drawDetection(pointsToShow, frameCopyForDraw, m_drawDetectFlag);///<图像帧画蓝色轨迹
+		break;
+	}
+	disPlayImage.ShowPicture(m_windowName, frameCopyForDraw);///<显示图像帧
+
+	return TRUE;
+}
+
+BOOL vidPlayer::drawROI(vector <CvRect> rect, CvScalar rectColor, int thickness)
+{
+	int rectCount = rect.size();         ///<获取需要绘制的矩形数量
+	cvCopy(m_curFrame, frameCopyForDraw);///<复制当前图像帧
+	CvPoint point1, point2;
+	for (int i = 0; i<rectCount; i++)
+	{///遍历矩形集合并绘制矩形框
+		//point1.x = rect.at(i).left; point1.y = rect.at(i).top;
+		//point2.x = rect.at(i).right; point2.y = rect.at(i).bottom;
+		point1.x= rect.at(i).x;point1.y= rect.at(i).y;
+		point2.x= rect.at(i).x+rect.at(i).width;point2.y= rect.at(i).y+rect.at(i).height;
+		cvRectangle(frameCopyForDraw, point1, point2, rectColor, thickness);
+	}
+	disPlayImage.ShowPicture(m_windowName, frameCopyForDraw);///<显示画框后图片
+
+	return TRUE;
+}
+
+
+BOOL vidPlayer::drawDetection(vector <CPoint> inputPoints, IplImage *img, int flag)
+{
+	CvPoint point1, point2;
+	if (inputPoints.size() < 2)
+		return FALSE;
+	point1.x = inputPoints.at(0).x;
+	point1.y = inputPoints.at(0).y;
+	point2.x = inputPoints.at(1).x;
+	point2.y = inputPoints.at(1).y;
+	CvScalar color = CV_RGB(255, 0, 0);
+	int thickness = 2;
+	switch (flag)
+	{
+	case 1:
+		cvLine(img, point1, point2, color, thickness);///<画红线
+		break;
+	case 2:
+		cvRectangle(img, point1, point2, color, thickness);///<画红框
+		break;
+	case 3:
+		{
+			cvLine(img, point1, point2, color, thickness);///<画红线
+			int vecSize = inputPoints.size();
+			if (vecSize<=2)
+				break;
+			color = CV_RGB(0, 255, 255);
+			for (int drawCenterFlag=2; drawCenterFlag<vecSize-1; drawCenterFlag++)
+			{///遍历点集合，画蓝色轨迹
+				if(inputPoints.at(drawCenterFlag+1).x == -1 &&
+					inputPoints.at(drawCenterFlag+1).y == -1)
+				{
+					drawCenterFlag += 2;
+				}
+				point1.x = inputPoints.at(drawCenterFlag).x;
+				point1.y = inputPoints.at(drawCenterFlag).y;
+				point2.x = inputPoints.at(drawCenterFlag+1).x;
+				point2.y = inputPoints.at(drawCenterFlag+1).y;
+				cvLine(img, point1, point2, color, thickness);
+			}
+		}
+		break;
+	case 4:
+		{
+			cvRectangle(img, point1, point2, color, thickness);///<画红线
+			int vecSize = inputPoints.size();
+			if (vecSize<=2)
+				break;
+			color = CV_RGB(0, 255, 255);
+			for (int drawCenterFlag=2; drawCenterFlag<vecSize-1; drawCenterFlag++)
+			{///遍历点集合，画蓝色轨迹
+				if(inputPoints.at(drawCenterFlag+1).x == -1 &&
+					inputPoints.at(drawCenterFlag+1).y == -1)
+				{
+					drawCenterFlag += 2;
+				}
+				point1.x = inputPoints.at(drawCenterFlag).x;
+				point1.y = inputPoints.at(drawCenterFlag).y;
+				point2.x = inputPoints.at(drawCenterFlag+1).x;
+				point2.y = inputPoints.at(drawCenterFlag+1).y;
+				cvLine(img, point1, point2, color, thickness);
+			}
+		}
+		break;
+	case 5:
+		{
+			int vecSize = inputPoints.size();
+			if (vecSize<=2)
+				break;
+			color = CV_RGB(0, 255, 255);
+			for (int drawCenterFlag=2; drawCenterFlag<vecSize-1; drawCenterFlag++)
+			{///遍历点集合，画蓝色轨迹
+				if(inputPoints.at(drawCenterFlag+1).x == -1 &&
+					inputPoints.at(drawCenterFlag+1).y == -1)
+				{
+					drawCenterFlag += 2;
+				}
+				point1.x = inputPoints.at(drawCenterFlag).x;
+				point1.y = inputPoints.at(drawCenterFlag).y;
+				point2.x = inputPoints.at(drawCenterFlag+1).x;
+				point2.y = inputPoints.at(drawCenterFlag+1).y;
+				cvLine(img, point1, point2, color, thickness);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return TRUE;
+}
+
+
+inline void vidPlayer::UpdatePlayData(int flag)
+{
+	if (pointsToShow.size()<2)
+		return;
+	CPoint drewPoit1, drewPoit2;
+	drewPoit1 = pointsToShow[0];
+	drewPoit2 = pointsToShow[1];
+	RectToShow.swap(vector<CRect>());   ///<清空运动目标Rect集合
+	pointsToShow.swap(vector<CPoint>());///<运动目标轨迹点集合
+	pointsToShow.push_back(drewPoit1);  ///<保存手绘检测条件点坐标1
+	pointsToShow.push_back(drewPoit2);  ///<保存手绘检测条件点坐标2
+	TempRect.swap(vector<CRect>());     ///<清空临时Rect集合
+	TempObjectID.swap(vector<int>());   ///<清空临时轨迹点集合
+
+	///数据表操作，获取某一帧号下对应的运动目标信息
+	m_MysqlObjHandle->GetRectFromObjectTable(m_currentFrameNO,objtablename,&TempRect,&TempObjectID);
+
+	int rCloseCount = 0;
+	double disP1P2 = sqrt(double((drewPoit1.x-drewPoit2.x)*(drewPoit1.x-drewPoit2.x) +
+		(drewPoit1.y-drewPoit2.y)*(drewPoit1.y-drewPoit2.y)));///计算所画线段p1p2长度
+
+	///新增新出现的物体
+	for(int i=0; i<TempRect.size(); i+=2)
+	{
+		///获取临时Rect中心点坐标
+		int centerX = TempRect.at(i).left;
+		int centerY = TempRect.at(i).top;
+		///判断当前目标中心点是否在 画线/画框 所对应的矩形内
+		if (((centerX<=drewPoit1.x&&centerX>=drewPoit2.x)||(centerX<=drewPoit2.x&&centerX>=drewPoit1.x)) &&
+			((centerY<=drewPoit1.y&&centerY>=drewPoit2.y)||(centerY<=drewPoit2.y&&centerY>=drewPoit1.y)))
+		{
+			if (flag == 2)
+			{///------------画框-----------------
+				RectToShow.push_back(TempRect.at(i+1));///记录运动目标Rect信息
+				///如果TempObjectID.at(i/2)在objectIDs中没出现过，将该运动目标ID录入objectIDs中
+				if (objectIDs.size()>0)
+				{
+					vector<int>::iterator it = find(objectIDs.begin(),objectIDs.end(),TempObjectID.at(i/2));
+					if(it == objectIDs.end())
+						objectIDs.push_back(TempObjectID.at(i/2));
+				}
+				else
+				{
+					objectIDs.push_back(TempObjectID.at(i/2));
+				}
+			}
+			else
+			{///------------画线------------------
+				double disP1C = sqrt(double((drewPoit1.x-centerX)*(drewPoit1.x-centerX) +
+					(drewPoit1.y-centerY)*(drewPoit1.y-centerY)));
+				double disP2C = sqrt(double((drewPoit2.x-centerX)*(drewPoit2.x-centerX) +
+					(drewPoit2.y-centerY)*(drewPoit2.y-centerY)));
+				if ((disP2C+disP1C-disP1P2) < 5)
+				{
+					rCloseCount += 1;
+					if (rCloseCount > 1)
+					{
+						///有两个点很接近线段p1p2，判为过线
+						RectToShow.push_back(TempRect.at(i+1));
+						///如果TempObjectID.at(i/2)在objectIDs中没出现过，将该运动目标ID录入objectIDs中
+						if (objectIDs.size()>0)
+						{
+							vector<int>::iterator it = find(objectIDs.begin(),objectIDs.end(),TempObjectID.at(i/2));
+							if(it == objectIDs.end())
+								objectIDs.push_back(TempObjectID.at(i/2));
+						}
+						else
+						{
+							objectIDs.push_back(TempObjectID.at(i/2));
+						}
+					}
+				}
+			}
+		}
+	}
+	///清除objectIDs中没有在当前帧中出现的objectID
+	vector<int>::size_type i = 0;
+	while(i < objectIDs.size())
+	{
+		vector<int>::iterator it = find(TempObjectID.begin(),TempObjectID.end(),objectIDs[i]);
+		if(it == TempObjectID.end())///没找到该运动目标
+			objectIDs.erase(objectIDs.begin() + i);
+		else///根据objectID和帧号得到rect
+		{
+			RectToShow.push_back(TempRect.at((it - TempObjectID.begin()) * 2 + 1));
+			i++;
+		}
+	}
+}
+
+inline void vidPlayer::UpdatePauseData()
+{
+	if (m_clickPoint == m_clickPosInCVWnd)///鼠标点击位置未发生变化，则不更新数据
+		return;
+	m_clickPoint = m_clickPosInCVWnd;///鼠标点击位置发生变化,记录鼠标点击位置
+	int objID = -1;
+	for (int i=0;i<RectToShow.size();i++)
+	{
+		if (m_clickPosInCVWnd.x>=RectToShow.at(i).left && m_clickPosInCVWnd.x <= RectToShow.at(i).right &&
+			m_clickPosInCVWnd.y>=RectToShow.at(i).top  && m_clickPosInCVWnd.y <= RectToShow.at(i).bottom)
+		{
+			///获得某一帧号下某一位置的运动目标物体ID
+			objID = m_MysqlObjHandle->GetObjectIDFromObjectTable(m_currentFrameNO,RectToShow.at(i),objtablename);
+			if (objID != -1)
+			{
+				CPoint p1 = pointsToShow.at(0);
+				CPoint p2 = pointsToShow.at(1);
+				pointsToShow.clear();
+				pointsToShow.push_back(p1);
+				pointsToShow.push_back(p2);
+				m_MysqlObjHandle->GetCenterFromObjectTable(objID,objtablename,&pointsToShow);///<获取该运动目标的轨迹点信息并保存到pointToShow
+				break;
+			}
+		}
+	}
 }

@@ -75,7 +75,8 @@ public:
 	int m_videoTimeInSecond;  //播放视频的长度
 	int m_CurrentTimeInSecond;//以秒为单位的当前时间
 	BOOL m_gotCVlclick;//
-
+	//CSliderCtrl m_CSliderPlayer1Ctrl;   ///<窗口一滑动条控件变量
+//	CSliderCtrl m_CSliderPlayer2Ctrl;   ///<窗口二滑动条控件变量
 	
 
 
@@ -102,7 +103,7 @@ public:
 	BOOL fastForwardByFrame();
 	BOOL fastBackwardByFrame();
 	IplImage *screenShot();
-	BOOL drawROI(vector <CRect> rect, CvScalar rectColor, int thickness);  ///<图像帧画框
+	//BOOL drawROI(vector <CRect> rect, CvScalar rectColor, int thickness);  ///<图像帧画框
 	BOOL stopPlay();
 
 	void ShowTime();  //显示当前播放进度时间
@@ -120,6 +121,31 @@ public:
 	CDataMySql* m_MysqlVideoParaSearchHandle;
 	CVideo *m_videoPro;
 	bool timeshow;
+
+
+
+//*************************************************************************
+///@手绘检测部分新增成员
+///@0924 ChenYJ
+	IplImage *frameCopyForDraw; ///<显示帧
+	bool m_IfStartDetect;       ///<手绘检测开始与否标志位
+	int  m_drawDetectFlag;      ///<手绘检测状态标志位
+	vector<int>   objectIDs;    ///<运动目标ID集合（检索结果）
+	vector<CPoint> pointsToShow;///<运动目标轨迹点集合
+	vector<CRect>  RectToShow;  ///<运动目标Rect集合
+	int m_clickObjectID;        ///<鼠标左键单击的运动目标ID
+	inline BOOL playInDrawDetection();   ///<播放状态下的运动目标检测
+	inline BOOL pauseInDrawDetection();  ///<暂停状态下的运动目标检测
+	BOOL drawDetection(vector <CPoint> twoPoints, IplImage *img, int flag);///<图像帧画轨迹
+	BOOL drawROI(vector <CvRect> rect, CvScalar rectColor, int thickness);  ///<图像帧画框
+	inline void UpdatePlayData(int flag);///<播放状态下的数据更新
+	inline void UpdatePauseData();       ///<暂停状态下的数据更新
+	CDataMySql *m_MysqlObjHandle;///<内部数据库句柄，用于查询ObjectTable
+	CString objtablename;       ///<ObjectTable数据表名
+	vector<CRect> TempRect;     ///<运动目标Rect集合（临时变量）
+	vector<int>   TempObjectID; ///<运动目标ID集合（临时变量）
+	CPoint m_clickPoint;	    ///<鼠标左键单击点
+//*************************************************************************
 };
 
 UINT RunPlayProcess(LPVOID controlNO);

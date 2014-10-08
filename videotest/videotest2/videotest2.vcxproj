@@ -101,42 +101,88 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="res\background.bmp" />
+    <None Include="res\Main\about-d.bmp" />
+    <None Include="res\Main\about-u.bmp" />
+    <None Include="res\Main\exit-d.bmp" />
+    <None Include="res\Main\exit-u.bmp" />
+    <None Include="res\Main\open-d.bmp" />
+    <None Include="res\Main\open-u.bmp" />
+    <None Include="res\Main\view-d.bmp" />
+    <None Include="res\Main\view-u.bmp" />
+    <None Include="res\PicSum\down_d.bmp" />
+    <None Include="res\PicSum\down_u.bmp" />
+    <None Include="res\PicSum\up_d.bmp" />
+    <None Include="res\PicSum\up_u.bmp" />
+    <None Include="res\step1.bmp" />
     <None Include="res\videotest2.ico" />
     <None Include="res\videotest2.rc2" />
+    <None Include="res\welcome.bmp" />
+    <None Include="res\播放器\pause_d.bmp" />
+    <None Include="res\播放器\pause_u.bmp" />
+    <None Include="res\播放器\play_d.bmp" />
+    <None Include="res\播放器\play_u.bmp" />
+    <None Include="res\播放器\stop_d.bmp" />
+    <None Include="res\播放器\stop_u.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ButtonBeautify.h" />
     <ClInclude Include="ChangeIniFileDlg.h" />
     <ClInclude Include="CvvImage.h" />
+    <ClInclude Include="Dialog1.h" />
     <ClInclude Include="DisplayFrame.h" />
+    <ClInclude Include="drawDetection.h" />
     <ClInclude Include="GlobalFunctions.h" />
     <ClInclude Include="ifRebuildDlg.h" />
     <ClInclude Include="LibMySql.h" />
     <ClInclude Include="ObjectViewDlg.h" />
+    <ClInclude Include="picsum.h" />
     <ClInclude Include="publicheader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UIbeautify.h" />
     <ClInclude Include="VideoSeg.h" />
     <ClInclude Include="videotest2.h" />
     <ClInclude Include="videotest2Dlg.h" />
     <ClInclude Include="vidPlayer.h" />
+    <ClInclude Include="VTrack.h" />
+    <ClInclude Include="WelcomeDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ButtonBeautify.cpp" />
     <ClCompile Include="ChangeIniFileDlg.cpp" />
     <ClCompile Include="CvvImage.cpp" />
+    <ClCompile Include="Dialog1.cpp" />
     <ClCompile Include="DisplayFrame.cpp" />
+    <ClCompile Include="drawDetection.cpp" />
     <ClCompile Include="GlobalFunctions.cpp" />
     <ClCompile Include="ifRebuildDlg.cpp" />
     <ClCompile Include="LibMySql.cpp" />
     <ClCompile Include="ObjectViewDlg.cpp" />
+    <ClCompile Include="picsum.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="UIbeautify.cpp" />
     <ClCompile Include="VideoSeg.cpp" />
     <ClCompile Include="videotest2.cpp" />
     <ClCompile Include="videotest2Dlg.cpp" />
     <ClCompile Include="vidPlayer.cpp" />
+    <ClCompile Include="VTrack.cpp" />
+    <ClCompile Include="WelcomeDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="videotest2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\default\abs-default-b.bmp" />
+    <Image Include="res\default\step1.bmp" />
+    <Image Include="res\default\step2.bmp" />
+    <Image Include="res\default\step3.bmp" />
+    <Image Include="res\default\step4.bmp" />
+    <Image Include="res\default\step5.bmp" />
+    <Image Include="res\Main\save-d.bmp" />
+    <Image Include="res\Main\save-u.bmp" />
+    <Image Include="res\title.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

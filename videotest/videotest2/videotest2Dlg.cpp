@@ -12,6 +12,10 @@
 #include "LibMySql.h"
 #include "VideoSeg.h"
 #include "SkinPPWTL.h"
+#include "Dialog1.h"
+#include "vidPlayer.h"
+#include "picsum.h"
+#include "ChangeIniFileDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,8 +26,7 @@
 #include <crtdbg.h>
 #define new new( _CLIENT_BLOCK, __FILE__, __LINE__)
 
-
-CDataMySql *m_MysqlHandle;         ///<数据库外部指针变量
+CDataMySql *m_MysqlHandle = new CDataMySql; ///<数据库句柄
 pointForCvMouse mousePosInPic1;
 pointForCvMouse mousePosInPic2;
 BOOL ifClick3 = FALSE;
@@ -47,6 +50,9 @@ public:
 
 // 实现
 
+public:
+	DECLARE_MESSAGE_MAP()
+//	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 /////////////////////////////////////////////////////////2014.6.16
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -67,37 +73,39 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 Cvideotest2Dlg::Cvideotest2Dlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(Cvideotest2Dlg::IDD, pParent)
 {
-	m_ifStartPro = false;
-	SubMenuCheckedNO = 3;
-	m_videoPro = new CVideo;
+	m_page1.Tab1_ifStartPro = false;
+	m_page1.Tab1_playpiece = FALSE;
 	m_MysqlVideoParaSearchHandle = new CDataMySql;
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_videoPro = new CVideo;
 	
 }
 
 Cvideotest2Dlg::~Cvideotest2Dlg()
 	
 {
-	  if(m_videoPro != NULL)
-	  {
-			 delete m_videoPro;
-			m_videoPro = NULL;
-	  }
-	  if(m_MysqlVideoParaSearchHandle != NULL)
-	  {		delete m_MysqlVideoParaSearchHandle;
-			m_MysqlVideoParaSearchHandle = NULL;
-	  }		   ///<删除数据库操作指针
+	if(m_videoPro != NULL)
+	{
+		delete m_videoPro;
+		m_videoPro = NULL;
+	}
+	if(m_MysqlVideoParaSearchHandle != NULL)
+	{		delete m_MysqlVideoParaSearchHandle;
+	m_MysqlVideoParaSearchHandle = NULL;
+	}		   ///<删除数据库操作指针
 }
 
 void Cvideotest2Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_SLIDER_PLAYER1,m_CSliderPlayer1Ctrl);
-	DDX_Control(pDX, IDC_SLIDER_PLAYER2,m_CSliderPlayer2Ctrl);
-	DDX_Control(pDX, IDC_EDIT_FRAME_NO, m_wndEditFrameNo1);	
-	//DDX_Control(pDX, IDC_EDIT_INPUT_FRAME_NO, m_wndEditInputFrameNo1);
-	//DDX_Control(pDX, IDC_EDIT_INPUT_nPara_NO, m_wndEditInput_nPara);
 	
+
+	DDX_Control(pDX, IDC_TAB1, m_tab);
+	DDX_Control(pDX, IDC_BTN_OPEN, Btn_BTN1_OPEN);
+	DDX_Control(pDX, IDC_BTN_VIEW, Btn_BTN1_VIEW);
+	DDX_Control(pDX, IDC_BTN_ABOUT, Btn_BTN1_ABOUT);
+	DDX_Control(pDX, IDC_BTN_exit, Btn_BTN1_EXIT);
+	DDX_Control(pDX, IDC_BTN_SAVE, Btn_BTN1_SAVE);
+	DDX_Control(pDX, IDC_BTN_TITLE, Btn_BTN1_TITLE);
 }
 
 BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
@@ -105,36 +113,23 @@ BEGIN_MESSAGE_MAP(Cvideotest2Dlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_TIMER()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(ID_OPEN, &Cvideotest2Dlg::OnBnClickedOpen)
-
-	ON_BN_CLICKED(IDC_BTN_GENERATE_ABS, &Cvideotest2Dlg::OnBnClickedBtnGenerateAbs)
-
 	
-	//ON_BN_CLICKED(IDC_BTN_exit, &Cvideotest2Dlg::OnBnClickedBtnexit)
-	ON_BN_CLICKED(IDC_BTN_VIEW_ABS, &Cvideotest2Dlg::OnBnClickedBtnViewAbs)
-	ON_BN_CLICKED(IDC_BTN1_play, &Cvideotest2Dlg::OnBnClickedBtn1play)
-	ON_BN_CLICKED(IDC_BTN1_pause, &Cvideotest2Dlg::OnBnClickedBtn1pause)
-	ON_BN_CLICKED(IDC_BTN1_stop, &Cvideotest2Dlg::OnBnClickedBtn1stop)
-	ON_BN_CLICKED(IDC_BTN2_play, &Cvideotest2Dlg::OnBnClickedBtn2play)
-	ON_BN_CLICKED(IDC_BTN2_pause, &Cvideotest2Dlg::OnBnClickedBtn2pause)
-	ON_BN_CLICKED(IDC_BTN2_stop, &Cvideotest2Dlg::OnBnClickedBtn2stop)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &Cvideotest2Dlg::OnNMCustomdrawProgress1)
-	//ON_BN_CLICKED(IDC_BTN_GOTO_FRAME, &Cvideotest2Dlg::OnBnClickedBtnGotoFrame)
-	//ON_BN_CLICKED(IDC_BTN_GOTO_PARA, &Cvideotest2Dlg::OnBnClickedBtnGotoPara)
-	ON_BN_CLICKED(IDC_CHECK1, &Cvideotest2Dlg::OnBnClickedCheck1)
-	//ON_BN_CLICKED(IDC_BUTTON_OBJECT, &Cvideotest2Dlg::OnBnClickedButtonObject)
 	ON_COMMAND(ID_ABOUT, &Cvideotest2Dlg::OnAbout)
-	ON_BN_CLICKED(IDC_BUTTON2, &Cvideotest2Dlg::OnBnClickedButton2)
-	ON_BN_CLICKED(IDC_BUTTON_1, &Cvideotest2Dlg::OnBnClickedButton1)
-
-	ON_STN_CLICKED(IDC_STATIC_ABSPIC1, &Cvideotest2Dlg::OnStnClickedStaticAbspic1)
-	ON_STN_CLICKED(IDC_STATIC_ABSPIC2, &Cvideotest2Dlg::OnStnClickedStaticAbspic2)
+	
 	ON_COMMAND(ID_32778, &Cvideotest2Dlg::OnClickObjectViewDlg)
 	ON_COMMAND(ID_32772, &Cvideotest2Dlg::OnMenuClickedOpen)
 	ON_COMMAND(ID_MENUITEM_UltraBlue, &Cvideotest2Dlg::OnMenuitemUltrablue)
 	ON_COMMAND(ID_MENUITEM_vladstudio, &Cvideotest2Dlg::OnMenuitemvladstudio)
 	ON_COMMAND(ID_MENUITEM_Phenom, &Cvideotest2Dlg::OnMenuitemPhenom)
 	ON_COMMAND(ID_MENUITEM_AquaOS, &Cvideotest2Dlg::OnMenuitemAquaos)
+	
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &Cvideotest2Dlg::OnTcnSelchangeTab1)
+	
+	ON_BN_CLICKED(IDC_BTN_OPEN, &Cvideotest2Dlg::OnBnClickedBtnOpen)
+	ON_BN_CLICKED(IDC_BTN_VIEW, &Cvideotest2Dlg::OnBnClickedBtnView)
+	ON_BN_CLICKED(IDC_BTN_ABOUT, &Cvideotest2Dlg::OnBnClickedButtonSettings)
+	ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_BTN_exit, &Cvideotest2Dlg::OnBnClickedBtnexit)
 END_MESSAGE_MAP()
 
 
@@ -144,27 +139,32 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// 将“关于...”菜单项添加到系统菜单中。
-	UserClick1 = FALSE;
-	Generated1 = FALSE;
+	WelDlg.DoModal();
+
+	skinppRemoveSkin();
+	skinppLoadSkin(_T("..\\SkinPlusplus\\Phenom.ssk"));
+	Invalidate();
+
+	UIBeautifier.LoadBackgroundPic(IDB_background);///<背景位图加载
+	CWnd* pWnd = CWnd::GetDesktopWindow();
+	pWnd->GetClientRect(UIBeautifier.rcDeskRect);///获取桌面矩形
+	BitmapBackGroundStrech=UIBeautifier.CBitmapResize(UIBeautifier.m_BitmapBackGround,UIBeautifier.rcDeskRect.Width(),UIBeautifier.rcDeskRect.Height());
+
+
+	GetDlgItem(IDC_TAB1)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,110.0*UIBeautifier.rcDeskRect.Height()/760,1120.0*UIBeautifier.rcDeskRect.Width()/1214,610.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_BTN_OPEN)->MoveWindow(20.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,60.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_BTN_VIEW)->MoveWindow(150.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,60.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_BTN_ABOUT)->MoveWindow(650.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_BTN_exit)->MoveWindow(1050.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
+
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_OPEN, IDB_OPEN_U, IDB_OPEN_D, 67.0 / 1214, 37.0 / 760, 98.0 / 1214, 68.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_VIEW, IDB_VIEW_U, IDB_VIEW_D, 157.0 / 1214, 39.0 / 760, 188.0 / 1214, 66.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_SAVE, IDB_SAVE_U, IDB_SAVE_D, 247.0 / 1214, 37.0 / 760, 278.0 / 1214, 68.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_ABOUT, IDB_ABOUT_U, IDB_ABOUT_D,1022.0 / 1214, 37.0 / 760, 1053.0 / 1214, 68.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_EXIT, IDB_EXIT_U, IDB_EXIT_D, 1112.0 / 1214, 37.0 / 760, 1143.0 / 1214, 68.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_TITLE, IDB_TITLE, IDB_TITLE, 425.0 / 1214, 5.0 / 760, 805.0 / 1214, 85.0 / 760);
 	
-	m_nInputFrameNo1 = 0;
-	player1.m_filePath = "";
-	player2.m_filePath = "";
-	player1.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow1");//该初始化需要在文件路径确认后完成
-	player1.m_currentFrameNO = player1.m_startFrameNO = 0;
-	player1.m_endFrameNO=3000;
-
-	m_CSliderPlayer1Ctrl.SetRange(0, player1.m_endFrameNO);
-	m_CSliderPlayer1Ctrl.SetPos(0);
-
-	player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
-	player2.m_currentFrameNO = player2.m_startFrameNO = 0;		
-	player2.m_endFrameNO=3000;
-
-
-
-
+	// 将“关于...”菜单项添加到系统菜单中。
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -189,33 +189,70 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	 TCITEM tc1,tc2,tc3,tc4;
+         tc1.mask = TCIF_TEXT;
+         tc1.pszText = _T("视频摘要");
+         tc2.mask = TCIF_TEXT;
+         tc2.pszText = _T("图片摘要");
+		 tc3.mask = TCIF_TEXT;
+         tc3.pszText = _T("前景目标");
+		 tc4.mask = TCIF_TEXT;
+		 tc4.pszText = _T("手绘检测");
 
-	///进度条初始化
-	myPro = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS1);
-	myPro->SetRange(0,500);
-	myPro->SetPos(0);
+		 m_tab.SetMinTabWidth(330);
 
-	m_CSliderPlayer1Ctrl.SetRange(0, player1.m_endFrameNO);   ///<初始化窗口一的滑动条
-	m_CSliderPlayer1Ctrl.SetPos(0);
+         m_tab.InsertItem(0, &tc1);
+         m_tab.InsertItem(1, &tc2); //到这里只是添加了两个tab页
+		 m_tab.InsertItem(2, &tc3);
+		 m_tab.InsertItem(3, &tc4);
 
-	m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);   ///<初始化窗口二的滑动条
-	m_CSliderPlayer2Ctrl.SetPos(0);
+         CRect rec;
+         m_tab.GetClientRect(&rec);//获得TAB控件的坐标
 
-	SetTimer(1, 100, NULL);///<计数器初始化
-	SetTimer(2, 200, NULL);
-	SetTimer(3, 500, NULL);
-	SetTimer(4, 100, NULL);
+         //定位选项卡页的位置，这里可以根据情况自己调节偏移量
+         rec.bottom -= 27;
+         rec.left += 1;
+         rec.top += 27;
+         rec.right -= 3;
 
-	If_playpiece=FALSE;
+         //创建子页面
+         m_page1.Create(IDD_DIALOG1,GetDlgItem(IDC_TAB1));
+         m_page3.Create(IDD_OBJECT,GetDlgItem(IDC_TAB1));
+		 m_page2.Create(IDD_picsum,GetDlgItem(IDC_TAB1));
+		 m_page4.Create(IDD_DRAW_DETECT,GetDlgItem(IDC_TAB1));
 
-	//LoadSkin(_T("..\\SkinPlusplus\\XPCorona.ssk"));
+         //将子页面移动到指定的位置
+         m_page1.MoveWindow(&rec);
+         m_page2.MoveWindow(&rec);
+		 m_page3.MoveWindow(&rec);
+		 m_page4.MoveWindow(&rec);
+         //显示子页面
+         m_page1.ShowWindow(SW_SHOW);
+         m_page2.ShowWindow(SW_HIDE);
+		 m_page3.ShowWindow(SW_HIDE);
+		 m_page4.ShowWindow(SW_HIDE);
+
+		 pDialog[0] = &m_page1;
+         pDialog[1] = &m_page2;
+		 pDialog[2] = &m_page3;
+		 pDialog[3] = &m_page4;
+        //显示初始页面
+        pDialog[0]->ShowWindow(SW_SHOW);
+        pDialog[1]->ShowWindow(SW_HIDE);
+		pDialog[2]->ShowWindow(SW_HIDE);
+		pDialog[3]->ShowWindow(SW_HIDE);
+        //保存当前选择
+        m_CurSelTab = 0;
+
+	//CBitmap *m_bmp_title=new CBitmap;
+	//m_bmp_title->LoadBitmap(IDB_TITLE);
+	//HBITMAP hBmp_title;// = HBITMAP(m_bmp);//将CBitmap转换为HBITMAP
+	//hBmp_title=(HBITMAP)(*m_bmp_title);
+	//((CStatic *)GetDlgItem(IDC_STATIC_TITLE))->SetBitmap(hBmp_title);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
-//void Cvideotest2Dlg::InitialPictureControl()
-//{
-//
-//}
+
 
 void Cvideotest2Dlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -255,6 +292,7 @@ void Cvideotest2Dlg::OnPaint()
 	}
 	else
 	{
+		this->MoveWindow(UIBeautifier.rcDeskRect.left, UIBeautifier.rcDeskRect.top, UIBeautifier.rcDeskRect.Width(), UIBeautifier.rcDeskRect.Height(), TRUE); ///<给选项卡定位
 		CDialogEx::OnPaint();
 	}
 }
@@ -267,899 +305,14 @@ HCURSOR Cvideotest2Dlg::OnQueryDragIcon()
 }
 
 
-
-void Cvideotest2Dlg::OnBnClickedOpen()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	
-	//文件类型过滤*/
-	CFileDialog dlg(TRUE, NULL, NULL,OFN_HIDEREADONLY,_T("Files (*.mp3 *.wma *.dat *.wmv *.avi *.mov *.mmm *.mid *.mpeg)|*.mp3;*.wma;*.dat;*.wmv;*.avi;*.mov;*.mmm;*.mid;*.mpeg|All Files (*.*)|*.*||"),NULL);
-	if(dlg.DoModal()==IDOK)
-	{
-		if (player1.m_currentFrameNO!=0)
-		{
-			player1.stopPlay();
-		}
-		PathName=dlg.GetPathName();
-		SetDlgItemText(IDC_EDIT3, PathName);
-		PathName.MakeUpper();
-
-		player1.m_filePath = PathName;
-	    player1.playInitial(GetDlgItem(IDC_STATIC2), "displayWindow1");//该初始化需要在文件路径确认后完成
-	
-		m_CSliderPlayer1Ctrl.SetRange(0, player1.m_endFrameNO);
-		m_CSliderPlayer1Ctrl.SetPos(0);
-		
-		player1.play();
-
-		CString m_pFilePath=PathName;
-		CString m_tmpFileName1, m_tmpFileName2;
-		GetVideoNameFromAbsolutePath1(&m_pFilePath,&m_tmpFileName1);///<获取文件名(包含后缀)
-		GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
-		m_videoPro->m_tableParams.VideoFGTableName.Format("%s_VideoFGTable",m_tmpFileName2);
-		m_videoPro->m_tableParams.FGTraceTableName.Format("%s_FGTraceTable",m_tmpFileName2);
-		m_videoPro->m_tableParams.NewToOldFrameTableName.Format("%s_New2OldFrameTable",m_tmpFileName2);
-		m_videoPro->m_tableParams.NewTraceTable.Format("%s_NewTraceTable",m_tmpFileName2);
-		m_videoPro->m_tableParams.CombineSegsTableName.Format("%s_CombineSegsTable", m_tmpFileName2);
-
-	}
-	
-}
-
-
-
-
-void Cvideotest2Dlg::OnBnClickedBtnGenerateAbs()
-{
-	CString a = "\\";
-	LPCTSTR m = a;
-	CString b = "/";
-	LPCTSTR n = b;
-	if (m_ifStartPro)
-	{
-		MessageBox("正在生成摘要，请等待");
-		return;
-	}
-	if (PathName != "")
-	{
-		CString m_tmpFileName1, m_tmpFileName2;
-		GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
-		GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
-		CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
-		//通过文件名判断摘要是否已经生成
-		if (_access(path, 0) == -1)
-		{
-			m_videoPro->m_IfContinue = true;
-			m_videoPro->m_IfDoneFus = false;
-			m_ifStartPro = true;
-			//player2.stop();///停止播放
-			player2.stopPlay();///关闭进程
-			PathName.Replace(*m, *n);
-			m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
-			return;
-		}
-		else{
-			m_videoPro->m_IfDoneFus = true;
-			ifRebuildDlg Dlg;	//提示是否重新生成
-			Dlg.DoModal();
-			if (Dlg.ifrebuild){
-				m_videoPro->m_IfContinue = true;
-				m_videoPro->m_IfDoneFus = false;
-				m_ifStartPro = true;
-				//player2.stop();///停止播放
-				player2.stopPlay();///关闭进程
-				PathName.Replace(*m, *n);
-				m_videoPro->DoProcessing((LPSTR)(LPCTSTR)PathName);
-			}
-			return;
-		}
-	
-	}
-}
-
-
-
-///@brief 计时器函数，用于刷新进度条和时间显示
-/// 
-///@param[in] UINT nIDEvent 计时器序号
-///@pre  NULL
-///@return NULL
-///@retval BOOL
-///@post NULL
-
 void Cvideotest2Dlg::OnTimer(UINT nIDEvent)
 {
-	switch (nIDEvent)
-	{
-		case 1:///<播放窗口1的进度条及时间显示刷新
-	    {
-			if (If_playpiece)
-			{
-				CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER_PLAYER1));
-				SliderCtrl->SetPos(player1.m_currentFrameNO);
-			}
-			else
-			{
-				CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER_PLAYER1));
-				int CurrentPos=SliderCtrl->GetPos();                            ///<获取当前进度条位置
-				int NewCurrentFrameNO = (double)CurrentPos*double(player1.m_endFrameNO-player1.m_startFrameNO)
-										/(double)SliderCtrl->GetRangeMax();     ///<根据当前进度条位置，重新计算帧号
-
-				if (player1.m_playState!=PLAY_STATE_STOP && player1.m_playState!=PLAY_STATE_FAST_FORWORD &&player1.m_playState!=PLAY_STATE_PLAY_PIECE)///<若播放器处于正常播放或暂停状态
-				{
-					if (abs(NewCurrentFrameNO-player1.m_currentFrameNO)>5)
-					{
-						player1.m_currentFrameNO=NewCurrentFrameNO;             ///<根据新计算的帧号，重置播放器
-					}
-				}
-				SliderCtrl->SetPos(player1.m_currentFrameNO);                   ///<根据新计算的帧号，重置滑动条
-				CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TIME_VID1);
-				if (player1.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
-				{
-					ShowTime(player1.m_currentFrameNO, player1.m_endFrameNO - player1.m_startFrameNO,
-						     player1.m_videoTimeInSecond, pWndTimeDis, 1);
-					ShowCurrentFrameNO(player1.m_currentFrameNO, &m_wndEditFrameNo1);
-				}
-				else                                                            ///<停止状态下，用方式二显示时间
-				{
-					SliderCtrl->SetPos(0);
-					ShowTime(player1.m_currentFrameNO, player1.m_endFrameNO - player1.m_startFrameNO,
-					         player1.m_videoTimeInSecond, pWndTimeDis, 0);
-					ShowCurrentFrameNO(player1.m_currentFrameNO, &m_wndEditFrameNo1);
-				}
-			}
-		}
-		case 2:///<刷进度条
-		{
-			if (!m_ifStartPro)
-			{
-				myPro->SetPos(0);
-				SetDlgItemText(IDC_STATIC, "");//helloworld
-			}
-			else if (m_videoPro->m_IfDoneFus)///<如果已经生成摘要则将ClistCtrl中响应的行显示为“已生成摘要”
-			{
-				m_ifStartPro = false;
-				MessageBox("已生成摘要");
-			}
-			///如果正在生成还未生成完毕,刷新进度条上方的显示处理阶段
-			else if (m_videoPro->m_IfContinue)
-			{
-				int VideoPos = (int)m_videoPro->ProcessingSpeed();
-				if (VideoPos == 0)
-				{
-					SetDlgItemText(IDC_STATIC,  "视频预处理……");
-				}
-				if (VideoPos == 1)
-				{
-					SetDlgItemText(IDC_STATIC,  "生成切分视频……");
-				}
-				if (VideoPos == 2)
-				{
-					SetDlgItemText(IDC_STATIC, "视频背景处理……");
-				}
-				if (VideoPos == 3)
-				{
-					SetDlgItemText(IDC_STATIC, "视频前景处理……");
-				}
-				if (VideoPos == 4)
-				{
-					SetDlgItemText(IDC_STATIC, "视频融合……");
-				}
-				myPro->SetPos((int)(m_videoPro->ProcessingSpeed()*100.0));
-			}
-			else
-			{
-				if ((int)m_videoPro->ProcessingSpeed() == -1)
-				{
-					m_ifStartPro = false;
-					MessageBox( "视频时长过短，无需融合处理");
-				
-				}
-			}
-		}
-		case 3:
-		{
-				CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER_PLAYER2));
-				int CurrentPos=SliderCtrl->GetPos();                            ///<获取当前进度条位置
-				int NewCurrentFrameNO = (double)CurrentPos*double(player2.m_endFrameNO-player2.m_startFrameNO)
-					/(double)SliderCtrl->GetRangeMax();     ///<根据当前进度条位置，重新计算帧号
-				if (player2.m_playState!=PLAY_STATE_STOP && player2.m_playState!=PLAY_STATE_FAST_FORWORD)///<若播放器处于正常播放或暂停状态
-				{
-					if (abs(NewCurrentFrameNO-player2.m_currentFrameNO)>5)
-					{
-						player2.m_currentFrameNO=NewCurrentFrameNO;             ///<根据新计算的帧号，重置播放器
-					}
-				}
-				SliderCtrl->SetPos(player2.m_currentFrameNO);                   ///<根据新计算的帧号，重置滑动条
-				CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TIME_VID2);
-				if (player2.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
-				{
-					ShowTime(player2.m_currentFrameNO, player2.m_endFrameNO -player2.m_startFrameNO,
-						player2.m_videoTimeInSecond, pWndTimeDis, 1);
-				}
-				else                                                            ///<停止状态下，用方式二显示时间
-				{
-					SliderCtrl->SetPos(0);
-					ShowTime(player2.m_currentFrameNO,player2.m_endFrameNO - player2.m_startFrameNO,
-						player2.m_videoTimeInSecond, pWndTimeDis, 0);
-
-				}
-		}
-		case 4://摘要窗口的左键单击
-		{
-			if (player2.m_gotCVlclick == TRUE)  //&& Abstractplayer.m_playState == PLAY_STATE_PAUSE
-			{
-				m_clickedObjRecPosInVec = -1;
-				CPoint posInWnd = player2.m_lBtnUpPosInCVWnd;///<播放器对象传出的点击坐标，此时的点击位置已经是原始帧尺寸的坐标
-				double clickPosXInImg = double(posInWnd.x);
-				double clickPosYInImg = double(posInWnd.y);///<注意此时的点击位置已经是原始帧尺寸的坐标
-				m_distanceToRecCenter = 1000000;
-
-				m_objectRectVector.clear();
-				///<从数据库中读取ROI信息
-				if(!m_MysqlVideoParaSearchHandle->FindROIFromNewTraceTable(player2.m_currentFrameNO,&m_objectRectVector,m_videoPro->m_tableParams.NewTraceTable))//////"00015_h_NewTraceTable"
-				{
-					AfxMessageBox("数据库出错");
-					return;
-				}
-
-				for (int i=0; i<m_objectRectVector.size(); i++)///<遍历所有ROI目标框
-				{
-					if (clickPosXInImg < m_objectRectVector[i].x+m_objectRectVector[i].width && clickPosXInImg > m_objectRectVector[i].x///<判断点击是否在当前框内
-						&& clickPosYInImg < m_objectRectVector[i].y+m_objectRectVector[i].height && clickPosYInImg > m_objectRectVector[i].y)
-					{
-						int tempDistance = (clickPosXInImg - (m_objectRectVector[i].x+m_objectRectVector[i].width/2))*
-							(clickPosXInImg - (m_objectRectVector[i].x+m_objectRectVector[i].width/2))+
-							(clickPosYInImg - (m_objectRectVector[i].y+m_objectRectVector[i].height/2))*
-							(clickPosYInImg - (m_objectRectVector[i].y+m_objectRectVector[i].height/2));///<计算点击位置与当前ROI中心的距离
-
-						if (tempDistance < m_distanceToRecCenter)
-						{
-							m_distanceToRecCenter = tempDistance;///<当前距离小于记录的最小距离，则更新这个最小距离
-							m_clickedObjRecPosInVec = i;         ///<并记录当前ROI在向量中的下标值
-						}
-					}
-				}
-				if(m_clickedObjRecPosInVec==-1)
-				{
-					return;
-				}
-				/*if (m_theObjRecClicked != m_objectRectVector[m_clickedObjRecPosInVec])
-				{*/
-					m_theObjRecClicked = m_objectRectVector[m_clickedObjRecPosInVec];
-					int m_theorigFrame=0;
-					if (m_videoPro!=NULL)
-					{
-						int m_origPara = m_MysqlVideoParaSearchHandle->FindOrigParaFromFGTraceTable(m_videoPro->m_tableParams.FGTraceTableName,m_theObjRecClicked);
-						m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromVideoFGTable(m_videoPro->m_tableParams.VideoFGTableName,m_origPara);//m_videoPro->m_tableParams.NewTraceTable
-					
-						//m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromNewTraceTable(m_videoPro->m_tableParams.NewTraceTable,m_theObjRecClicked);//m_videoPro->m_tableParams.NewTraceTable
-					}
-					
-					if (m_theorigFrame == -1)  
-					{
-						MessageBox("数据库有误");
-						player2.m_gotCVlclick = FALSE;     
-						return;
-					};
-					//else
-					//{
-					//	Originalplayer.m_startFrameNO = MAX(0,m_theorigFrame-500);///<未能得到帧号，则默认播放前500帧和后1000帧
-					//	Originalplayer.m_endFrameNO   = Originalplayer.m_startFrameNO + 1000;
-					//}
-		
-					//player1.m_filePath = absOriNameTansf(Abstractplayer.m_filePath);				
-					player1.m_currentFrameNO=m_theorigFrame;                                 ///<初始化原始视频播放器
-				//}
-				If_playpiece=TRUE;
-				player2.m_gotCVlclick = FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
-			}
-		}
-		case 5://摘要图片的左键单击
-		{
-				CString m_windowName1 = "displayWindow4"; //当前进程控制的CV窗口名
-					
-				CPoint m_clickPosInCVWnd;///<记录左键单击的点
-				CPoint m_lBtnUpPosInCVWnd;///<记录左键弹起的点
-				int para=5;
-				cvSetMouseCallback(m_windowName1, cvMouseHandlerInPic1, &para);
-
-				m_clickPosInCVWnd.x = mousePosInPic1.x;
-				m_clickPosInCVWnd.y = mousePosInPic1.y;
-				m_lBtnUpPosInCVWnd.x = mousePosInPic1.x1;
-				m_lBtnUpPosInCVWnd.y = mousePosInPic1.y1;
-				//m_gotCVlclick = mousePosInPic.clickInCVwnd;//cv窗口得到点击参数便传出
-
-				if (mousePosInPic1.clickInCVwnd)
-				{
-				
-					m_clickedObjRecPosInVec = -1;
-					double clickPosXInImg = double(m_lBtnUpPosInCVWnd.x);
-					double clickPosYInImg = double(m_lBtnUpPosInCVWnd.y);///<注意此时的点击位置已经是原始帧尺寸的坐标
-					m_distanceToRecCenter = 1000000;
-
-					m_objectOrigTraceTableVector.clear();
-					///<从数据库中读取ROI信息
-					if (!m_MysqlVideoParaSearchHandle->FindROIFromCombineSegsTable(&m_objectOrigTraceTableVector, m_videoPro->m_tableParams.CombineSegsTableName))//////"00015_h_NewTraceTable"
-					{
-						AfxMessageBox("数据库出错");
-						return;
-					}
-
-					for (int i = 0; i < m_objectOrigTraceTableVector.size(); i++)///<遍历所有ROI目标框
-					{
-						if (clickPosXInImg < m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth && clickPosXInImg > m_objectOrigTraceTableVector[i].nX///<判断点击是否在当前框内
-							&& clickPosYInImg < m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight && clickPosYInImg > m_objectOrigTraceTableVector[i].nY&&m_objectOrigTraceTableVector[i].PicID == m_pageNum+1)
-						{
-							int tempDistance = (clickPosXInImg - (m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth / 2))*
-								(clickPosXInImg - (m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth / 2)) +
-								(clickPosYInImg - (m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight / 2))*
-								(clickPosYInImg - (m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight / 2));///<计算点击位置与当前ROI中心的距离
-
-							if (tempDistance < m_distanceToRecCenter)
-							{
-								m_distanceToRecCenter = tempDistance;///<当前距离小于记录的最小距离，则更新这个最小距离
-								m_clickedObjRecPosInVec = i;         ///<并记录当前ROI在向量中的下标值
-							}
-						}
-					}
-					if (m_clickedObjRecPosInVec == -1)
-					{
-						return;
-					}
-					/*if (m_theObjRecClicked != m_objectRectVector[m_clickedObjRecPosInVec])
-					{*/
-					m_theObjRecClicked.x = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nX;
-					m_theObjRecClicked.y = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nY;
-					m_theObjRecClicked.width = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nWidth;
-					m_theObjRecClicked.height = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nHeight;
-					int m_theorigFrame = 0;
-					if (m_videoPro != NULL)
-					{
-						int m_origPara = m_MysqlVideoParaSearchHandle->FindOrigParaFromFGTraceTable(m_videoPro->m_tableParams.FGTraceTableName, m_theObjRecClicked);
-						m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromVideoFGTable(m_videoPro->m_tableParams.VideoFGTableName, m_origPara);//m_videoPro->m_tableParams.NewTraceTable
-
-						//m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromNewTraceTable(m_videoPro->m_tableParams.NewTraceTable,m_theObjRecClicked);//m_videoPro->m_tableParams.NewTraceTable
-					}
-
-					if (m_theorigFrame == -1)
-					{
-						MessageBox("数据库有误");
-						mousePosInPic1.clickInCVwnd = FALSE;
-						return;
-					};
-
-					player1.m_currentFrameNO = m_theorigFrame;                                 ///<初始化原始视频播放器
-
-					If_playpiece = TRUE;
-					mousePosInPic1.clickInCVwnd=FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
-					ifClick4 = FALSE;
-				}
-		}
-		case 6://摘要图片的左键单击
-		{
-			CString m_windowName2 = "displayWindow3"; //当前进程控制的CV窗口名
-
-			CPoint m_clickPosInCVWnd;///<记录左键单击的点
-			CPoint m_lBtnUpPosInCVWnd;///<记录左键弹起的点
-			int para=5;
-			cvSetMouseCallback(m_windowName2, cvMouseHandlerInPic2, &para);
-
-			m_clickPosInCVWnd.x = mousePosInPic2.x;
-			m_clickPosInCVWnd.y = mousePosInPic2.y;
-			m_lBtnUpPosInCVWnd.x = mousePosInPic2.x1;
-			m_lBtnUpPosInCVWnd.y = mousePosInPic2.y1;
-			//m_gotCVlclick = mousePosInPic.clickInCVwnd;//cv窗口得到点击参数便传出
-
-			if (mousePosInPic2.clickInCVwnd)
-			{
-
-				m_clickedObjRecPosInVec = -1;
-				double clickPosXInImg = double(m_lBtnUpPosInCVWnd.x);
-				double clickPosYInImg = double(m_lBtnUpPosInCVWnd.y);///<注意此时的点击位置已经是原始帧尺寸的坐标
-				m_distanceToRecCenter = 1000000;
-
-				m_objectOrigTraceTableVector.clear();
-				///<从数据库中读取ROI信息
-				if (!m_MysqlVideoParaSearchHandle->FindROIFromCombineSegsTable(&m_objectOrigTraceTableVector, m_videoPro->m_tableParams.CombineSegsTableName))//////"00015_h_NewTraceTable"
-				{
-					AfxMessageBox("数据库出错");
-					return;
-				}
-
-				for (int i = 0; i < m_objectOrigTraceTableVector.size(); i++)///<遍历所有ROI目标框
-				{
-					if (clickPosXInImg < m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth && clickPosXInImg > m_objectOrigTraceTableVector[i].nX///<判断点击是否在当前框内
-						&& clickPosYInImg < m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight && clickPosYInImg > m_objectOrigTraceTableVector[i].nY&&m_objectOrigTraceTableVector[i].PicID == m_pageNum)
-					{
-						int tempDistance = (clickPosXInImg - (m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth / 2))*
-							(clickPosXInImg - (m_objectOrigTraceTableVector[i].nX + m_objectOrigTraceTableVector[i].nWidth / 2)) +
-							(clickPosYInImg - (m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight / 2))*
-							(clickPosYInImg - (m_objectOrigTraceTableVector[i].nY + m_objectOrigTraceTableVector[i].nHeight / 2));///<计算点击位置与当前ROI中心的距离
-
-						if (tempDistance < m_distanceToRecCenter)
-						{
-							m_distanceToRecCenter = tempDistance;///<当前距离小于记录的最小距离，则更新这个最小距离
-							m_clickedObjRecPosInVec = i;         ///<并记录当前ROI在向量中的下标值
-						}
-					}
-				}
-				if (m_clickedObjRecPosInVec == -1)
-				{
-					return;
-				}
-				/*if (m_theObjRecClicked != m_objectRectVector[m_clickedObjRecPosInVec])
-				{*/
-				m_theObjRecClicked.x = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nX;
-				m_theObjRecClicked.y = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nY;
-				m_theObjRecClicked.width = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nWidth;
-				m_theObjRecClicked.height = m_objectOrigTraceTableVector[m_clickedObjRecPosInVec].nHeight;
-				int m_theorigFrame = 0;
-				if (m_videoPro != NULL)
-				{
-					int m_origPara = m_MysqlVideoParaSearchHandle->FindOrigParaFromFGTraceTable(m_videoPro->m_tableParams.FGTraceTableName, m_theObjRecClicked);
-					m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromVideoFGTable(m_videoPro->m_tableParams.VideoFGTableName, m_origPara);//m_videoPro->m_tableParams.NewTraceTable
-
-					//m_theorigFrame = m_MysqlVideoParaSearchHandle->FindOrigFrameFromNewTraceTable(m_videoPro->m_tableParams.NewTraceTable,m_theObjRecClicked);//m_videoPro->m_tableParams.NewTraceTable
-				}
-
-				if (m_theorigFrame == -1)
-				{
-					MessageBox("数据库有误");
-					mousePosInPic2.clickInCVwnd = FALSE;
-					return;
-				};
-
-				player1.m_currentFrameNO = m_theorigFrame;                                 ///<初始化原始视频播放器
-
-				If_playpiece = TRUE;
-				mousePosInPic2.clickInCVwnd = FALSE;                                       ///<点击比对完毕，将得到点击标志位置否
-				ifClick3 = FALSE;
-			}
-		}
-		case 7://监视显示对象的子对话框
-		{
-			if (ObjectDlg.UserClick==TRUE)
-			{
-				player1.m_currentFrameNO=ObjectDlg.OriFrame;
-				If_playpiece=TRUE;
-				ObjectDlg.UserClick=FALSE;
-			}
-		}
-
-
-
-		default:
-			break;
-	}
 }
 
 void Cvideotest2Dlg::OnAppExit()
 {
-	// same as double-clicking on main window close box
-	//ASSERT(m_pMainWnd != NULL);
+	
 	SendMessage(WM_CLOSE);
-	//_CrtDumpMemoryLeaks();
-}
-
-
-//void Cvideotest2Dlg::OnBnClickedBtnexit()
-//{
-//	// TODO: 在此添加控件通知处理程序代码
-//	OnAppExit();
-//	
-//}
-
-
-void Cvideotest2Dlg::OnBnClickedBtnViewAbs()
-{
-	
-	// TODO: 在此添加控件通知处理程序代码
-	//if(PathName)
-	if (m_ifStartPro)
-	{
-		::MessageBox(NULL,_T("摘要尚未处理完成"),_T("error!"),MB_OK);
-		return;
-	}
-	
-	if (player1.m_currentFrameNO!=0)
-		{
-			player2.stopPlay();
-		}
-	CString m_tmpFileName1, m_tmpFileName2;
-	GetVideoNameFromAbsolutePath1(&player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
-	GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
-	CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
-		player2.m_filePath = path;
-		if(_access(path,0)==-1)
-		{
-			AfxMessageBox("找不到文件");
-			return;
-		}
-
-
-		m_pageNum = 0;
-		m_pageSum = 2;
-		m_tableParams.CombineSegsTableName.Format("%s_CombineSegsTable", m_tmpFileName2);
-		m_tableParams.FGTraceTableName.Format("%s_FGTraceTable", m_tmpFileName2);
-		Generated1 = TRUE;
-		DisplayPageSumImgnew();
-
-
-		 // Read the file
-		//IplImage* image= NULL;
-		//CString m_tmpFileName0 = player1.m_filePath;
-		//GetVideoNameFromAbsolutePath1(&m_tmpFileName0,&m_tmpFileName1);///<获取文件名(包含后缀)
-		//GetFileNameBeforeDot(&m_tmpFileName1,&m_tmpFileName2);        ///<获取文件名(不含后缀)
-	
-		//image = cvLoadImage("../"+ m_tmpFileName2 +"/All.jpg",1);
-		//if (!ifinitDisplay3){
-		//	CRect rect;
-		//	GetDlgItem(IDC_STATIC_ABS2)->GetClientRect(&rect);
-		//	disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_ABS2), "displayWindow3",
-		//		rect.Width(), rect.Height());
-		//	ifinitDisplay3 = true;
-		//}
-		//if(image != NULL ) // Check for invalid input
-		//{
-		//	disPlayImage.ShowPicture("displayWindow3",image);
-		//	//ShowImage(image,IDC_STATIC_ABS2);
-		//	cvReleaseImage(&image);
-		//}
-
-		SetTimer(5, 600, NULL); //新加载的Picture Control的计时器
-
-		player2.playInitial(GetDlgItem(IDC_STATIC_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
-		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);
-		m_CSliderPlayer2Ctrl.SetPos(0);
-
-		player2.play();
-		player2.m_MysqlVideoParaSearchHandle=m_MysqlVideoParaSearchHandle;
-		player2.m_videoPro=m_videoPro;
-		player2.timeshow=FALSE;
-}
-
-void Cvideotest2Dlg::ShowImage1( IplImage* img, UINT ID )    // ID 是Picture Control控件的ID号
-{
-	CWnd *m_pWnd = GetDlgItem(ID);
-	CDC* pDC = GetDlgItem(ID)->GetDC();        // 获得显示控件的 DC
-	HDC hDC = pDC->GetSafeHdc();                // 获取 HDC(设备句柄) 来进行绘图操作
-	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
-
-	CRect rect;
-	GetDlgItem(ID)->GetClientRect(&rect);
-	int rw = rect.right - rect.left;            // 求出图片控件的宽和高
-	int rh = rect.bottom - rect.top;
-	int iw = img->width;                        // 读取图片的宽和高
-	int ih = img->height;
-
-	//float temp=max(iw/rw,ih/rh);
-	//rw = (int)(iw/temp);		//应显示按比例的宽度
-	//rh = (int)(ih/temp);	
-	int tx = rect.left;
-	int ty = rect.top;
-	SetRect(rect, tx, ty, tx + rw, ty + rh);
-
-	//disPlayImage.SetOpenCVWindow(m_pWnd,WName,
-	//	rect.Width(), rect.Height());
-	//disPlayImage.ShowPicture(WName, img);
-
-	CvvImage cimg;
-	cimg.CopyOf(img);
-	cimg.DrawToHDC(hDC, &rect);
-	ReleaseDC(pDC);
-}
-
-
-
-void Cvideotest2Dlg::DisplayPageSumImgnew()
-{
-	DisplayFrame disPlayImage;//用于内嵌播放窗口的对象
-	IplImage* image = NULL;
-	CString nOldPara1, nOldPara2;
-	for (int i = 0; i < m_pageSum; i++)
-	{
-		CString PicName;
-		CString m_tmpFileName1, m_tmpFileName2;
-		CString m_tmpFileName0 = player1.m_filePath;
-		GetVideoNameFromAbsolutePath1(&m_tmpFileName0, &m_tmpFileName1);
-		GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
-		PicName.Format(m_tmpFileName2 + "\\All%d", i + m_pageNum);
-		image = cvLoadImage("../" + PicName + ".jpg", 1);
-		///显示图片
-		if (image != NULL)
-		{
-			///取出视频中该目标起始帧号的那一帧
-		
-			switch (i)
-			{
-			case 0:
-				if (!ifinitDisplay3){
-					CRect rect;
-					GetDlgItem(IDC_STATIC_ABSPIC1)->GetClientRect(&rect);
-					disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_ABSPIC1), "displayWindow3",
-						rect.Width(), rect.Height());
-					ifinitDisplay3 = true;
-				}
-				if (image != NULL) // Check for invalid input
-				{
-					disPlayImage.ShowPicture("displayWindow3", image);
-					cvReleaseImage(&image);
-				}
-				nOldPara1.Format("%d", i + m_pageNum);
-				GetDlgItem(IDC_STATIC_1)->SetWindowText(nOldPara1);
-				break;
-			case 1:
-				if (!ifinitDisplay4){
-					CRect rect;
-					GetDlgItem(IDC_STATIC_ABSPIC2)->GetClientRect(&rect);
-					disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_ABSPIC2), "displayWindow4",
-						rect.Width(), rect.Height());
-					ifinitDisplay4 = true;
-				}
-				if (image != NULL) // Check for invalid input
-				{
-					disPlayImage.ShowPicture("displayWindow4", image);
-					cvReleaseImage(&image);
-				}
-				nOldPara2.Format("%d", i + m_pageNum);
-				GetDlgItem(IDC_STATIC_2)->SetWindowText(nOldPara2);
-				break;
-			default:
-				break;
-			}
-		}
-		else											///若为最后一页，则用closeup.bmp填充
-		{
-			image = cvLoadImage("closeup.bmp", CV_LOAD_IMAGE_COLOR);
-			switch (i)
-			{
-			case 0:
-				ShowImage1(image, IDC_STATIC_ABSPIC1);
-				nOldPara1 = "";
-				GetDlgItem(IDC_STATIC_1)->SetWindowText(nOldPara1);
-				break;
-			case 1:
-				ShowImage1(image, IDC_STATIC_ABSPIC2);
-				nOldPara2 = "";
-				GetDlgItem(IDC_STATIC_2)->SetWindowText(nOldPara2);
-				break;
-			default:
-				break;
-			}
-		}
-
-	}
-	//cvReleaseCapture(&capture);
-}
-
-void Cvideotest2Dlg::OnBnClickedBtn1play()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if(player1.m_filePath!="")
-	{
-		m_CSliderPlayer1Ctrl.SetRange(0, player1.m_endFrameNO);///<滑动条初始化
-		
-		///<时间显示准备
-		CString VideoTime;                                     
-		int VedioHour=player1.m_videoTimeInSecond/3600;
-		int VedioMinute=player1.m_videoTimeInSecond/60-VedioHour*60;
-		int VedioSecond=player1.m_videoTimeInSecond-VedioHour*3600-VedioMinute*60;
-
-		VideoTime.Format(" 0:0:0 / %d:%d:%d ",VedioHour,VedioMinute,VedioSecond);
-		GetDlgItem(IDC_STATIC_TIME_VID1)->SetWindowText(VideoTime);///<将时间显示到控件上
-
-		player1.play();
-		
-	}
-	else
-	{
-		AfxMessageBox("请选中文件");
-	}
-
-}
-
-
-void Cvideotest2Dlg::OnBnClickedBtn1pause()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	player1.pause();
-	
-}
-
-
-void Cvideotest2Dlg::OnBnClickedBtn1stop()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	player1.stop();
-	
-}
-
-
-void Cvideotest2Dlg::OnBnClickedBtn2play()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_ifStartPro){
-		AfxMessageBox("生在生成摘要，请稍后操作");
-		return;
-	}
-	if(player2.m_filePath!="")
-	{
-		m_CSliderPlayer2Ctrl.SetRange(0, player2.m_endFrameNO);///<滑动条初始化
-		
-		///<时间显示准备
-		CString VideoTime;                                     
-		int VedioHour=player2.m_videoTimeInSecond/3600;
-		int VedioMinute=player2.m_videoTimeInSecond/60-VedioHour*60;
-		int VedioSecond=player2.m_videoTimeInSecond-VedioHour*3600-VedioMinute*60;
-
-		VideoTime.Format(" 0:0:0 / %d:%d:%d ",VedioHour,VedioMinute,VedioSecond);
-		GetDlgItem(IDC_STATIC_TIME_VID2)->SetWindowText(VideoTime);///<将时间显示到控件上
-
-		player2.play();
-		
-	}
-	else
-	{
-		AfxMessageBox("请选中文件");
-	}
-}
-
-
-void Cvideotest2Dlg::OnBnClickedBtn2pause()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_ifStartPro){
-		AfxMessageBox("生在生成摘要，请稍后操作");
-		return;
-	}
-	player2.pause();
-	/*GetDlgItem(IDC_BUTTON2_pause)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON2_play)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON2_play)->ShowWindow(TRUE);*/
-}
-
-
-void Cvideotest2Dlg::OnBnClickedBtn2stop()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_ifStartPro){
-		AfxMessageBox("生在生成摘要，请稍后操作");
-		return;
-	}
-	player2.stop();
-}
-
-
-void Cvideotest2Dlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
-	// TODO: 在此添加控件通知处理程序代码
-	*pResult = 0;
-}
-
-///@brief 播放器时间显示功能
-/// 
-///@param[in] int m_currentFrameNO--当前帧号, int totalFrameCount--总帧数, int videoTimeInSecond--视频时间长度（s）, CWnd *m_pShowTimeWnd--显示控件句柄, int flag--显示类型
-///@pre  NULL
-///@return NULL
-///@retval BOOL
-///@post NULL
-void Cvideotest2Dlg::ShowTime(int m_currentFrameNO, int totalFrameCount, 
-						   int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
-{
-	CString CurVideoTime;
-	if (flag == 1)
-	{	
-		int CurrentTimeInSecond = (double)m_currentFrameNO/double(totalFrameCount)*videoTimeInSecond;
-		int CurVedioHour=CurrentTimeInSecond/3600;
-		int CurVedioMinute=CurrentTimeInSecond/60-CurVedioHour*60;
-		int CurVedioSecond=CurrentTimeInSecond-CurVedioHour*3600-CurVedioMinute*60;
-
-		int VedioHour= videoTimeInSecond/3600;
-		int VedioMinute= videoTimeInSecond/60-VedioHour*60;
-		int VedioSecond= videoTimeInSecond-VedioHour*3600-VedioMinute*60;
-
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-	else if (flag == 0)
-	{
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",0,0,0,0,0,0);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-
-}
-
-///@brief 显示CEdit* m_wndEditFrameNo对应播放器所显示的帧数，用来查看当前帧，或输入帧数转到指定帧
-///@QiFeng 
-void Cvideotest2Dlg::ShowCurrentFrameNO(int m_currentFrameNO, CEdit* m_wndEditFrameNo)
-{
-	CString _Str_FrameNo;
-	_Str_FrameNo.Format("%d", m_currentFrameNO);
-	m_wndEditFrameNo->SetWindowTextA(_T(_Str_FrameNo));
-}
-
-//void Cvideotest2Dlg::OnBnClickedBtnGotoFrame()
-//{
-//	// TODO: 在此添加控件通知处理程序代码
-//	
-//	//输入框
-//	CString m_StrInputFrameNo;
-//	m_wndEditInputFrameNo1.GetWindowTextA(m_StrInputFrameNo);
-//	m_nInputFrameNo1 = _ttoi(m_StrInputFrameNo);
-//	//<先判断输入框是否改变了帧数  @QiFeng
-//	if (m_nInputFrameNo1 != player1.m_currentFrameNO)
-//	{
-//			CvCapture *capture = cvCreateFileCapture(PathName);///<获取视频头指针
-//			if (!capture)
-//			{///获取失败，输出提示语句
-//				AfxMessageBox("您要播放的文件已损坏或者已经从原路径移除！！！\n请重新选择文件。");
-//				//return 0;
-//			}
-//			cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, m_nInputFrameNo1);
-//			player1.m_currentFrameNO = m_nInputFrameNo1; 		
-//			
-//			
-//			IplImage *m_curFrame;//当前帧指针
-//			m_curFrame = cvQueryFrame(capture);///<获取当前帧图像
-//			if (!m_curFrame)
-//				return;
-//			player1.m_playState = PLAY_STATE_PAUSE;
-//			player1.disPlayImage.ShowPicture( player1.m_windowName,m_curFrame);
-//			
-//			
-//			player1.bEditIsChange = true;
-//	}
-//		
-//}
-
-
-void Cvideotest2Dlg::OnBnClickedBtnGotoPara()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	//输入框
-	CString m_StrInput_nPara;
-	m_wndEditInput_nPara.GetWindowTextA(m_StrInput_nPara);
-	int m_nPara = _ttoi(m_StrInput_nPara);
-
-	///<数据库读出响应的帧号
-
-	int m_ParaStartFrame = m_MysqlVideoParaSearchHandle->FindStartFrameFromVideoFGTable(m_nPara, m_videoPro->m_tableParams.VideoFGTableName);		
-	int m_ParaEndFrame = m_MysqlVideoParaSearchHandle->FindEndFrameFromVideoFGTable(m_nPara, m_videoPro->m_tableParams.VideoFGTableName);		
-		
-	if (m_ParaStartFrame == -1)  
-	{
-			MessageBox("帧数读取有误！");
-			return;
-	}
-	else
-	{
-			player1.m_startFrameNO = MAX(0,m_ParaStartFrame - 50);          ///<未能从数据库中读取帧号，则默认播放前500和后1000帧
-			player1.m_endFrameNO   = m_ParaEndFrame + 300;		
-	}					
-			player1.playPiece();												///<更改原始播放器的播放状态
-				 
-			If_playpiece=TRUE;
-			player1.m_gotCVlclick = FALSE; 
-
-}
-
-
-
-
-void Cvideotest2Dlg::OnBnClickedCheck1()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (((CButton *)GetDlgItem(IDC_CHECK1))->GetCheck())
-	{
-		player2.timeshow=TRUE;
-		player2.d_AbsVideoTimeRatio = (player1.m_endFrameNO- player1.m_startFrameNO)/ player1.m_videoTimeInSecond;//totalFrameCount--总帧数*videoTimeInSecond--视频时间长度（s）
-	}
-	else
-	{
-		player2.timeshow=FALSE;
-	}
 	
 }
 
@@ -1236,88 +389,10 @@ void cvMouseHandlerInPic2(int eventType, int x, int y, int flags, void *param)
 	}
 }
 
-
-
-
-
-//void Cvideotest2Dlg::OnBnClickedButtonObject()
-//{
-//	CString m_strSql;
-//	MYSQL_RES *m_result;
-//	m_strSql.Format("select * from %s",m_videoPro->m_tableParams.CombineSegsTableName) ;//00015_h_combinesegstable
-//	int i=mysql_real_query(&m_MysqlVideoParaSearchHandle->m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength());
-//	if(i!=0)
-//	{
-//		AfxMessageBox("请先点击生成摘要");
-//		return;
-//	}
-//	else
-//	{
-//		m_result=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
-//		ObjectDlg.oriPlayer=player1;
-//		ObjectDlg.m_MysqlVideoHandle=m_MysqlVideoParaSearchHandle;
-//		ObjectDlg.videoPro=m_videoPro;
-//		SetTimer(6, 100, NULL);
-//		ObjectDlg.DoModal();
-//		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
-//		ObjectDlg.Generated=FALSE;
-//	}
-//}
-
-
 void Cvideotest2Dlg::OnAbout()
 {
-	// TODO: Add your command handler code here
-	//MessageBox("This is a test！");
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
-}
-
-
-void Cvideotest2Dlg::OnBnClickedButton2()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	if (m_pageNum > 0)
-	{
-		m_pageNum = m_pageNum - 2;;
-		DisplayPageSumImgnew();
-	}
-}
-
-
-void Cvideotest2Dlg::OnBnClickedButton1()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	IplImage* image = NULL;
-	CString PicName;
-	CString m_tmpFileName1, m_tmpFileName2;
-	CString m_tmpFileName0 = player1.m_filePath;
-	GetVideoNameFromAbsolutePath1(&m_tmpFileName0, &m_tmpFileName1);
-	GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
-	PicName.Format(m_tmpFileName2 + "\\All%d", m_pageNum+2);
-	image = cvLoadImage("../" + PicName + ".jpg", 1);
-	if (image!=NULL)
-	{
-		m_pageNum = m_pageNum+2;
-		DisplayPageSumImgnew();
-	}
-}
-
-
-
-
-
-void Cvideotest2Dlg::OnStnClickedStaticAbspic1()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	ifClick3 = TRUE;
-}
-
-
-void Cvideotest2Dlg::OnStnClickedStaticAbspic2()
-{
-	// TODO:  在此添加控件通知处理程序代码
-	ifClick4 = TRUE;
 }
 
 
@@ -1358,6 +433,7 @@ void Cvideotest2Dlg::OnMenuClickedOpen()
 		{
 			player1.stopPlay();
 		}
+		
 		PathName=dlg.GetPathName();
 		SetDlgItemText(IDC_EDIT3, PathName);
 		PathName.MakeUpper();
@@ -1442,3 +518,467 @@ void Cvideotest2Dlg::OnMenuitemAquaos()
 		SubMenuCheckedNO = 3;
 	}
 }
+
+
+/*void Cvideotest2Dlg::OnBnClickedButton3()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	m_dlg1.DoModal();
+	m_dlg1.dlg1_MysqlHandle = m_MysqlVideoParaSearchHandle;
+
+	
+}
+*/
+
+void Cvideotest2Dlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: 在此添加控件通知处理程序代码
+	 pDialog[m_CurSelTab]->ShowWindow(SW_HIDE);
+    //得到新的页面索引
+    m_CurSelTab = m_tab.GetCurSel();
+    //把新的页面显示出来
+	pDialog[m_CurSelTab]->ShowWindow(SW_SHOW);
+	//各个页面响应
+	switch(m_CurSelTab)
+	{
+	case 0:
+	{
+		if (m_page2.playerori_TAB2.m_playState == PLAY_STATE_PLAY)
+		{///播放状态下
+			m_page2.playerori_TAB2.pause();
+		}
+		if (m_page3.ObjectPlayer.m_playState == PLAY_STATE_PLAY)
+		{///播放状态下
+			m_page3.ObjectPlayer.pause();
+		}
+		if (m_page1.Tab1_Player1.m_filePath != "")
+		{
+			m_page1.Tab1_Player1.play();
+		}
+		if (m_page4.player.m_playState == PLAY_STATE_PLAY)
+		{///播放状态下
+			m_page4.player.pause();
+		}
+		m_page2.playerori_TAB2.play();
+		break;
+	}
+	case 1:
+	{
+		if(m_page2.playerori_TAB2.m_filePath !="")
+		{
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			if (_access(path, 0) == -1)
+			{
+				AfxMessageBox("请先点击生成摘要");
+				return;
+			}
+			else
+			{
+				//m_result1=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+				//m_page3.oriPlayer=m_page1.Tab1_Player1;
+				m_page2.Tab2_MysqlVideoParaSearchHandle=m_MysqlVideoParaSearchHandle;
+				m_page2.m_videoPro=m_page1.Tab1_videoPro;
+				m_page2.playerori_TAB2.m_filePath = m_page1.Tab1_Player1.m_filePath;
+				//if(m_result1!=NULL) mysql_free_result(m_result1);///<释放结果资源
+				//m_page2.Generated=FALSE;
+			}
+
+			//播放处理
+			if (m_page1.Tab1_Player1.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page1.Tab1_Player1.pause();
+				m_page1.Tab1_Player2.pause();
+			}
+			if (m_page3.ObjectPlayer.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page3.ObjectPlayer.pause();
+			}
+			if (m_page4.player.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page4.player.pause();
+			}
+			m_page2.playerori_TAB2.play();
+		}
+		break;
+	}
+	case 2:
+	{
+		if(m_page2.playerori_TAB2.m_filePath !="")
+		{
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			if (_access(path, 0) == -1)
+			{
+				//弹回tab1
+				AfxMessageBox("请先点击生成摘要");
+				return;
+			}
+			else
+			{
+				//m_result2=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+				//m_page3.oriPlayer=m_page1.Tab1_Player1;
+				m_page3.m_MysqlVideoHandle=m_MysqlVideoParaSearchHandle;
+				m_page3.videoPro=m_page1.Tab1_videoPro;
+				m_page3.oriPlayer.m_filePath=m_page1.Tab1_PathName;
+				//if(m_result2!=NULL) mysql_free_result(m_result2);///<释放结果资源
+				//m_page3.Generated=FALSE;
+			}
+
+			//原“查看btn”中的Object处理
+			//m_page3.m_pageNum = 0;
+			//m_page3.Generated=TRUE;
+			//m_page3.DetectResult();
+			//m_page3.DisplayPageSumImg();
+			////ObjectPlayer.play();
+			//m_page3.pScrollBar->SetScrollRange(0,(m_page3.objDetectedInfos.size()-4>0)?m_page3.objDetectedInfos.size()-4:0);//滑块移动的位置为0——100；
+		
+
+			//播放处理
+			if (m_page1.Tab1_Player1.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page1.Tab1_Player1.pause();
+				m_page1.Tab1_Player2.pause();
+			}
+			if (m_page2.playerori_TAB2.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page2.playerori_TAB2.pause();
+			}
+			if (m_page4.player.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page4.player.pause();
+			}
+			m_page3.ObjectPlayer.play();
+		}
+		break;
+	}
+
+	case 3:
+	{
+		if(m_page4.player.m_filePath !="" && m_page4.player.m_filePath !="")
+		{
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			if (_access(path, 0) == -1)
+			{
+				//弹回tab1
+				AfxMessageBox("请先点击生成摘要");
+				return;
+			}
+			else
+			{
+				//m_result2=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+				//m_page3.oriPlayer=m_page1.Tab1_Player1;
+				m_page4.m_MysqlHandle=m_MysqlVideoParaSearchHandle;
+				m_page4.draw_videoPro=m_page1.Tab1_videoPro;
+				m_page4.player.m_filePath=m_page1.Tab1_PathName;
+				m_page4.objtablename=m_page1.Tab1_videoPro->m_tableParams.ObjectTableName;
+				m_page4.oriPlayer.objtablename=m_page1.Tab1_videoPro->m_tableParams.ObjectTableName;
+				//m_MysqlVideoParaSearchHandle->IfExistTable(m_page1.Tab1_videoPro->m_tableParams.ObjectTableName,&m_page4.m_ifExistProData);
+				//if(m_result2!=NULL) mysql_free_result(m_result2);///<释放结果资源
+				//m_page3.Generated=FALSE;
+			}
+
+			//原“查看btn”中的Object处理
+			//m_page3.m_pageNum = 0;
+			//m_page3.Generated=TRUE;
+			//m_page3.DetectResult();
+			//m_page3.DisplayPageSumImg();
+			////ObjectPlayer.play();
+			//m_page3.pScrollBar->SetScrollRange(0,(m_page3.objDetectedInfos.size()-4>0)?m_page3.objDetectedInfos.size()-4:0);//滑块移动的位置为0——100；
+
+
+			//播放处理
+			if (m_page1.Tab1_Player1.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page1.Tab1_Player1.pause();
+				m_page1.Tab1_Player2.pause();
+			}
+			if (m_page2.playerori_TAB2.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page2.playerori_TAB2.pause();
+			}
+			m_page3.ObjectPlayer.play();
+			
+			if (m_page3.ObjectPlayer.m_playState == PLAY_STATE_PLAY)
+			{///播放状态下
+				m_page3.ObjectPlayer.pause();
+			}
+			m_page4.player.play();
+		}
+		break;
+	}
+	default:
+		break;
+
+	}
+
+	
+	*pResult = 0;
+}
+void Cvideotest2Dlg::OnBnClickedBtnOpen()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Files (*.mp3 *.wma *.dat *.wmv *.avi *.mov *.mmm *.mid *.mpeg)|*.mp3;*.wma;*.dat;*.wmv;*.avi;*.mov;*.mmm;*.mid;*.mpeg|All Files (*.*)|*.*||"), NULL);
+	if (dlg.DoModal() == IDOK)
+	{
+		if (m_page1.Tab1_Player1.m_currentFrameNO != 0)
+		{
+			m_page1.Tab1_Player1.stopPlay();
+		}
+
+		m_page1.Tab1_PathName = dlg.GetPathName();
+		m_page1.Tab1_PathName.MakeUpper();
+
+		m_page1.Tab1_Player1.m_filePath = m_page1.Tab1_PathName;
+
+		m_page1.Tab1_Player1.playInitial(m_page1.GetDlgItem(IDC_STATIC_TAB1_ORI), "displayWindow1");//该初始化需要在文件路径确认后完成
+		m_page1.Tab1_CSliderPlayer1Ctrl.SetRange(0, m_page1.Tab1_Player1.m_endFrameNO);
+		m_page1.Tab1_CSliderPlayer1Ctrl.SetPos(0);
+
+		//m_page1.Tab1_Player1.play();
+
+
+
+		if (m_page2.playerori_TAB2.m_currentFrameNO != 0)
+		{
+			m_page2.playerori_TAB2.stopPlay();
+		}
+		m_page2.playerori_TAB2.m_filePath = m_page1.Tab1_Player1.m_filePath;
+
+		m_page2.playerori_TAB2.playInitial(m_page2.GetDlgItem(IDC_STATIC_TAB2_ORI), "ori_displaywindow");//该初始化需要在文件路径确认后完成
+		m_page2.Tab2_CSliderPlayer1Ctrl.SetRange(0, m_page2.playerori_TAB2.m_endFrameNO);
+		m_page2.Tab2_CSliderPlayer1Ctrl.SetPos(0);
+
+		//m_page2.playerori_TAB2.play();
+
+
+		if (m_page3.ObjectPlayer.m_currentFrameNO != 0)
+		{
+			m_page3.ObjectPlayer.stopPlay();
+		}
+		m_page3.ObjectPlayer.m_filePath = m_page1.Tab1_PathName;
+
+		m_page3.ObjectPlayer.playInitial(m_page3.GetDlgItem(IDC_STATIC_OBJECT), "ori_window_Tab3");//该初始化需要在文件路径确认后完成
+		m_page3.m_CSliderPlayerCtrl.SetRange(0, m_page3.ObjectPlayer.m_endFrameNO);
+		m_page3.m_CSliderPlayerCtrl.SetPos(0);
+
+
+
+		if (m_page4.player.m_currentFrameNO != 0)
+		{
+			m_page4.player.stopPlay();
+		}
+		m_page4.player.m_filePath = m_page1.Tab1_PathName;
+
+		m_page4.player.playInitial(m_page4.GetDlgItem(IDC_DISPLAY_IN_DRAW_DETECT), "ori_window_Tab4");//该初始化需要在文件路径确认后完成
+		m_page4.m_CSlider_playerCtrl.SetRange(0, m_page4.player.m_endFrameNO);
+		m_page4.m_CSlider_playerCtrl.SetPos(0);
+
+		m_page4.oriPlayer.m_filePath = m_page1.Tab1_PathName;
+
+		m_page4.oriPlayer.playInitial(m_page4.GetDlgItem(IDC_DISPLAY_IN_DRAW_DETECT2), "ori_detect_window_Tab4");//该初始化需要在文件路径确认后完成
+		m_page4.m_CSlider_oriplayerCtrl.SetRange(0, m_page4.oriPlayer.m_endFrameNO);
+		m_page4.m_CSlider_oriplayerCtrl.SetPos(0);
+
+
+
+
+	}
+
+	else
+		return;
+		
+
+	CString m_pFilePath = m_page1.Tab1_PathName;
+	CString m_tmpFileName1, m_tmpFileName2;
+	GetVideoNameFromAbsolutePath1(&m_pFilePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+	GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+	m_page1.Tab1_videoPro->m_tableParams.VideoFGTableName.Format("%s_VideoFGTable", m_tmpFileName2);
+	m_page1.Tab1_videoPro->m_tableParams.FGTraceTableName.Format("%s_FGTraceTable", m_tmpFileName2);
+	m_page1.Tab1_videoPro->m_tableParams.NewToOldFrameTableName.Format("%s_New2OldFrameTable", m_tmpFileName2);
+	m_page1.Tab1_videoPro->m_tableParams.NewTraceTable.Format("%s_NewTraceTable", m_tmpFileName2);
+	m_page1.Tab1_videoPro->m_tableParams.CombineSegsTableName.Format("%s_CombineSegsTable", m_tmpFileName2);
+	m_page1.Tab1_videoPro->m_tableParams.ObjectTableName.Format("%s_ObjectTable", m_tmpFileName2);
+
+
+	switch(m_CurSelTab)
+	{
+	case 0:
+		{
+			m_page1.Tab1_Player1.play();
+			break;
+		}
+	case 1:
+		{
+			m_page2.playerori_TAB2.play();
+			break;
+		}
+	case 2:
+		{
+			m_page3.ObjectPlayer.play();
+
+			CString m_strSql;
+			MYSQL_RES *m_result;
+			m_strSql.Format("select * from %s",m_page1.Tab1_videoPro->m_tableParams.CombineSegsTableName) ;//00015_h_combinesegstable
+			int i=mysql_real_query(&m_MysqlVideoParaSearchHandle->m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength());
+			if(i!=0)
+			{
+				AfxMessageBox("请先返回第一页点击生成摘要");
+				return;
+			}
+			else
+			{
+				m_result=mysql_store_result(&m_MysqlVideoParaSearchHandle->m_mysql);///<保存查询到的数据到m_result
+				//m_page3.oriPlayer=m_page1.Tab1_Player1;
+				m_page3.m_MysqlVideoHandle=m_MysqlVideoParaSearchHandle;
+				m_page3.videoPro=m_page1.Tab1_videoPro;
+				m_page3.oriPlayer.m_filePath=m_page1.Tab1_PathName;
+				if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+				m_page3.Generated=FALSE;
+			}
+
+			m_page3.ObjectPlayer.play();
+			//原“查看btn”中的Object处理
+			//m_page3.m_pageNum = 0;
+			//m_page3.Generated=TRUE;
+			//m_page3.DetectResult();
+			//m_page3.DisplayPageSumImg();
+			//m_page3.pScrollBar->SetScrollRange(0,(m_page3.objDetectedInfos.size()-4>0)?m_page3.objDetectedInfos.size()-4:0);//滑块移动的位置为0——100；
+		
+			break;
+		}
+	default:
+		break;
+	}
+
+}
+
+void Cvideotest2Dlg::OnBnClickedBtnView()
+{
+	// TODO: Add your control notification handler code here
+	switch(m_CurSelTab)
+	{
+	case 0:
+		{
+			if (m_page1.Tab1_ifStartPro)
+			{
+				::MessageBox(NULL, _T("摘要尚未处理完成"), _T("error!"), MB_OK);
+				return;
+			}
+
+			if (m_page1.Tab1_Player1.m_currentFrameNO != 0)
+			{
+				m_page1.Tab1_Player2.stopPlay();
+			}
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			m_page1.Tab1_Player2.m_filePath = path;
+			if (_access(path, 0) == -1)
+			{
+				AfxMessageBox("找不到文件");
+				return;
+			}
+
+			m_page1.Tab1_Player2.playInitial(m_page1.GetDlgItem(IDC_STATIC_TAB1_ABS), "displayWindow2");//该初始化需要在文件路径确认后完成
+			m_page1.Tab1_CSliderPlayer2Ctrl.SetRange(0, m_page1.Tab1_Player2.m_endFrameNO);
+			m_page1.Tab1_CSliderPlayer2Ctrl.SetPos(0);
+
+			m_page1.Tab1_Player2.play();
+			m_page1.Tab1_Player2.m_MysqlVideoParaSearchHandle = m_page1.Tab1_MysqlHandle;
+			m_page1.Tab1_Player2.m_videoPro = m_page1.Tab1_videoPro;
+			m_page1.Tab1_Player2.timeshow = FALSE;
+			break;
+		}
+	case 1:
+		{
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			if (m_page1.Tab1_ifStartPro||_access(path, 0) == -1)
+				{
+					AfxMessageBox("请先返回第一页点击生成摘要");
+					return;
+				}
+			m_page2.m_pagenum = 0;
+			m_page2.Generated = TRUE;
+			m_page2.DisplaySumImg();
+			break;
+		}
+	case 2:
+		{
+			CString m_tmpFileName1, m_tmpFileName2;
+			GetVideoNameFromAbsolutePath1(&m_page1.Tab1_Player1.m_filePath, &m_tmpFileName1);///<获取文件名(包含后缀)
+			GetFileNameBeforeDot(&m_tmpFileName1, &m_tmpFileName2);        ///<获取文件名(不含后缀)
+			CString path = "../" + m_tmpFileName2 + "/" + m_tmpFileName2 + "_fusion.avi";
+			if (m_page1.Tab1_ifStartPro||_access(path, 0) == -1)
+				{
+					AfxMessageBox("请先返回第一页点击生成摘要");
+					return;
+				}
+			m_page3.m_pageNum = 0;
+			m_page3.Generated=TRUE;
+			m_page3.DetectResult();
+			m_page3.DisplayPageSumImg();
+			//ObjectPlayer.play();
+			m_page3.pScrollBar->SetScrollRange(0,(m_page3.objDetectedInfos.size()-4>0)?m_page3.objDetectedInfos.size()-4:0);//滑块移动的位置为0——100；
+			//m_page3.m_CSliderPlayerCtrl.SetRange(0, m_page3.ObjectPlayer.m_endFrameNO);   ///<初始化窗口一的滑动条
+			//m_page3.m_CSliderPlayerCtrl.SetPos(0);
+			break;
+		}
+	default:
+		break;
+	}
+}
+
+
+
+void Cvideotest2Dlg::OnBnClickedButtonSettings()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//ChangeIniFileDlg m_ChangeIniDlg;
+	//m_ChangeIniDlg.DoModal();
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
+}
+
+
+void Cvideotest2Dlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	//CWnd * pWnd1=GetDlgItem(IDC_TAB1);
+	//	if (pWnd1->GetSafeHwnd())
+	//	{
+	//		pWnd1->MoveWindow(15,15,cx-30,cy-30);
+	//	}
+}
+
+
+void Cvideotest2Dlg::OnBnClickedBtnexit()
+{
+	// TODO: Add your control notification handler code here
+	OnAppExit();
+}
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+//	ON_WM_SIZE()
+END_MESSAGE_MAP()
+
+
+//void CAboutDlg::OnSize(UINT nType, int cx, int cy)
+//{
+//	CDialogEx::OnSize(nType, cx, cy);
+//
+//	// TODO: 在此处添加消息处理程序代码
+//
+//}

@@ -1,0 +1,26 @@
+0709更改说明	@陈彦杰
+
+增加功能：	1.新增子对话框用于逐一显示前景物体
+		2.点击前景物体时，父对话框的player1跳到前景的起始帧开始播放
+
+新增文件：ObjectViewDlg.h、ObjectViewDlg.cpp
+
+涉及改动的文件：ObjectViewDlg.h、ObjectViewDlg.cpp、LibMySql.h、LibMySql.cpp、Resource.h、videotest2Dlg.h、videotest2Dlg.cpp
+
+必要说明：
+
+1.ObjectViewDlg.h、ObjectViewDlg.cpp中是新增的窗口类。
+子窗口中有4个picture control，各有一个点击消息的响应函数，用于响应用户的点击，注意：Notify属性必须为TRUE才会响应。
+下面对重要成员进行说明：
+	vector<objectInfo> objDetectedInfos;	///<存储数据库的物体信息，用来显示缩略图，数据来自combinesegstable表
+	void DetectResult();//用于从combinesegstable中查询信息
+	bool UserClick;///<用于判断用户有无按下鼠标，无操作时为FALSE，有操作时为TRUE
+	bool Generated;///<用户是否点击了“生成”按钮
+	int OriFrame;//用于传出到主对话框，让播放器跳到对应的帧
+
+2.数据库类中新增函数：
+	bool GetObjectInfoFromObjectTable(vector<objectInfo> *objDetectedInfos,CString ObjectTableName);       ///<获取所有运动目标的信息
+
+3.主对话框类Cvideotest2Dlg中新增子对话框成员：CObjectViewDlg ObjectDlg;//逐一显示前景对象的窗口
+同时计时器新增case 6，用于检测用户在子对话框中的点击事件。
+打开子对话框的语句是：ObjectDlg.DoModal();

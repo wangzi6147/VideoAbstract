@@ -28,7 +28,18 @@ Others:        NULL
 *********************************************/
 DisplayFrame::DisplayFrame(void)
 {
-
+	lpbmih = new BITMAPINFO;
+	lpbmih->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);	
+	lpbmih->bmiHeader.biWidth = 0;
+	lpbmih->bmiHeader.biHeight = 0;
+	lpbmih->bmiHeader.biPlanes = 1;
+	lpbmih->bmiHeader.biBitCount = 24;
+	lpbmih->bmiHeader.biCompression = BI_RGB;
+	lpbmih->bmiHeader.biSizeImage = 0;
+	lpbmih->bmiHeader.biXPelsPerMeter = 0;
+	lpbmih->bmiHeader.biYPelsPerMeter = 0;
+	lpbmih->bmiHeader.biClrUsed = 0;
+	lpbmih->bmiHeader.biClrImportant = 0;
 }
 
 /*********************************************
@@ -99,4 +110,18 @@ void DisplayFrame::SetOpenCVWindow(CWnd *pWnd,CString csWndName,
 						SWP_NOMOVE | SWP_NOZORDER);
 	cvResizeWindow(pWndName, nTarWidth, nTarHeight);
 	
+}
+
+void DisplayFrame::ShowPictureHolderBMP(IplImage *image, HDC hDC, CRect rec, CClientDC &dc)
+{	
+	lpbmih->bmiHeader.biWidth = image->width;				//初始化位图信息头的图片高和宽
+	lpbmih->bmiHeader.biHeight = -image->height;			//负值表示位图正序存放(默认是倒序存放的)
+
+	BYTE *pBits;											//位图数据指针
+	HBITMAP hBitmap = CreateDIBSection(hDC, lpbmih, DIB_RGB_COLORS, (void**)&pBits, NULL, 0);		//创建位图句柄
+	memcpy(pBits, image->imageData, image->imageSize);		//将IplImage图片数据拷贝到bmp数据区域    
+	ShowImg.CreateFromBitmap(hBitmap, NULL, FALSE);			//将位图句柄关联到CPictureHolder对象 	
+	ShowImg.Render((CDC*)&dc, &rec, 0);						//在picture控件所在区域(rec)显示图片
+	if(!DeleteObject(hBitmap))
+		AfxMessageBox("删除位图，释放资源失败！");
 }

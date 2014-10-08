@@ -37,6 +37,11 @@ CVideo::CVideo()
 	m_IfDoneFus       = false;///<视频融合完成标志位置否
 	SegFrame_Count    = 0;    ///<分割视频总帧数置零
 	FusFrame_Count    = 0;    ///<融合视频总帧数置零
+	StepBitmapDefault[0] = 0;
+	StepBitmapDefault[1] = 0;
+	StepBitmapDefault[2] = 0;
+	StepBitmapDefault[3] = 0;
+	StepBitmapDefault[4] = 0;
 
 	m_ProcessingSpeed = 0.0;  ///<处理进度置零
 
@@ -1211,7 +1216,7 @@ void CVideo::VideoFusionProcessing()
 			}
 		}
 		if (m_FusionParam - m_FusionStart<=1)
-			return;
+			break;
 
 		char m_strName[500];         ///<名称临时变量
 		for (int k=m_FusionStart;k<m_FusionParam && m_IfContinue;k++)

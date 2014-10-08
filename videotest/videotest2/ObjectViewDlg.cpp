@@ -6,6 +6,7 @@
 #include "ObjectViewDlg.h"
 #include "afxdialogex.h"
 #include "CvvImage.h"
+#include "publicheader.h"
 
 
 // CObjectViewDlg 对话框
@@ -15,7 +16,7 @@ IMPLEMENT_DYNAMIC(CObjectViewDlg, CDialog)
 CObjectViewDlg::CObjectViewDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CObjectViewDlg::IDD, pParent)
 {
-	m_pageSum=4;//显示4张图
+	m_pageSum=1;//显示4张图
 	m_pageNum = 0;
 	UserClick=FALSE;
 	Generated=FALSE;
@@ -23,13 +24,18 @@ CObjectViewDlg::CObjectViewDlg(CWnd* pParent /*=NULL*/)
 
 CObjectViewDlg::~CObjectViewDlg()
 {
-
+	
 }
 
 void CObjectViewDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_STATIC_OBJECT1, ObjectPicture_1);
+	//DDX_Control(pDX, IDC_STATIC_OBJECT1, ObjectPicture_1);
+	DDX_Control(pDX, IDC_SLIDER1,m_CSliderPlayerCtrl);
+	DDX_Control(pDX, IDC_BTN_OBJECT_ORI_PLAY, BTN_OBJECT_ORI_PLAY);
+	DDX_Control(pDX, IDC_BTN_OBJECT_ORI_PAUSE, BTN_OBJECT_ORI_PAUSE);
+	DDX_Control(pDX, IDC_BTN_OBJECT_ORI_STOP, BTN_OBJECT_ORI_STOP);
+
 }
 
 
@@ -41,6 +47,18 @@ BEGIN_MESSAGE_MAP(CObjectViewDlg, CDialog)
 	ON_STN_CLICKED(IDC_STATIC_OBJECT2, &CObjectViewDlg::OnStnClickedStaticObject2)
 	ON_STN_CLICKED(IDC_STATIC_OBJECT3, &CObjectViewDlg::OnStnClickedStaticObject3)
 	ON_STN_CLICKED(IDC_STATIC_OBJECT4, &CObjectViewDlg::OnStnClickedStaticObject4)
+	ON_WM_TIMER()
+//	ON_WM_INITMENU()
+//	ON_WM_INITMENUPOPUP()
+//ON_WM_UNICHAR()
+ON_WM_VSCROLL()
+ON_BN_CLICKED(IDC_BUTTON1, &CObjectViewDlg::OnBnClickedButton1)
+ON_BN_CLICKED(IDC_BUTTON2, &CObjectViewDlg::OnBnClickedButton2)
+ON_BN_CLICKED(IDC_BUTTON3, &CObjectViewDlg::OnBnClickedButton3)
+//ON_WM_CLOSE()
+ON_WM_CLOSE()
+//ON_WM_CANCELMODE()
+//ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -81,16 +99,14 @@ void CObjectViewDlg::ShowImage( IplImage* img, UINT ID ,CString WName)    // ID 
 void CObjectViewDlg::OnBnClickedButtonObject()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	//IplImage* image= NULL;
-	//image = cvLoadImage("../00015_H/All.jpg",1);
-	//ShowImage(image,IDC_STATIC_OBJECT1,"displayWindow_1");
-	//ShowImage(image,IDC_STATIC_OBJECT2,"displayWindow_2");
-	//ShowImage(image,IDC_STATIC_OBJECT3,"displayWindow_3");
-	//ShowImage(image,IDC_STATIC_OBJECT4,"displayWindow_4");
 	m_pageNum = 0;
 	Generated=TRUE;
 	DetectResult();
 	DisplayPageSumImg();
+	//ObjectPlayer.play();
+	pScrollBar->SetScrollRange(0,(objDetectedInfos.size()-3>0)?objDetectedInfos.size()-3:0);//滑块移动的位置为0——100；
+	m_CSliderPlayerCtrl.SetRange(0, ObjectPlayer.m_endFrameNO);   ///<初始化窗口一的滑动条
+	m_CSliderPlayerCtrl.SetPos(0);
 }
 
 
@@ -101,15 +117,15 @@ void CObjectViewDlg::DisplayPageSumImg()
 	if (!capture)
 		return;
 
-	int num = m_pageSum;
+	int num = 4;//m_pageSum;
 	if (objDetectedInfos.size()/m_pageSum > m_pageNum)		//若当前页不为最后一页
-		num = m_pageSum;									
+		num = 4;//m_pageSum;									
 	else
 		num = objDetectedInfos.size()%m_pageSum;			//为最后一页，显示剩余的图
 
 	IplImage* image = NULL;
 	CString nOldPara1,nOldPara2,nOldPara3,nOldPara4;
-	for (int i = 0; i < m_pageSum; i++)
+	for (int i = 0; i < 4; i++)/////原来为m_pageSum
 	{	
 		///显示图片
 		if(i < num)											
@@ -269,7 +285,7 @@ void CObjectViewDlg::OnBnClickedObjectRight()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	DetectResult();			//计算m_pageSum要显示的object填充objDetectedInfos
-	if (m_pageNum < ceil(objDetectedInfos.size()/(float)m_pageSum) - 1)			
+	if (m_pageNum + 3 < ceil(objDetectedInfos.size()/(float)m_pageSum) - 1)			
 	{
 		m_pageNum++; 
 		DisplayPageSumImg();
@@ -277,3 +293,305 @@ void CObjectViewDlg::OnBnClickedObjectRight()
 }
 
 
+
+
+void CObjectViewDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialog::OnTimer(nIDEvent);
+	
+	switch(nIDEvent)  
+	{  
+	case 1: //如果id为1的timer结束，则执行关闭窗口操作  
+		//int temp;
+		//temp=pScrollBar->GetScrollPos();
+
+		//if (objDetectedInfos.size()>4 && m_pageNum!=(objDetectedInfos.size()-4)*temp/100)
+		//{
+			//pScrollBar->SetScrollPos(4);
+		if (user_click_scrollbar==TRUE)
+		{
+			m_pageNum=pScrollBar->GetScrollPos();
+			if (Generated==TRUE)
+			{
+				DisplayPageSumImg();
+			}
+			user_click_scrollbar=FALSE;
+		}
+		//}
+	case 2:///<播放窗口1的进度条及时间显示刷新
+		{
+			if (If_playpiece)
+			{
+				CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER1));
+				SliderCtrl->SetPos(ObjectPlayer.m_currentFrameNO);
+				If_playpiece=FALSE;
+			}
+			else
+			{
+				CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER1));
+				int CurrentPos=SliderCtrl->GetPos();                            ///<获取当前进度条位置
+				int NewCurrentFrameNO = (double)CurrentPos*double(ObjectPlayer.m_endFrameNO-ObjectPlayer.m_startFrameNO)
+					/(double)SliderCtrl->GetRangeMax();     ///<根据当前进度条位置，重新计算帧号
+
+				if (ObjectPlayer.m_playState!=PLAY_STATE_STOP && ObjectPlayer.m_playState!=PLAY_STATE_FAST_FORWORD &&ObjectPlayer.m_playState!=PLAY_STATE_PLAY_PIECE)///<若播放器处于正常播放或暂停状态
+				{
+					if (abs(NewCurrentFrameNO-ObjectPlayer.m_currentFrameNO)>5)
+					{
+						ObjectPlayer.m_currentFrameNO=NewCurrentFrameNO;             ///<根据新计算的帧号，重置播放器
+					}
+				}
+				SliderCtrl->SetPos(ObjectPlayer.m_currentFrameNO);                   ///<根据新计算的帧号，重置滑动条
+				CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_OBJECTWINDOW);
+				if (ObjectPlayer.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
+				{
+					ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
+						ObjectPlayer.m_videoTimeInSecond, pWndTimeDis, 1);
+				}
+				else                                                            ///<停止状态下，用方式二显示时间
+				{
+					SliderCtrl->SetPos(0);
+					ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
+						ObjectPlayer.m_videoTimeInSecond, pWndTimeDis, 0);
+				}
+			}
+
+		}
+	case 3://监视显示对象的子对话框
+		{
+			if (UserClick==TRUE)
+			{
+				If_playpiece=TRUE;
+				ObjectPlayer.m_currentFrameNO=OriFrame;
+				UserClick=FALSE;
+			}
+		}
+	default:  
+		break;  
+	} 
+}
+
+
+
+
+BOOL CObjectViewDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	UIBeautifier.LoadBackgroundPic(IDB_background);///<背景位图加载
+	CWnd* pWnd = CWnd::GetDesktopWindow();
+	pWnd->GetClientRect(UIBeautifier.rcDeskRect);///获取桌面矩形
+	BitmapBackGroundStrech=UIBeautifier.CBitmapResize(UIBeautifier.m_BitmapBackGround,UIBeautifier.rcDeskRect.Width(),UIBeautifier.rcDeskRect.Height());
+	
+	GetDlgItem(IDC_SLIDER_OBJECT_ORI)->MoveWindow(370.0*UIBeautifier.rcDeskRect.Width()/1214,490.0*UIBeautifier.rcDeskRect.Height()/760,600.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECT1)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,125*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECT2)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width()/1214,155.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,125*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECT3)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width()/1214,280.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,125*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECT4)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width()/1214,405.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,125*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECT)->MoveWindow(370.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,600.0*UIBeautifier.rcDeskRect.Width()/1214,450.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECTWINDOW)->MoveWindow(830.0*UIBeautifier.rcDeskRect.Width()/1214,520.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_OBJECT_SCROLLBAR)->MoveWindow(210*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,25.0*UIBeautifier.rcDeskRect.Width()/1214,530.0*UIBeautifier.rcDeskRect.Height()/760);
+
+	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_PLAY,IDB_PLAY_U,IDB_PLAY_D,370.0/1214,520.0/760,400.0/1214,550.0/760);
+	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,420.0/1214,520.0/760,450.0/1214,550.0/760);
+	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_STOP,IDB_STOP_U,IDB_STOP_D,470.0/1214,520.0/760,500.0/1214,550.0/760);
+
+	pScrollBar = (CScrollBar*)GetDlgItem(IDC_SCROLLBAR1);
+	SetTimer(1, 200, NULL);
+	ObjectPlayer.playInitial(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindow");
+	SetTimer(2,50, NULL);
+	SetTimer(3, 300, NULL);
+	If_playpiece=FALSE;
+
+	DisplayFrame initImage;
+	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
+	CRect rect1;
+	GetDlgItem(IDC_STATIC_OBJECT)->GetClientRect(&rect1);
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindowtmp",rect1.Width(), rect1.Height());
+	if (temp_image != NULL) // Check for invalid input
+	{
+		initImage.ShowPicture("obj_displayWindowtmp", temp_image);
+		cvReleaseImage(&temp_image);
+	}
+	user_click_scrollbar=FALSE;
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常: OCX 属性页应返回 FALSE
+}
+
+
+void CObjectViewDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	int TempPos = pScrollBar->GetScrollPos();
+	switch(nSBCode)
+	{
+	case SB_THUMBPOSITION://拖动滑块
+		if(nPos<objDetectedInfos.size()-3)
+		{
+			pScrollBar->SetScrollPos(nPos);
+			user_click_scrollbar=TRUE;
+		}
+		//pScrollBar->SetScrollPos(nPos);
+		break;
+	case SB_THUMBTRACK://拖动滑块
+		if(nPos<objDetectedInfos.size()-3)
+		{
+
+			pScrollBar->SetScrollPos(nPos);
+			user_click_scrollbar=TRUE;
+		}
+
+		//pScrollBar->SetScrollPos(nPos);
+		break;
+	case SB_LINEUP://点击上边的箭头
+		if(TempPos > 0)
+		{
+			TempPos--;
+		}
+		pScrollBar->SetScrollPos(TempPos);
+		user_click_scrollbar=TRUE;
+		break;
+	case SB_LINEDOWN://点击下边的箭头
+		if(TempPos<objDetectedInfos.size()-4)
+		{
+			TempPos++;
+		}
+		pScrollBar->SetScrollPos(TempPos);
+		user_click_scrollbar=TRUE;
+		break;
+	} 
+	//int i=pScrollBar->GetScrollPos();
+	CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+void CObjectViewDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if(ObjectPlayer.m_filePath!="")
+	{
+		//m_CSliderPlayer1Ctrl.SetRange(0, ObjectPlayer.m_endFrameNO);///<滑动条初始化
+
+		///<时间显示准备
+		CString VideoTime;                                     
+		int VedioHour=ObjectPlayer.m_videoTimeInSecond/3600;
+		int VedioMinute=ObjectPlayer.m_videoTimeInSecond/60-VedioHour*60;
+		int VedioSecond=ObjectPlayer.m_videoTimeInSecond-VedioHour*3600-VedioMinute*60;
+
+		VideoTime.Format(" 0:0:0 / %d:%d:%d ",VedioHour,VedioMinute,VedioSecond);
+		GetDlgItem(IDC_STATIC)->SetWindowText(VideoTime);///<将时间显示到控件上
+
+		ObjectPlayer.play();
+
+	}
+	else
+	{
+		AfxMessageBox("请选中文件");
+	}
+
+}
+
+
+void CObjectViewDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ObjectPlayer.pause();
+}
+
+
+
+
+void CObjectViewDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ObjectPlayer.stop();
+}
+
+
+void CObjectViewDlg::ShowTime(int m_currentFrameNO, int totalFrameCount, 
+	int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
+{
+	CString CurVideoTime;
+	if (flag == 1)
+	{	
+		int CurrentTimeInSecond = (double)m_currentFrameNO/double(totalFrameCount)*videoTimeInSecond;
+		int CurVedioHour=CurrentTimeInSecond/3600;
+		int CurVedioMinute=CurrentTimeInSecond/60-CurVedioHour*60;
+		int CurVedioSecond=CurrentTimeInSecond-CurVedioHour*3600-CurVedioMinute*60;
+
+		int VedioHour= videoTimeInSecond/3600;
+		int VedioMinute= videoTimeInSecond/60-VedioHour*60;
+		int VedioSecond= videoTimeInSecond-VedioHour*3600-VedioMinute*60;
+
+		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
+		m_pShowTimeWnd->SetWindowText(CurVideoTime);
+	}
+	else if (flag == 0)
+	{
+		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",0,0,0,0,0,0);
+		m_pShowTimeWnd->SetWindowText(CurVideoTime);
+	}
+
+}
+
+
+
+void CObjectViewDlg::OnClose()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialog::OnClose();
+	//cvReleaseCapture( &capture );
+	cvDestroyWindow( "obj_displayWindow" );
+	ObjectPlayer.threadRunOrNot=FALSE;
+}
+
+
+//void CObjectViewDlg::OnCancelMode()
+//{
+//	CDialog::OnCancelMode();
+//	cvDestroyWindow( "obj_displayWindow" );
+//	ObjectPlayer.threadRunOrNot=FALSE;
+//
+//	// TODO: 在此处添加消息处理程序代码
+//}
+
+
+void CObjectViewDlg::OnCancel()
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	return;
+	//CDialog::OnCancel();
+	//cvDestroyWindow( "obj_displayWindow" );
+	//ObjectPlayer.threadRunOrNot=FALSE;
+}
+
+
+//void CObjectViewDlg::OnPaint()
+//{
+//	if (IsIconic())
+//	{
+//		CPaintDC dc(this); // 用于绘制的设备上下文
+//
+//		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+//
+//		// 使图标在工作区矩形中居中
+//		int cxIcon = GetSystemMetrics(SM_CXICON);
+//		int cyIcon = GetSystemMetrics(SM_CYICON);
+//		CRect rect;
+//		GetClientRect(&rect);
+//		int x = (rect.Width() - cxIcon + 1) / 2;
+//		int y = (rect.Height() - cyIcon + 1) / 2;
+//
+//		// 绘制图标
+//		dc.DrawIcon(x, y, m_hIcon);
+//	}
+//	else
+//	{
+//		//this->MoveWindow(UIBeautifier.rcDeskRect.left, UIBeautifier.rcDeskRect.top, UIBeautifier.rcDeskRect.Width(), UIBeautifier.rcDeskRect.Height(), TRUE); ///<给选项卡定位
+//		CDialog::OnPaint();
+//	}
+//}

@@ -2,6 +2,8 @@
 #include "afxwin.h"
 #include "vidPlayer.h"
 #include "LibMySql.h"
+#include "ButtonBeautify.h"
+#include "UIbeautify.h"
 
 
 // CObjectViewDlg 对话框
@@ -48,4 +50,41 @@ public:
 	bool UserClick;///<用于判断用户有无按下鼠标，无操作时为FALSE，有操作时为TRUE
 	bool Generated;///<用户是否点击了“生成”按钮
 	int OriFrame;//用于传出到主对话框，让播放器跳到对应的帧
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+//	afx_msg void OnInitMenu(CMenu* pMenu);
+//	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
+//	afx_msg void OnUniChar(UINT Char, UINT nRepCnt, UINT nFlags);
+	virtual BOOL OnInitDialog();
+
+	CScrollBar* pScrollBar;
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	vidPlayer ObjectPlayer;
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
+	CSliderCtrl m_CSliderPlayerCtrl; 
+	bool user_click_scrollbar;
+	BOOL  If_playpiece;//原始视频开始播放片段置标志位;
+	void ShowTime(int m_currentFrameNO,            ///<用于显示播放时间的函数
+		int totalFrameCount,
+		int videoTimeInSecond, 
+		CWnd *m_pShowTimeWnd, int flag);
+//	afx_msg void OnClose();
+	afx_msg void OnClose();
+//	afx_msg void OnCancelMode();
+	virtual void OnCancel();
+//	afx_msg void OnPaint();
+	HICON m_hIcon;
+
+	CRect m_rect;
+	//afx_msg void OnSize(UINT nType, int cx, int cy);
+	POINT old;  
+
+	UIbeautify UIBeautifier;                      ///<用于美化界面的对象
+	CButtonBeautify  BTN_OBJECT_ORI_PLAY;
+	CButtonBeautify  BTN_OBJECT_ORI_PAUSE;
+	CButtonBeautify  BTN_OBJECT_ORI_STOP;
+
+	CBitmap *BitmapBackGroundStrech;              ///<拉伸后图片
+	CRect rcTabRect;                                    ///<子窗口坐标
 };

@@ -1,2 +1,4 @@
 /videotest/Debug/
 /videotest/videotest2/Debug/
+*.sdf
+*.dll

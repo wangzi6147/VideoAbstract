@@ -36,6 +36,7 @@ typedef struct _TableParams
 	CString NewToOldFrameTableName; ///<新旧视频帧对照表名
 	CString NewTraceTable;          ///<目标轨迹信息表名
 	CString CombineSegsTableName;	///<合成前景图信息表名
+	CString ObjectTableName;	///<合成前景图信息表名 @ChenYJ
 }TableParams;
 
 ///@brief 定义视频融合类
@@ -178,6 +179,7 @@ public:
 	bool   m_IfContinue;            ///<继续处理标志位
 	double m_ProcessingSpeed;       ///<当前处理进度
 	string m_strFilePath;           ///<视频路径
+	bool StepBitmapDefault[5];  //进度条同步 中加载初始化图需要的标志位
 
 	///视频数据表信息
 	TableParams        m_tableParams;       ///<表名信息

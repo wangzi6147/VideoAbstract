@@ -15,6 +15,12 @@
 #include "vidPlayer.h"
 #include "ObjectViewDlg.h"
 #include "LibMySql.h"
+#include "Dialog1.h"
+#include "picsum.h"
+#include "ButtonBeautify.h"
+#include "UIbeautify.h"
+#include "WelcomeDlg.h"
+#include "drawDetection.h"
 
 
 // Cvideotest2Dlg 对话框
@@ -25,6 +31,13 @@ public:
 	Cvideotest2Dlg(CWnd* pParent = NULL);	// 标准构造函数
 	~Cvideotest2Dlg();
 	CDataMySql* m_MysqlVideoParaSearchHandle;
+	int m_CurSelTab; 
+    Dialog1 m_page1;
+	//vidPlayer playVideo;
+	picsum m_page2;
+    CObjectViewDlg m_page3;
+	drawDetection m_page4;
+    CDialog* pDialog[4];
 
 // 对话框数据
 	enum { IDD = IDD_VIDEOTEST2_DIALOG };
@@ -43,41 +56,23 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-private:
-	CString PathName;
-	CVideo* m_videoPro;
-	CProgressCtrl* myPro;
 public:
 	bool m_ifStartPro;          ///<是否点击了生成摘要
 	bool Generated;///<用户是否点击了“生成”按钮
-	vidPlayer player1;
-	vidPlayer player2;
 	void DisplayPageSumImgnew();
 	TableParams m_tableParams;
 	vector<objectInfo> objDetectedInfos;	///<存储数据库的物体信息，用来显示缩略图
 	void DetectResultnew();
 	BOOL  If_playpiece;//原始视频开始播放片段置标志位;
+	CString PathName;	
+	CVideo* m_videoPro;
+	CProgressCtrl* myPro;
+	vidPlayer player1;
+	vidPlayer player2;
 	
-	afx_msg void OnBnClickedOpen();
-	afx_msg void OnBnClickedBtnGenerateAbs();
-
-	
-	//void DrawPicToHDC(IplImage *img, UINT ID);
 	void ShowImage1(IplImage* pSrc, UINT ID);
-	afx_msg void OnEnChangeEdit3();
 	void OnAppExit();
-	//void ShowImage( IplImage* img, UINT ID );    // ID 是Picture Control控件的ID号
-	//afx_msg void OnBnClickedBtnexit();
-	afx_msg void OnBnClickedBtnViewAbs();
-	afx_msg void OnBnClickedBtn1play();
-	afx_msg void OnBnClickedBtn1pause();
-	afx_msg void OnBnClickedBtn1stop();
-	afx_msg void OnBnClickedBtn2play();
-	afx_msg void OnBnClickedBtn2pause();
-	afx_msg void OnBnClickedBtn2stop();
-	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
-
-//时间显示
+	
 public:
 	afx_msg void OnTimer(UINT nIDEvent);           ///<计时器用于播放器进度条以及时间显示刷新
 	void ShowTime(int m_currentFrameNO,            ///<用于显示播放时间的函数
@@ -115,21 +110,42 @@ public:
 	bool Generated1;///<用户是否点击了“生成”按钮
 
 
-	afx_msg void OnBnClickedCheck1();
+	//afx_msg void OnBnClickedCheck1();
 
 	CObjectViewDlg ObjectDlg;//逐一显示前景对象的窗口
+	//Dialog1 m_dlg1;//test0916
+	WelcomeDlg WelDlg;
 	afx_msg void OnBnClickedButtonObject();//逐一显示前景对象按钮
 	afx_msg void OnAbout();
-	afx_msg void OnBnClickedButton2();
-	afx_msg void OnBnClickedButton1();
-	afx_msg void OnStnClickedStaticAbspic1();
-	afx_msg void OnStnClickedStaticAbspic2();
 	afx_msg void OnClickObjectViewDlg();
 	afx_msg void OnMenuClickedOpen();
 	afx_msg void OnMenuitemUltrablue();
 	afx_msg void OnMenuitemvladstudio();
 	afx_msg void OnMenuitemPhenom();
 	afx_msg void OnMenuitemAquaos();
+	
+	CTabCtrl m_tab;
+	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
+	
+	afx_msg void OnBnClickedBtnOpen();
+	afx_msg void OnBnClickedBtnView();
+
+	CRect m_rect;
+	//afx_msg void OnSize(UINT nType, int cx, int cy);
+	POINT old;  
+	UIbeautify UIBeautifier;                      ///<用于美化界面的对象
+	CButtonBeautify Btn_BTN1_OPEN;
+	CButtonBeautify Btn_BTN1_VIEW;
+	CButtonBeautify Btn_BTN1_ABOUT;
+	CButtonBeautify Btn_BTN1_EXIT;
+	CButtonBeautify Btn_BTN1_SAVE;
+	CButtonBeautify Btn_BTN1_TITLE;
+	CBitmap *BitmapBackGroundStrech;              ///<拉伸后图片
+	CRect rcTabRect;                                    ///<子窗口坐标
+	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnBnClickedButtonSettings();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnBnClickedBtnexit();
 };
 
 void cvMouseHandlerInPic1(int eventType, int x, int y, int flags, void *param);

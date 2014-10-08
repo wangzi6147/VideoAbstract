@@ -1,0 +1,32 @@
+0620更改说明（陈彦杰改）
+
+增加功能：	1.点击摘要窗口的前景，原始视频窗口跳转到该前景出现的帧并继续播放
+
+		2.摘要窗口显示前景出现时间的功能（用户可以选择显示或不显示）
+
+1.在LibMySql.h的CDataMySql类中新增函数
+	bool FindTimePositionFromNewTraceTable(int NewFrame,vector <CvPoint> *m_Point,vector<int> *origFrame,CString tableName);
+参数接口含义：NewFrame（摘要播放的当前帧），m_Point（存放当前帧中所有运动前景的矩形框位置的容器），origFrame（所有运动前景在原始视频的帧No）,tableName(当前视频对应的newtracetable)。
+功能：在newtrcetable中查找对应帧的所有运动前景，并返回他们的矩形框坐标、在原始视频中出现的帧No。
+
+2.在vidplayer.h的vidplayer类中增加几个成员用于显示前景时间
+	vector<CvPoint> TimePosition;//需要标注时间的位置坐标
+	vector<int> Time;//需要显示的时间
+	CDataMySql* m_MysqlVideoParaSearchHandle;//用于调用FindTimePositionFromNewTraceTable函数
+	CVideo *m_videoPro;//需要用到的是CVideo类中newtrcetable的表名
+	bool timeshow;
+
+增加原因：由于显示前景时间的部分必须在播放器的线程写，但是查表函数在libmysql中，所以在vidplayer类中增加几个对象，以便传入参数后调用相应的函数。
+
+3.UINT vidPlayer::playProcess()增加
+	if(timeshow==TRUE)//显示时间
+这是显示时间的主要执行部分
+
+4.void Cvideotest2Dlg::OnTimer(UINT nIDEvent)函数中新增定时器（case 4部分）
+完成功能：摘要窗口的左键单击，原始视频窗口从对应前景出现的原始帧开始播放。
+
+
+
+
+
+*可能会出现的BUG：在显示前景时间的情况下，在摘要窗口点击过于频繁可能会中断程序，尚未发现原因。

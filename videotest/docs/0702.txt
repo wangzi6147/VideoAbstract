@@ -1,0 +1,8 @@
+0702更新日志 @齐峰
+
+将所有目标存储在同一图片m_pCombineSegsImage中：
+具体实现如下：
+
+if  m_segIDParam == m_MysqlSegHandle->FindSegIDFromFGTraceTable(m_tableParams.FGTraceTableName,m_VideoFGParam.nOldPara)
+					
+在已经预存的背景帧中加上目标物体；

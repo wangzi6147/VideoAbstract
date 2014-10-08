@@ -177,6 +177,11 @@ typedef struct
 	CvRect roi;
 	int MidFrameID;
 	int MidSegID;
+	//DrawDetect新引入 @ChenYJ
+	int firstFrameID;
+	int lastFrameID;
+	CRect C_roi;
+	int objectID;
 }objectInfo;
 
 
@@ -357,6 +362,6 @@ public:
 	int  GetObjectIDFromObjectTable(int frameID,CRect rect,CString ObjectTableName);                       ///<获取某一帧特殊位置的物体ID
 	
 	bool GetFrameidFromObjectTable(int objectID,CString ObjectTableName,vector<int>* frameID);              ///<获取某一运动目标的frameID集合
-
+	bool GetObjectInfoFromDrawObjectTable(int objectID,CString ObjectTableName,objectInfo* tempInfo);           ///<获取某一运动目标的运动信息
 
 };
