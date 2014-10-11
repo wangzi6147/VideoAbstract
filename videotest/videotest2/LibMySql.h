@@ -45,10 +45,6 @@ typedef struct _VideoBGTable
 ///记录图片ROI上下左右坐标的结构体
 typedef struct _ImageROI
 {
-	/*int nTop;
-	int nBottom;
-	int nLeft;
-	int nRight;*/
 	int nX;
 	int nY;
 	int nWidth;
@@ -65,7 +61,6 @@ typedef struct _OrigTraceTable
 	int nWidth;
 	int nHeight;
 	int origFrame;      ///<物体所在的原始帧号
-	//CString segSize;    ///<物体大小
 	int segSize;
 	int PicID;
 }OrigTraceTable;
@@ -100,8 +95,6 @@ typedef struct _NewTraceTable
 	int nBottom;
 	int nLeft;
 	int nRight;
-	
-	//CString segSize;    ///<物体大小
 	int segSize;
 }NewTraceTable;
 typedef struct _NewTrackParams
@@ -177,7 +170,6 @@ typedef struct
 	CvRect roi;
 	int MidFrameID;
 	int MidSegID;
-	//DrawDetect新引入 @ChenYJ
 	int firstFrameID;
 	int lastFrameID;
 	CRect C_roi;

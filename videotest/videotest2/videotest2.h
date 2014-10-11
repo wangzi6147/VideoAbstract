@@ -9,7 +9,7 @@
 #endif
 
 #include "resource.h"		// Ö÷·ûºÅ
-//#include "mfcvideoplayer.h"
+#include "publicheader.h"
 #include "vidPlayer.h"
 
 // Cvideotest2App:
@@ -28,9 +28,7 @@ public:
 // ÊµÏÖ
 
 	DECLARE_MESSAGE_MAP()
-	
 	afx_msg void OnMenuChangeinifile();
-
 };
 
 extern Cvideotest2App theApp;

@@ -45,8 +45,10 @@ public:
    /* draw the current image ROI to the specified rectangle of the destination DC */
    virtual void  DrawToHDC( HDC hDCDst, RECT* pDstRect );
 #endif
+
 protected:
    IplImage*  m_img;
+
 };
 typedef CvvImage CImage;
 #endif

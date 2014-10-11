@@ -27,7 +27,6 @@ public:
 	CPictureHolder ShowImg;									///<CPictureHolder对象
 	DisplayFrame(void);
 	~DisplayFrame(void);
-
 public:
 	void SetOpenCVWindow(CWnd *pWnd,CString csWndName,         //设置OpenCV窗口的位置，
 						 int nTarHeight,int nTarWidth);        //将OpenCV窗口嵌入MFC内

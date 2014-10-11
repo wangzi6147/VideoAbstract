@@ -129,15 +129,6 @@
     <ClInclude Include="ifRebuildDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectViewDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialog1.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="picsum.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ButtonBeautify.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -147,10 +138,19 @@
     <ClInclude Include="WelcomeDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="drawDetection.h">
+    <ClInclude Include="VTrack.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="VTrack.h">
+    <ClInclude Include="VideoAbsSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawDetectionSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureAbsSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectViewSUBDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,15 +188,6 @@
     <ClCompile Include="ifRebuildDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectViewDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialog1.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="picsum.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ButtonBeautify.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -206,10 +197,19 @@
     <ClCompile Include="WelcomeDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="drawDetection.cpp">
+    <ClCompile Include="VTrack.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="VTrack.cpp">
+    <ClCompile Include="VideoAbsSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawDetectionSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureAbsSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectViewSUBDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

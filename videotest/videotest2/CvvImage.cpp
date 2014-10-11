@@ -49,15 +49,12 @@ CV_INLINE IplROI RectToROI( RECT r )
    roi.width = r.right - r.left;
    roi.height = r.bottom - r.top;
    roi.coi = 0;
-
    return roi;
 }
 void  FillBitmapInfo( BITMAPINFO* bmi, int width, int height, int bpp, int origin )
 {
    assert( bmi && width >= 0 && height >= 0 && (bpp == 8 || bpp == 24 || bpp == 32));
-
    BITMAPINFOHEADER* bmih = &(bmi->bmiHeader);
-
    memset( bmih, 0, sizeof(*bmih));
    bmih->biSize = sizeof(BITMAPINFOHEADER);
    bmih->biWidth = width;

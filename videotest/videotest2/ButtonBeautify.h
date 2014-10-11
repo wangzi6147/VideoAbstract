@@ -22,12 +22,10 @@
 ///
 class CButtonBeautify : public CButton
 {
-public:
-	CButtonBeautify();
 
 public:
-	///void SetSize(int nWidth, int nHeight);
-	///void SetBitmaps(UINT nNormal, UINT nSelect, UINT nFocuse);
+	CButtonBeautify();
+	virtual ~CButtonBeautify();
 	void SetBitmaps(CBitmap &nNormal, CBitmap &nSelect, CBitmap &nFocuse);///<设置图象或绘图操作应用的效果
 	void DrawNormalState(CRect rc, CDC *pDC);	///<图象或绘图操作应用m_bmNormal的效果
 	void DrawSelectedState(CRect rc, CDC *pDC);	///<图象或绘图操作应用m_bmSelect的效果
@@ -36,21 +34,14 @@ public:
 		CDC* pDC);
 	void DrawFrame(CRect& rc, COLORREF clrTopRight, COLORREF clrBottomLeft,
 		CDC *pDC);///<设置图图片的样式
-
-public:
-
-	BOOL	m_bIsMouseMove;
-	CBitmap m_bmNormal;
-	CBitmap m_bmSelect;
-	CBitmap m_bmFocuse;
-
-public:
-
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);///<重载DrawItem可以绘制自己需要的控件外观
 	virtual void PreSubclassWindow();						 ///<重载这个函数以完成属性值的设置
 
 public:
-	virtual ~CButtonBeautify();
+	BOOL	m_bIsMouseMove;
+	CBitmap m_bmNormal;
+	CBitmap m_bmSelect;
+	CBitmap m_bmFocuse;
 
 protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);		///<鼠标指针移动按钮时，触发该消息函数

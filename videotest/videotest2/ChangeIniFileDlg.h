@@ -10,6 +10,7 @@ class ChangeIniFileDlg : public CDialogEx
 public:
 	ChangeIniFileDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~ChangeIniFileDlg();
+	afx_msg void OnBnClickedSave();
 
 // Dialog Data
 	enum { IDD = IDD_CHANGEINIFILE };
@@ -21,6 +22,4 @@ protected:
 	CEdit		m_wndEditMinTargetArea;
 
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnBnClickedSave();
 };

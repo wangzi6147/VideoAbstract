@@ -185,12 +185,10 @@ void CButtonBeautify::DrawFace(CRect &rc, COLORREF clrTopRight, COLORREF clrBott
 
 	CPen Pen;
 	CPen* pOldPen = pDC->SelectObject(&Pen);
-
 	int R,G, B;
 	R = (GetRValue(clrTopRight) - GetRValue(clrBottomLeft)) / rc.Height();
 	G = (GetGValue(clrTopRight) - GetGValue(clrBottomLeft)) / rc.Height();
 	B = (GetBValue(clrTopRight) - GetBValue(clrBottomLeft)) / rc.Height();
-
 	int nColR = GetRValue(clrTopRight); 
 	int	nColG = GetGValue(clrTopRight);
 	int	nColB = GetBValue(clrTopRight);
@@ -202,15 +200,10 @@ void CButtonBeautify::DrawFace(CRect &rc, COLORREF clrTopRight, COLORREF clrBott
 		nColR -= R;
 		nColG -= G;
 		nColB -= B;
-
-
-		Pen.CreatePen(PS_SOLID, 1, RGB(nColR, nColG, nColB));
-
+    	Pen.CreatePen(PS_SOLID, 1, RGB(nColR, nColG, nColB));
 		pDC->SelectObject(&Pen);
-
 		pDC->MoveTo(rc.left, rc.top+i);
 		pDC->LineTo(rc.right, rc.top+i);
-
 		Pen.DeleteObject();
 	}
 
@@ -230,15 +223,12 @@ void CButtonBeautify::DrawFrame(CRect& rc, COLORREF clrTopRight, COLORREF clrBot
 	CBrush NullBrush;
 	NullBrush.CreateStockObject(NULL_BRUSH);
 	CBrush* pOldBrush = pDC->SelectObject(&NullBrush);
-
 	CPen Pen;
 	Pen.CreatePen(PS_SOLID, 1, RGB(0, 64, 128));
 	CPen* pOldPen = pDC->SelectObject(&Pen);
-
 	pDC->RoundRect(rc, CPoint(3, 3) );
 	rc.DeflateRect(1, 1, 1, 1); 
 	pDC->Draw3dRect(rc, clrTopRight, clrBottomLeft);
-
 	pDC->SelectObject(pOldPen);
 	pDC->SelectObject(pOldBrush);
 }

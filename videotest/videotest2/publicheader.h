@@ -18,9 +18,11 @@
 #include <Windows.h>
 #include <math.h>
 #include <io.h> 
-
-#include "atlstr.h"
-
+#include <atlstr.h>
+#pragma warning(disable:4244)
+#pragma warning(disable:4018)
+#pragma warning(disable:4996)
+#pragma warning(disable:4005)
 
 ///加载opencv和mysql头文件
 #include "../PublicHeader/mysql/mysql.h"
