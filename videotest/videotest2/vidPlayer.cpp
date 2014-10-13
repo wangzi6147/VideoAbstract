@@ -315,20 +315,23 @@ UINT vidPlayer::playProcess()
 ///@brief vidPlayer类的视频播放,线程开启函数
 BOOL vidPlayer::play()
 {
-	if(threadRunOrNot == FALSE)
+	if (threadRunOrNot == FALSE)
 	{
 		threadRunOrNot = TRUE;
-		CRect rec;
-		m_pWnd->GetClientRect(rec);
-		if (rec.Height()*m_size.width / m_size.height <= rec.Width())
+		if (PlaywindowRect.Height()*m_size.width / m_size.height <= PlaywindowRect.Width())
 		{
-			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
-				rec.Height()*m_size.width / m_size.height, rec.Height());
+			int nTar = PlaywindowRect.Width() - PlaywindowRect.Height()*m_size.width / m_size.height;
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName, PlaywindowRect.left + nTar / 2, PlaywindowRect.top,
+				PlaywindowRect.Height()*m_size.width / m_size.height, PlaywindowRect.Height());
 		}
 		else
-			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
-			rec.Width(), rec.Width()*m_size.height / m_size.width);
-		m_threadControl = ::AfxBeginThread(RunPlayProcess,this);
+		{
+			int nTar = PlaywindowRect.Height() - PlaywindowRect.Width()*m_size.height / m_size.width;
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName, PlaywindowRect.left, PlaywindowRect.top + nTar / 2,
+				PlaywindowRect.Width(), PlaywindowRect.Width()*m_size.height / m_size.width);
+		}
+
+		m_threadControl = ::AfxBeginThread(RunPlayProcess, this);
 	}
 	m_playState = PLAY_STATE_PLAY;
 

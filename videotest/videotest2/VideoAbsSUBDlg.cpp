@@ -461,6 +461,17 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	//UIBeautifier.LoadButtonBitmaps(Btn_BTN2_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,550.0/1214,520.0/760,580.0/1214,550.0/760);
 	//UIBeautifier.LoadButtonBitmaps(Btn_BTN2_STOP,IDB_STOP_U,IDB_STOP_D,600.0/1214,520.0/760,630.0/1214,550.0/760);
 
+	//初始化播放器窗口
+	Tab1_Player1.PlaywindowRect.left = 50.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player1.PlaywindowRect.right = 50.0*UIBeautifier.rcDeskRect.Width() / 1214 + 350.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player1.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	Tab1_Player1.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 262.5*UIBeautifier.rcDeskRect.Height() / 760;
+
+	Tab1_Player2.PlaywindowRect.left = 430.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player2.PlaywindowRect.right = 430.0*UIBeautifier.rcDeskRect.Width() / 1214 + 668.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player2.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	Tab1_Player2.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 501.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 	// TODO:  在此添加额外的初始化
 	SetTimer(1, 100, NULL);///<计数器初始化
 	SetTimer(2, 200, NULL);
@@ -483,13 +494,12 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
 	CRect rect1;
 	GetDlgItem(IDC_STATIC_TAB1_ORI)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ORI), "displayWindow1tmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ORI), "displayWindow1tmp", Tab1_Player1.PlaywindowRect.left, Tab1_Player1.PlaywindowRect.top, Tab1_Player1.PlaywindowRect.Width(), Tab1_Player1.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("displayWindow1tmp", temp_image);
 		cvReleaseImage(&temp_image);
 	}
-
 	//temp_image = cvLoadImage(".\\res\\abs-default.png", CV_LOAD_IMAGE_COLOR);
 	//GetDlgItem(IDC_STATIC_TAB1_ABS)->GetClientRect(&rect1);
 	//initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ABS), "displayWindow2tmp",rect1.Width(), rect1.Height());

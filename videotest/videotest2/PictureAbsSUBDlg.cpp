@@ -89,9 +89,12 @@ void PictureAbsSUBDlg::DisplaySumImg()
 			case 0:
 				if (!ifinitDisplay5){
 					CRect rect;
-					GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC)->GetClientRect(&rect);
+					rect.left = 25.0*UIBeautifier.rcDeskRect.Width() / 1214;
+					rect.right = 25.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+					rect.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+					rect.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
 					disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0",
-						rect.Width(), rect.Height());
+						rect.left, rect.top, rect.Width(), rect.Height());
 					ifinitDisplay5 = true;
 				}
 				if (image != NULL) // Check for invalid input
@@ -186,12 +189,16 @@ BOOL PictureAbsSUBDlg::OnInitDialog()
 	UIBeautifier.LoadButtonBitmaps(Btn_TAB2_UP, IDB_UP_U, IDB_UP_D, 270.0 / 1214, 40.0 / 760, 330.0 / 1214,80.0 / 760);
 	UIBeautifier.LoadButtonBitmaps(Btn_TAB2_DOWN, IDB_DOWN_U, IDB_DOWN_D, 270.0 / 1214, 500.0 / 760, 330.0 / 1214, 540.0 / 760);
 
+	//初始化播放窗口位置
+	playerori_TAB2.PlaywindowRect.left = 581.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	playerori_TAB2.PlaywindowRect.right = 581.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	playerori_TAB2.PlaywindowRect.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+	playerori_TAB2.PlaywindowRect.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 	//初始化图片展示
 	DisplayFrame initImage;
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
-	CRect rect1;
-	GetDlgItem(IDC_STATIC_TAB2_ORI)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_ORI), "ori_displayWindowtmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_ORI), "ori_displayWindowtmp", playerori_TAB2.PlaywindowRect.left, playerori_TAB2.PlaywindowRect.top, playerori_TAB2.PlaywindowRect.Width(), playerori_TAB2.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("ori_displayWindowtmp", temp_image);
@@ -199,8 +206,13 @@ BOOL PictureAbsSUBDlg::OnInitDialog()
 	}
 
 	temp_image = cvLoadImage(".\\res\\pic-default.png", CV_LOAD_IMAGE_COLOR);
-	GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0tmp",rect1.Width(), rect1.Height());
+	CRect rect1;
+	25.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760, 506.0*UIBeautifier.rcDeskRect.Width() / 1214, 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+	rect1.left = 25.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	rect1.right = 25.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	rect1.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+	rect1.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0tmp", rect1.left, rect1.top, rect1.Width(), rect1.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("displayWindow0tmp", temp_image);

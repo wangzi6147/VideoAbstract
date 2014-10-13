@@ -28,8 +28,9 @@ public:
 	DisplayFrame(void);
 	~DisplayFrame(void);
 public:
-	void SetOpenCVWindow(CWnd *pWnd,CString csWndName,         //设置OpenCV窗口的位置，
-						 int nTarHeight,int nTarWidth);        //将OpenCV窗口嵌入MFC内
+	void SetOpenCVWindow(CWnd *pWnd, CString csWndName,
+		int nTarLeft, int nTarTop,         //设置OpenCV窗口的位置，
+		int nTarHeight, int nTarWidth);        //将OpenCV窗口嵌入MFC内
 	void ShowPicture(CString csWndName,IplImage *pImg);        //单张图片显示函数
 	void ShowPictureHolderBMP(IplImage *image, HDC hDC,CRect rec, CClientDC &dc);		   ///<利用CPictureHolder类来显示图片
 };

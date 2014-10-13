@@ -399,18 +399,24 @@ BOOL ObjectViewSUBDlg::OnInitDialog()
 	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,410.0/1214,540.0/760,440.0/1214,570.0/760);
 	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_STOP,IDB_STOP_U,IDB_STOP_D,450.0/1214,540.0/760,480.0/1214,570.0/760);
 	
+	//初始化播放窗口位置
+	ObjectPlayer.PlaywindowRect.left = 370.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	ObjectPlayer.PlaywindowRect.right = 370.0*UIBeautifier.rcDeskRect.Width() / 1214 + 600.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	ObjectPlayer.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	ObjectPlayer.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 450.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 	pScrollBar = (CScrollBar*)GetDlgItem(IDC_SCROLLBAR1);
 	SetTimer(1, 200, NULL);
 	ObjectPlayer.playInitial(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindow");
-	SetTimer(2,50, NULL);
+	SetTimer(2, 50, NULL);
 	SetTimer(3, 300, NULL);
-	If_playpiece=FALSE;
+	If_playpiece = FALSE;
 
 	DisplayFrame initImage;
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
 	CRect rect1;
 	GetDlgItem(IDC_STATIC_OBJECT)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindowtmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindowtmp", ObjectPlayer.PlaywindowRect.left, ObjectPlayer.PlaywindowRect.top, ObjectPlayer.PlaywindowRect.Width(), ObjectPlayer.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("obj_displayWindowtmp", temp_image);

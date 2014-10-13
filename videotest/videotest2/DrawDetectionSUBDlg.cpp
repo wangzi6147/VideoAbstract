@@ -115,6 +115,11 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	player.m_endFrameNO = 0;
 	player.m_drawDetectFlag = 0;
 	player.m_IfStartDetect = false;
+	player.PlaywindowRect.left = 100.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	player.PlaywindowRect.right = 100.0*UIBeautifier.rcDeskRect.Width() / 1214 + 340.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	player.PlaywindowRect.top = 140.0*UIBeautifier.rcDeskRect.Height() / 760;
+	player.PlaywindowRect.bottom = 140.0*UIBeautifier.rcDeskRect.Height() / 760 + 255.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 
 	///右播放器初始化
 	oriPlayer.m_filePath = "";
@@ -123,6 +128,10 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	oriPlayer.m_endFrameNO = 0;
 	oriPlayer.m_drawDetectFlag = 0;
 	oriPlayer.m_IfStartDetect = false;
+	oriPlayer.PlaywindowRect.left = 540.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	oriPlayer.PlaywindowRect.right = 540.0*UIBeautifier.rcDeskRect.Width() / 1214 + 513.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	oriPlayer.PlaywindowRect.top = 10.0*UIBeautifier.rcDeskRect.Height() / 760;
+	oriPlayer.PlaywindowRect.bottom = 10.0*UIBeautifier.rcDeskRect.Height() / 760 + 385.0*UIBeautifier.rcDeskRect.Height() / 760;
 
 	///进度条初始化
 	VTrackPro = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS_IN_DRAW_DETECT);
