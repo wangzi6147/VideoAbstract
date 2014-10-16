@@ -259,22 +259,22 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[0] = true;
 				}				
 			}
-			if (VideoPos == 1)
-			{
-				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "生成切分视频……");
-				if(Tab1_videoPro->StepBitmapDefault[1] == false)
-				{
-					CBitmap *m_bmp=new CBitmap;
-					m_bmp->LoadBitmap(IDB_STEP2);
-					m_bmp=UIBeautifier.CBitmapResize(*m_bmp,668.0*UIBeautifier.rcDeskRect.Width()/1214,501.0*UIBeautifier.rcDeskRect.Height()/760);
+			//if (VideoPos == 1)
+			//{
+			//	//SetDlgItemText(IDC_STATIC_TAB1_PRO, "生成切分视频……");
+			//	if(Tab1_videoPro->StepBitmapDefault[1] == false)
+			//	{
+			//		CBitmap *m_bmp=new CBitmap;
+			//		m_bmp->LoadBitmap(IDB_STEP2);
+			//		m_bmp=UIBeautifier.CBitmapResize(*m_bmp,668.0*UIBeautifier.rcDeskRect.Width()/1214,501.0*UIBeautifier.rcDeskRect.Height()/760);
 
-					HBITMAP hBmp;// = HBITMAP(m_bmp);//将CBitmap转换为HBITMAP
-					hBmp=(HBITMAP)(*m_bmp);
-					((CStatic *)GetDlgItem(IDC_STATIC_TAB1_ABS))->SetBitmap(hBmp);
-					Tab1_videoPro->StepBitmapDefault[1] = true;
-				}		
-			}
-			if (VideoPos == 2)
+			//		HBITMAP hBmp;// = HBITMAP(m_bmp);//将CBitmap转换为HBITMAP
+			//		hBmp=(HBITMAP)(*m_bmp);
+			//		((CStatic *)GetDlgItem(IDC_STATIC_TAB1_ABS))->SetBitmap(hBmp);
+			//		Tab1_videoPro->StepBitmapDefault[1] = true;
+			//	}		
+			//}
+			if (VideoPos == 1)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频背景处理……");
 				if(Tab1_videoPro->StepBitmapDefault[2] == false)
@@ -289,7 +289,7 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[2] = true;
 				}	
 			}
-			if (VideoPos == 3)
+			if (VideoPos == 2)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频前景处理……");
 				if(Tab1_videoPro->StepBitmapDefault[3] == false)
@@ -304,7 +304,7 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[3] = true;
 				}	
 			}
-			if (VideoPos == 4)
+			if (VideoPos == 3)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频融合……");
 				if(Tab1_videoPro->StepBitmapDefault[4] == false)
