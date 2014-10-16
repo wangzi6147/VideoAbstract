@@ -481,7 +481,7 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	Tab1_Pro = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS_TAB1);
-	Tab1_Pro->SetRange(0, 500);
+	Tab1_Pro->SetRange(0, 400);
 	Tab1_Pro->SetPos(0);
 
 	Tab1_CSliderPlayer1Ctrl.SetRange(0, Tab1_Player1.m_endFrameNO);   ///<初始化窗口一的滑动条
@@ -610,6 +610,7 @@ void VideoAbsSUBDlg::OnBnClickedBtnTab1GenerateAbs()
 			Tab1_Player2.stopPlay();///关闭进程
 			Tab1_PathName.Replace(*m, *n);
 			Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);
+			GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
 			return;
 		}
 		else{
@@ -623,9 +624,9 @@ void VideoAbsSUBDlg::OnBnClickedBtnTab1GenerateAbs()
 				//player2.stop();///停止播放
 				Tab1_Player2.stopPlay();///关闭进程
 				Tab1_PathName.Replace(*m, *n);
-				Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);
-				GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
+				Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);				
 			}
+			GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
 			return;
 		}
 

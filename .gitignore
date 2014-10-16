@@ -1,5 +1,7 @@
 /videotest/Debug/
+/videotest/Release/
 /videotest/videotest2/Debug/
+/videotest/videotest2/Release/
 *.sdf
 *.dll
 *.aps

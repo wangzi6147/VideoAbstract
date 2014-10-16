@@ -174,54 +174,26 @@ void VTrack::ProcessFrame(Mat* frame)
 	{
 		InitMemory(frame);
 	}
+	//else if (frameID % 3 == 0)
+	//{
+		assert(frame->channels() == 3);//assert宏的原型定义在<assert.h>中，其作用是如果它的条件返回错误，则终止程序执行
 
-	assert(frame->channels() == 3);//assert宏的原型定义在<assert.h>中，其作用是如果它的条件返回错误，则终止程序执行
-    
-	cvtColor(*frame, *grayFrameIMG, CV_BGR2GRAY);
-	frame->copyTo(*colorIMG);//当前帧的3通道图
+		cvtColor(*frame, *grayFrameIMG, CV_BGR2GRAY);
 
+		frame->copyTo(*colorIMG);//当前帧的3通道图
+
+		UpdateBackground(grayFrameIMG);
+
+		CleanHistroyBlob();
+
+
+		vector<Rect> blobs;
+
+		blobs = FindBlob(diffIMG);//将一帧画面中所有的运动blob都找出来
+
+		UpdateHistoryBlob(blobs);
+	//}
 	
-
-    //CALC_RUN_TIME(UpdateBackground(grayFrameIMG), "UpdateBackground");
-	UpdateBackground(grayFrameIMG);//每一帧都更新背景
-
-	CleanHistroyBlob();
-	//CALC_RUN_TIME(CleanHistroyBlob(), "CleanHistroyBlob");
-
-	//CALC_RUN_TIME(TrackHistroyBlob(), "TrackBlob");
-	//TrackHistroyBlob();
-    
-
-    vector<Rect> blobs;
-    //CALC_RUN_TIME(blobs = FindBlob(diffIMG), "FindBlob");
-	blobs = FindBlob(diffIMG);//将一帧画面中所有的运动blob都找出来
-
-    //CALC_RUN_TIME(UpdateHistoryBlob(blobs), "UpdateBlobHistory");
-	UpdateHistoryBlob(blobs);
-
-	//=======================Draw========================
-    /* Rect drc;
-    for (int i = 0; i < historyBlobs.size(); i++)
-    {
-		
-        drc = historyBlobs[i].rcs.back();
-
-        rectangle(*frame, drc, Scalar(0,0,255));
-		if (historyBlobs[i].trackedRC.width > 0)
-		{
-			rectangle(*frame, historyBlobs[i].trackedRC, Scalar(255,0,0));
-		}
-        for (int j = 1; j < historyBlobs[i].centers.size(); j++)
-        {
-            line(*frame, historyBlobs[i].centers[j], historyBlobs[i].centers[j-1], Scalar(255,255,0));
-        }
-    }
-
-	for (int i = 0; i < ROI.size(); i++)
-	{
-		rectangle(*frame, ROI[i], Scalar(0,255,255));
-	}*/
-	//=======================Draw========================
     frameID++;
 	
 }
@@ -260,70 +232,19 @@ void VTrack::UpdateBackground(Mat* frame){
     if (frameID == 0)
     {
         frame->convertTo(*backgroundIMG32, CV_32FC1);//32位浮点型数据
-		//imshow("diffIMG", *backgroundIMG);
     }
-	
-   // CALC_RUN_TIME(accumulateWeighted(*frame, *backgroundIMG32, paramsAlpha);backgroundIMG32->convertTo(*backgroundIMG, CV_8UC1);absdiff(*grayFrameIMG, *backgroundIMG, *diffIMG),"mkbg");
-	accumulateWeighted(*frame, *backgroundIMG32, paramsAlpha);//用于更新背景的关键函数
-	backgroundIMG32->convertTo(*backgroundIMG, CV_8UC1);
-
-	Scalar avgGray = mean(*grayFrameIMG);
-	Scalar avgBG = mean(*backgroundIMG);
-	float scale = avgBG[0]/avgGray[0];
-	convertScaleAbs(*grayFrameIMG, *grayFrameIMG, scale);//调整灰度，使灰度接近于背景
-
-	absdiff(*grayFrameIMG, *backgroundIMG, *diffIMG);//背景与当前帧的差
-
-	//Scalar avgBG = mean(*diffIMG);
-	//printf("diff Mean:%f\n", avgBG[0]);
-	//convertScaleAbs(*diffIMG, *diffIMG, 1.0/avgBG[0]);
-	//imshow("diffIMG", *backgroundIMG);
-
-    //CALC_RUN_TIME(adaptiveThreshold(*diffIMG, *diffIMG, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 11, 6),"adaptiveThreshold"); //30ms
+	myGaussModel(*grayFrameIMG, *diffIMG, 0.01);
+	Mat *temp = diffIMG;
 	adaptiveThreshold(*diffIMG, *diffIMG, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 11, 6);//自适应阈值，能比较清晰描述轮廓
-
-	//imshow("diff1", *diffIMG);
-	//adaptiveThreshold(*diffIMG, *diffIMG, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 11, 20);
-	//imshow("diff2", *diffIMG);
-    //threshold(*diffIMG, *diffIMG, 20, 255, CV_THRESH_BINARY);
-	 
+	//cvThreshold(diffIMG, temp, 10, 255.0, CV_THRESH_BINARY);///<前景图像二值化
     dilate(*diffIMG, *diffIMG, Mat());  //4ms
 	erode(*diffIMG, *diffIMG, Mat());//腐蚀
 	dilate(*diffIMG, *diffIMG, Mat());//膨胀
-	//dilate(*diffIMG, *diffIMG, Mat());
-    //imshow("diffIMG", *diffIMG);
-    //threshold(*diffIMG, *diffIMG, 125, 1, CV_THRESH_BINARY);
 
 
-    uchar *pDiffHistData, *pDiffIMGData;
-	pDiffIMGData = diffIMG->data;//指向diffIMG的内存
-	pDiffHistData = diffHist->data;//指向diffHist的内存
-	int imgSize = diffIMG->rows*diffIMG->step;
-    for (int i = 0; i < imgSize; i++)//看不懂！
-    {
-        
-        if (*pDiffIMGData > 0)
-        {
-            *pDiffHistData += 1;
-        }
-        else
-        {
-            *pDiffHistData = *pDiffHistData ? *pDiffHistData - 1:0;
-        }
-        if (*pDiffHistData < 4 || *pDiffIMGData < 1)
-        {
-            *pDiffIMGData = 0;
-        }else {
-            *pDiffIMGData = 255;
-        }
-
-        pDiffIMGData++;
-        pDiffHistData++;
-
-    }
     //erode(*diffIMG, *diffIMG, Mat());
     //dilate(*diffIMG, *diffIMG, Mat());
-    diffIMG->copyTo(*backgroundIMG);//？
+    //diffIMG->copyTo(*backgroundIMG);//？
 	//imshow("diffIMG1", *diffIMG);
 }
 
@@ -361,24 +282,15 @@ vector<Rect> VTrack::FindBlob(Mat* binIMG){
 
     for (int i = 0; i < contours.size(); i++)
     {
+		
         Rect rc = boundingRect(Mat(contours[i]));//生成矩形边界
-        blobs.push_back(rc);
+
+			blobs.push_back(rc);
+
+        
         //rectangle(*frame, rc, Scalar(255,255,0));
     }
 
-    //排除太小或者太大的
-    /*for (int i = 0; i < blobs.size(); i++)
-    {
-        if (blobs[i].width < minBlobSize.width || blobs[i].width > maxBlobSize.width ||
-            blobs[i].height < minBlobSize.height || blobs[i].height > maxBlobSize.height)
-        {
-            blobs[i] = blobs[blobs.size() - 1];
-            blobs.pop_back();
-            i--;
-        }
-    }
-*/
-    //merge
     bool isAgain = true;
     int r1, r2, b1, b2; //right and bottom
     int mergeLength = 0;
@@ -415,8 +327,7 @@ vector<Rect> VTrack::FindBlob(Mat* binIMG){
     //排除太小或者太大的
     for (int i = 0; i < blobs.size(); i++)
     {
-        if ((blobs[i].width < minBlobSize.width || blobs[i].width > maxBlobSize.width) ||
-            blobs[i].height < minBlobSize.height || blobs[i].height > maxBlobSize.height)
+        if (blobs[i].width*  blobs[i].height <750 )
         {
             blobs[i] = blobs.back();
             blobs.pop_back();
@@ -492,45 +403,49 @@ void VTrack::TrackHistroyBlob(){
 	{
 		return;
 	}
+	if (frameID % 3 == 0)
+	{
+		vector<Point2f> points[2];
+		for (int i = 0; i < historyBlobs.size(); i++){
+			vector<Point2f> bp = getFeaturePoints(historyBlobs[i].rcs.back());
+			points[0].insert(points[0].end(), bp.begin(), bp.end());
+		}
+		vector<uchar> status;
+		vector<float> err;
+		calcOpticalFlowPyrLK(*preGrayFrameIMG, *grayFrameIMG, points[0], points[1], status, err);
+		grayFrameIMG->copyTo(*preGrayFrameIMG);
 
-	vector<Point2f> points[2];
-	for (int i = 0; i < historyBlobs.size(); i++){
-		vector<Point2f> bp = getFeaturePoints(historyBlobs[i].rcs.back());
-		points[0].insert(points[0].end(), bp.begin(), bp.end());
-	}
-	vector<uchar> status;
-	vector<float> err;
-	calcOpticalFlowPyrLK(*preGrayFrameIMG, *grayFrameIMG, points[0], points[1], status, err);
-	grayFrameIMG->copyTo(*preGrayFrameIMG);
-
-	Mat drawImg = colorIMG->clone();
-	Rect trackedRC;
-	for (int i = 0; i < historyBlobs.size(); i++){
-		vector<Point2f> rcp;
-		for (int j = i*25; j < (i+1)*25; j++)
-		{
-			if (status[j] && isPointInMat(grayFrameIMG, points[1][j]))
+		Mat drawImg = colorIMG->clone();
+		Rect trackedRC;
+		for (int i = 0; i < historyBlobs.size(); i++){
+			vector<Point2f> rcp;
+			for (int j = i * 25; j < (i + 1) * 25; j++)
 			{
-				rcp.push_back(points[1][j]);
+				if (status[j] && isPointInMat(grayFrameIMG, points[1][j]))
+				{
+					rcp.push_back(points[1][j]);
+				}
 			}
+			if (rcp.size() > 10)
+			{
+				trackedRC = boundingRect(Mat(rcp));
+				historyBlobs[i].trackedRC = historyBlobs[i].rcs.back();
+				Point center1 = getRectCenter(historyBlobs[i].trackedRC);
+				Point center2 = getRectCenter(trackedRC);
+				historyBlobs[i].trackedRC.x += center2.x - center1.x;
+				historyBlobs[i].trackedRC.y += center2.y - center1.y;
+			}
+			else {
+				historyBlobs[i].trackedRC = Rect(0, 0, 0, 0);
+			}
+			WorkBlob wb = historyBlobs[i];
+			rectangle(drawImg, historyBlobs[i].trackedRC, Scalar(0, 255, 0));
+			rectangle(drawImg, historyBlobs[i].rcs.back(), Scalar(255, 0, 0));
 		}
-		if (rcp.size() > 10)
-		{
-			trackedRC = boundingRect(Mat(rcp));
-			historyBlobs[i].trackedRC = historyBlobs[i].rcs.back();
-			Point center1 = getRectCenter(historyBlobs[i].trackedRC);
-			Point center2 = getRectCenter(trackedRC);
-			historyBlobs[i].trackedRC.x += center2.x - center1.x;
-			historyBlobs[i].trackedRC.y += center2.y - center1.y;
-		}else {
-			historyBlobs[i].trackedRC = Rect(0,0,0,0);
-		}
-		WorkBlob wb = historyBlobs[i];
-		rectangle(drawImg, historyBlobs[i].trackedRC, Scalar(0,255,0));
-		rectangle(drawImg, historyBlobs[i].rcs.back(), Scalar(255,0,0));
+
+		imshow("LK", drawImg);
 	}
 	
-	imshow("LK", drawImg);
 }
 
 void VTrack::CleanHistroyBlob(){
