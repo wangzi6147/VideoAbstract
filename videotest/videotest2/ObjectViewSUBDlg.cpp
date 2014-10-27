@@ -118,10 +118,10 @@ void ObjectViewSUBDlg::DisplayPageSumImg()
 		return;
 
 	int num = 4;//m_pageSum;
-	if (objDetectedInfos.size()/m_pageSum > m_pageNum)		//若当前页不为最后一页
+	if (objDetectedInfos.size()/m_pageSum > 4)		//若当前页不为最后一页
 		num = 4;//m_pageSum;									
 	else
-		num = objDetectedInfos.size()%m_pageSum;			//为最后一页，显示剩余的图
+		num = objDetectedInfos.size();			//为最后一页，显示剩余的图
 
 	IplImage* image = NULL;
 	CString nOldPara1,nOldPara2,nOldPara3,nOldPara4;
@@ -346,13 +346,13 @@ void ObjectViewSUBDlg::OnTimer(UINT_PTR nIDEvent)
 				CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_OBJECTWINDOW);
 				if (ObjectPlayer.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
 				{
-					ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
+					ObjectPlayer.ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
 						ObjectPlayer.m_videoTimeInSecond, pWndTimeDis, 1);
 				}
 				else                                                            ///<停止状态下，用方式二显示时间
 				{
 					SliderCtrl->SetPos(0);
-					ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
+					ObjectPlayer.ShowTime(ObjectPlayer.m_currentFrameNO, ObjectPlayer.m_endFrameNO - ObjectPlayer.m_startFrameNO,
 						ObjectPlayer.m_videoTimeInSecond, pWndTimeDis, 0);
 				}
 			}
@@ -393,24 +393,30 @@ BOOL ObjectViewSUBDlg::OnInitDialog()
 
 	GetDlgItem(IDC_STATIC_OBJECT)->MoveWindow(370.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,668.0*UIBeautifier.rcDeskRect.Width()/1214,501.0*UIBeautifier.rcDeskRect.Height()/760);
 	
-	GetDlgItem(IDC_STATIC_OBJECTWINDOW)->MoveWindow(480.0*UIBeautifier.rcDeskRect.Width()/1214,550.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_OBJECTWINDOW)->MoveWindow(480.0*UIBeautifier.rcDeskRect.Width()/1214,540.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,40.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_SLIDER_OBJECT_ORI)->MoveWindow(560.0*UIBeautifier.rcDeskRect.Width()/1214,545.0*UIBeautifier.rcDeskRect.Height()/760,480.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_PLAY,IDB_PLAY_U,IDB_PLAY_D,370.0/1214,540.0/760,400.0/1214,570.0/760);
 	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,410.0/1214,540.0/760,440.0/1214,570.0/760);
 	UIBeautifier.LoadButtonBitmaps(BTN_OBJECT_ORI_STOP,IDB_STOP_U,IDB_STOP_D,450.0/1214,540.0/760,480.0/1214,570.0/760);
 	
+	//初始化播放窗口位置
+	ObjectPlayer.PlaywindowRect.left = 370.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	ObjectPlayer.PlaywindowRect.right = 370.0*UIBeautifier.rcDeskRect.Width() / 1214 + 668.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	ObjectPlayer.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	ObjectPlayer.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 501.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 	pScrollBar = (CScrollBar*)GetDlgItem(IDC_SCROLLBAR1);
 	SetTimer(1, 200, NULL);
 	ObjectPlayer.playInitial(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindow");
-	SetTimer(2,50, NULL);
+	SetTimer(2, 50, NULL);
 	SetTimer(3, 300, NULL);
-	If_playpiece=FALSE;
+	If_playpiece = FALSE;
 
 	DisplayFrame initImage;
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
 	CRect rect1;
 	GetDlgItem(IDC_STATIC_OBJECT)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindowtmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_OBJECT), "obj_displayWindowtmp", ObjectPlayer.PlaywindowRect.left, ObjectPlayer.PlaywindowRect.top, ObjectPlayer.PlaywindowRect.Width(), ObjectPlayer.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("obj_displayWindowtmp", temp_image);
@@ -512,34 +518,6 @@ void ObjectViewSUBDlg::OnBnClickedButton3()
 }
 
 
-void ObjectViewSUBDlg::ShowTime(int m_currentFrameNO, int totalFrameCount, 
-	int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
-{
-	CString CurVideoTime;
-	if (flag == 1)
-	{	
-		int CurrentTimeInSecond = (double)m_currentFrameNO/double(totalFrameCount)*videoTimeInSecond;
-		int CurVedioHour=CurrentTimeInSecond/3600;
-		int CurVedioMinute=CurrentTimeInSecond/60-CurVedioHour*60;
-		int CurVedioSecond=CurrentTimeInSecond-CurVedioHour*3600-CurVedioMinute*60;
-
-		int VedioHour= videoTimeInSecond/3600;
-		int VedioMinute= videoTimeInSecond/60-VedioHour*60;
-		int VedioSecond= videoTimeInSecond-VedioHour*3600-VedioMinute*60;
-
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-	else if (flag == 0)
-	{
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ",0,0,0,0,0,0);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-
-}
-
-
-
 void ObjectViewSUBDlg::OnClose()
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
@@ -569,30 +547,3 @@ void ObjectViewSUBDlg::OnCancel()
 	//cvDestroyWindow( "obj_displayWindow" );
 	//ObjectPlayer.threadRunOrNot=FALSE;
 }
-
-
-//void ObjectViewSUBDlg::OnPaint()
-//{
-//	if (IsIconic())
-//	{
-//		CPaintDC dc(this); // 用于绘制的设备上下文
-//
-//		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-//
-//		// 使图标在工作区矩形中居中
-//		int cxIcon = GetSystemMetrics(SM_CXICON);
-//		int cyIcon = GetSystemMetrics(SM_CYICON);
-//		CRect rect;
-//		GetClientRect(&rect);
-//		int x = (rect.Width() - cxIcon + 1) / 2;
-//		int y = (rect.Height() - cyIcon + 1) / 2;
-//
-//		// 绘制图标
-//		dc.DrawIcon(x, y, m_hIcon);
-//	}
-//	else
-//	{
-//		//this->MoveWindow(UIBeautifier.rcDeskRect.left, UIBeautifier.rcDeskRect.top, UIBeautifier.rcDeskRect.Width(), UIBeautifier.rcDeskRect.Height(), TRUE); ///<给选项卡定位
-//		CDialog::OnPaint();
-//	}
-//}

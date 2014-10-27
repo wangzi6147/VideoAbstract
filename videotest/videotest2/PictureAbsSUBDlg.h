@@ -60,7 +60,7 @@ public:
 	virtual void OnCancel();
 	virtual BOOL OnInitDialog();
 	void DisplaySumImg();
-	void ShowTime(int m_currentFrameNO, int totalFrameCount, int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag);  ///<用于显示播放时间的函数
+	//void ShowTime(int m_currentFrameNO, int totalFrameCount, int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag);  ///<用于显示播放时间的函数
 
 
 protected:

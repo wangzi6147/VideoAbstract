@@ -75,34 +75,6 @@ END_MESSAGE_MAP()
 
 
 
-//播放器时间显示功能
-void VideoAbsSUBDlg::ShowTime(int m_currentFrameNO, int totalFrameCount,
-	int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
-{
-	CString CurVideoTime;
-	if (flag == 1)
-	{
-		int CurrentTimeInSecond = (double)m_currentFrameNO / double(totalFrameCount)*videoTimeInSecond;
-		int CurVedioHour = CurrentTimeInSecond / 3600;
-		int CurVedioMinute = CurrentTimeInSecond / 60 - CurVedioHour * 60;
-		int CurVedioSecond = CurrentTimeInSecond - CurVedioHour * 3600 - CurVedioMinute * 60;
-
-		int VedioHour = videoTimeInSecond / 3600;
-		int VedioMinute = videoTimeInSecond / 60 - VedioHour * 60;
-		int VedioSecond = videoTimeInSecond - VedioHour * 3600 - VedioMinute * 60;
-
-		CurVideoTime.Format(_T(" %d:%d:%d / %d:%d:%d "), CurVedioHour, CurVedioMinute, CurVedioSecond, VedioHour, VedioMinute, VedioSecond);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-	else if (flag == 0)
-	{
-		CurVideoTime.Format(_T(" %d:%d:%d / %d:%d:%d "), 0, 0, 0, 0, 0, 0);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-
-}
-
-
 /*void VideoAbsSUBDlg::OnBnClickedButton9()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -179,13 +151,13 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 			CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TAB1_ORI_TIME);
 			if (Tab1_Player1.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
 			{
-				ShowTime(Tab1_Player1.m_currentFrameNO, Tab1_Player1.m_endFrameNO - Tab1_Player1.m_startFrameNO,
+				Tab1_Player1.ShowTime(Tab1_Player1.m_currentFrameNO, Tab1_Player1.m_endFrameNO - Tab1_Player1.m_startFrameNO,
 					Tab1_Player1.m_videoTimeInSecond, pWndTimeDis, 1);
 			}
 			else                                                            ///<停止状态下，用方式二显示时间
 			{
 				SliderCtrl->SetPos(0);
-				ShowTime(Tab1_Player1.m_currentFrameNO, Tab1_Player1.m_endFrameNO - Tab1_Player1.m_startFrameNO,
+				Tab1_Player1.ShowTime(Tab1_Player1.m_currentFrameNO, Tab1_Player1.m_endFrameNO - Tab1_Player1.m_startFrameNO,
 					Tab1_Player1.m_videoTimeInSecond, pWndTimeDis, 0);
 			}
 		}
@@ -216,13 +188,13 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 			CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TAB1_ABS_TIME);
 			if (Tab1_Player2.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
 			{
-				ShowTime(Tab1_Player2.m_currentFrameNO, Tab1_Player2.m_endFrameNO - Tab1_Player2.m_startFrameNO,
+				Tab1_Player2.ShowTime(Tab1_Player2.m_currentFrameNO, Tab1_Player2.m_endFrameNO - Tab1_Player2.m_startFrameNO,
 					Tab1_Player2.m_videoTimeInSecond, pWndTimeDis, 1);
 			}
 			else                                                            ///<停止状态下，用方式二显示时间
 			{
 				SliderCtrl->SetPos(0);
-				ShowTime(Tab1_Player2.m_currentFrameNO, Tab1_Player2.m_endFrameNO - Tab1_Player2.m_startFrameNO,
+				Tab1_Player2.ShowTime(Tab1_Player2.m_currentFrameNO, Tab1_Player2.m_endFrameNO - Tab1_Player2.m_startFrameNO,
 					Tab1_Player2.m_videoTimeInSecond, pWndTimeDis, 0);
 			}
 		}
@@ -259,22 +231,22 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[0] = true;
 				}				
 			}
-			if (VideoPos == 1)
-			{
-				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "生成切分视频……");
-				if(Tab1_videoPro->StepBitmapDefault[1] == false)
-				{
-					CBitmap *m_bmp=new CBitmap;
-					m_bmp->LoadBitmap(IDB_STEP2);
-					m_bmp=UIBeautifier.CBitmapResize(*m_bmp,668.0*UIBeautifier.rcDeskRect.Width()/1214,501.0*UIBeautifier.rcDeskRect.Height()/760);
+			//if (VideoPos == 1)
+			//{
+			//	//SetDlgItemText(IDC_STATIC_TAB1_PRO, "生成切分视频……");
+			//	if(Tab1_videoPro->StepBitmapDefault[1] == false)
+			//	{
+			//		CBitmap *m_bmp=new CBitmap;
+			//		m_bmp->LoadBitmap(IDB_STEP2);
+			//		m_bmp=UIBeautifier.CBitmapResize(*m_bmp,668.0*UIBeautifier.rcDeskRect.Width()/1214,501.0*UIBeautifier.rcDeskRect.Height()/760);
 
-					HBITMAP hBmp;// = HBITMAP(m_bmp);//将CBitmap转换为HBITMAP
-					hBmp=(HBITMAP)(*m_bmp);
-					((CStatic *)GetDlgItem(IDC_STATIC_TAB1_ABS))->SetBitmap(hBmp);
-					Tab1_videoPro->StepBitmapDefault[1] = true;
-				}		
-			}
-			if (VideoPos == 2)
+			//		HBITMAP hBmp;// = HBITMAP(m_bmp);//将CBitmap转换为HBITMAP
+			//		hBmp=(HBITMAP)(*m_bmp);
+			//		((CStatic *)GetDlgItem(IDC_STATIC_TAB1_ABS))->SetBitmap(hBmp);
+			//		Tab1_videoPro->StepBitmapDefault[1] = true;
+			//	}		
+			//}
+			if (VideoPos == 1)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频背景处理……");
 				if(Tab1_videoPro->StepBitmapDefault[2] == false)
@@ -289,7 +261,7 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[2] = true;
 				}	
 			}
-			if (VideoPos == 3)
+			if (VideoPos == 2)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频前景处理……");
 				if(Tab1_videoPro->StepBitmapDefault[3] == false)
@@ -304,7 +276,7 @@ void VideoAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 					Tab1_videoPro->StepBitmapDefault[3] = true;
 				}	
 			}
-			if (VideoPos == 4)
+			if (VideoPos == 3)
 			{
 				//SetDlgItemText(IDC_STATIC_TAB1_PRO, "视频融合……");
 				if(Tab1_videoPro->StepBitmapDefault[4] == false)
@@ -426,7 +398,7 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	
 	GetDlgItem(IDC_STATIC_TAB1_ORI_TIME)->MoveWindow(160.0*UIBeautifier.rcDeskRect.Width() / 1214, 307.5*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_SLIDER1_TAB1)->MoveWindow(240.0*UIBeautifier.rcDeskRect.Width()/1214,307.5*UIBeautifier.rcDeskRect.Height()/760,160.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	GetDlgItem(IDC_STATIC_TAB1_ABS_TIME)->MoveWindow(540.0*UIBeautifier.rcDeskRect.Width()/1214,550.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_STATIC_TAB1_ABS_TIME)->MoveWindow(540.0*UIBeautifier.rcDeskRect.Width()/1214,540.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,40.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_SLIDER2_TAB1)->MoveWindow(620.0*UIBeautifier.rcDeskRect.Width()/1214,545.0*UIBeautifier.rcDeskRect.Height()/760,380.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_CHECK_TAB1)->MoveWindow(1010.0*UIBeautifier.rcDeskRect.Width()/1214,540.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
 
@@ -440,26 +412,16 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	UIBeautifier.LoadButtonBitmaps(Btn_BTN2_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,470.0/1214,540.0/760,500.0/1214,570.0/760);
 	UIBeautifier.LoadButtonBitmaps(Btn_BTN2_STOP,IDB_STOP_U,IDB_STOP_D,510.0/1214,540.0/760,540.0/1214,570.0/760);
 
+	//初始化播放器窗口
+	Tab1_Player1.PlaywindowRect.left = 50.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player1.PlaywindowRect.right = 50.0*UIBeautifier.rcDeskRect.Width() / 1214 + 350.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player1.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	Tab1_Player1.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 262.5*UIBeautifier.rcDeskRect.Height() / 760;
 
-	//GetDlgItem(IDC_STATIC_TAB1_ORI)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,350.0*UIBeautifier.rcDeskRect.Width()/1214,262.5*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_STATIC_TAB1_ABS)->MoveWindow(500.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760,600.0*UIBeautifier.rcDeskRect.Width()/1214,450.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_SLIDER1_TAB1)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,302.5*UIBeautifier.rcDeskRect.Height()/760,350.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_STATIC_TAB1_ORI_TIME)->MoveWindow(300.0*UIBeautifier.rcDeskRect.Width() / 1214, 332.5*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
-	//GetDlgItem(IDC_STATIC_TAB1_PRO)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,460.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_PROGRESS_TAB1)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,392.5*UIBeautifier.rcDeskRect.Height()/760,350.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_SLIDER2_TAB1)->MoveWindow(500.0*UIBeautifier.rcDeskRect.Width()/1214,490.0*UIBeautifier.rcDeskRect.Height()/760,600.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_STATIC_TAB1_ABS_TIME)->MoveWindow(830.0*UIBeautifier.rcDeskRect.Width()/1214,530.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_CHECK_TAB1)->MoveWindow(1010.0*UIBeautifier.rcDeskRect.Width()/1214,520.0*UIBeautifier.rcDeskRect.Height()/760,80.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
-	////GetDlgItem(IDC_BTN_TAB1_VIEW_ABS)->MoveWindow(200.0*UIBeautifier.rcDeskRect.Width()/1214,545.0*UIBeautifier.rcDeskRect.Height()/760,50.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
-	//GetDlgItem(IDC_BTN_TAB1_GENERATE_ABS)->MoveWindow(125.0*UIBeautifier.rcDeskRect.Width()/1214,500.0*UIBeautifier.rcDeskRect.Height()/760,200.0*UIBeautifier.rcDeskRect.Width()/1214,30.0*UIBeautifier.rcDeskRect.Height()/760);
-
-	////UIBeautifier.LoadButtonBitmaps(Btn_GENERATE_ABS,IDB_BITMAP1,IDB_BITMAP3,1118.0/1214,10.0/760,1200.0/1214,40.0/760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN1_PLAY,IDB_PLAY_U,IDB_PLAY_D,50.0/1214,332.5/760,80.0/1214,362.5/760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN1_PAUSE, IDB_PAUSE_U, IDB_PAUSE_D, 100.0 / 1214, 332.5 / 760, 130.0 / 1214, 362.5 / 760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN1_STOP, IDB_STOP_U, IDB_STOP_D, 150.0 / 1214, 332.5 / 760, 180.0 / 1214, 362.5 / 760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN2_PLAY,IDB_PLAY_U,IDB_PLAY_D,500.0/1214,520.0/760,530.0/1214,550.0/760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN2_PAUSE,IDB_PAUSE_U,IDB_PAUSE_D,550.0/1214,520.0/760,580.0/1214,550.0/760);
-	//UIBeautifier.LoadButtonBitmaps(Btn_BTN2_STOP,IDB_STOP_U,IDB_STOP_D,600.0/1214,520.0/760,630.0/1214,550.0/760);
+	Tab1_Player2.PlaywindowRect.left = 430.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player2.PlaywindowRect.right = 430.0*UIBeautifier.rcDeskRect.Width() / 1214 + 668.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	Tab1_Player2.PlaywindowRect.top = 30.0*UIBeautifier.rcDeskRect.Height() / 760;
+	Tab1_Player2.PlaywindowRect.bottom = 30.0*UIBeautifier.rcDeskRect.Height() / 760 + 501.0*UIBeautifier.rcDeskRect.Height() / 760;
 
 	// TODO:  在此添加额外的初始化
 	SetTimer(1, 100, NULL);///<计数器初始化
@@ -470,7 +432,7 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	Tab1_Pro = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS_TAB1);
-	Tab1_Pro->SetRange(0, 500);
+	Tab1_Pro->SetRange(0, 400);
 	Tab1_Pro->SetPos(0);
 
 	Tab1_CSliderPlayer1Ctrl.SetRange(0, Tab1_Player1.m_endFrameNO);   ///<初始化窗口一的滑动条
@@ -483,13 +445,12 @@ BOOL VideoAbsSUBDlg::OnInitDialog()
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
 	CRect rect1;
 	GetDlgItem(IDC_STATIC_TAB1_ORI)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ORI), "displayWindow1tmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ORI), "displayWindow1tmp", Tab1_Player1.PlaywindowRect.left, Tab1_Player1.PlaywindowRect.top, Tab1_Player1.PlaywindowRect.Width(), Tab1_Player1.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("displayWindow1tmp", temp_image);
 		cvReleaseImage(&temp_image);
 	}
-
 	//temp_image = cvLoadImage(".\\res\\abs-default.png", CV_LOAD_IMAGE_COLOR);
 	//GetDlgItem(IDC_STATIC_TAB1_ABS)->GetClientRect(&rect1);
 	//initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB1_ABS), "displayWindow2tmp",rect1.Width(), rect1.Height());
@@ -600,6 +561,7 @@ void VideoAbsSUBDlg::OnBnClickedBtnTab1GenerateAbs()
 			Tab1_Player2.stopPlay();///关闭进程
 			Tab1_PathName.Replace(*m, *n);
 			Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);
+			GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
 			return;
 		}
 		else{
@@ -613,9 +575,9 @@ void VideoAbsSUBDlg::OnBnClickedBtnTab1GenerateAbs()
 				//player2.stop();///停止播放
 				Tab1_Player2.stopPlay();///关闭进程
 				Tab1_PathName.Replace(*m, *n);
-				Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);
-				GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
+				Tab1_videoPro->DoProcessing((LPSTR)(LPCTSTR)Tab1_PathName);				
 			}
+			GetDlgItem(IDC_PROGRESS_TAB1)->ShowWindow(true);
 			return;
 		}
 
@@ -707,33 +669,6 @@ void VideoAbsSUBDlg::OnBnClickedCheckTab1()
 		Tab1_Player2.timeshow = FALSE;
 	}
 }
-
-
-//void VideoAbsSUBDlg::OnPaint()
-//{
-//	if (IsIconic())
-//	{
-//		CPaintDC dc(this); // 用于绘制的设备上下文
-//
-//		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-//
-//		// 使图标在工作区矩形中居中
-//		int cxIcon = GetSystemMetrics(SM_CXICON);
-//		int cyIcon = GetSystemMetrics(SM_CYICON);
-//		CRect rect;
-//		GetClientRect(&rect);
-//		int x = (rect.Width() - cxIcon + 1) / 2;
-//		int y = (rect.Height() - cyIcon + 1) / 2;
-//
-//		// 绘制图标
-//		dc.DrawIcon(x, y, m_hIcon);
-//	}
-//	else
-//	{
-//		this->MoveWindow(UIBeautifier.rcDeskRect.left, UIBeautifier.rcDeskRect.top, UIBeautifier.rcDeskRect.Width(), UIBeautifier.rcDeskRect.Height(), TRUE); ///<给选项卡定位
-//		CDialogEx::OnPaint();
-//	}
-//}
 
 
 HCURSOR VideoAbsSUBDlg::OnQueryDragIcon()

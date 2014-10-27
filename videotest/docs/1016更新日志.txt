@@ -1,0 +1,36 @@
+本版本在1011版本基础上更改
+1. 将VTrack部分改成GMM算法；
+2. 修复进度条隐藏问题；
+3. 修复进度条增涨不均匀问题；
+4. 修复时间显示为负的bug,合并所有ShowTime函数；
+5. 修复371bug；
+5. 去掉了没有用的静态库和动态链接库；
+   目前依赖库：
+SkinPPWTL.lib
+libmysql.lib
+opencv_calib3d244d.lib
+opencv_core244d.lib
+opencv_features2d244d.lib
+opencv_flann244d.lib
+opencv_highgui244d.lib
+opencv_imgproc244d.lib
+opencv_legacy244d.lib
+opencv_video244d.lib
+
+原有依赖库：
+SkinPPWTL.lib
+libmysql.lib
+opencv_core244d.lib
+opencv_contrib244d.lib
+opencv_photo244d.lib
+opencv_videostab244d.lib
+opencv_nonfree244d.lib
+opencv_highgui244d.lib
+opencv_imgproc244d.lib
+opencv_objdetect244d.lib
+opencv_video244d.lib
+opencv_calib3d244d.lib
+opencv_features2d244d.lib
+opencv_flann244d.lib
+opencv_legacy244d.lib
+opencv_ts244d.lib

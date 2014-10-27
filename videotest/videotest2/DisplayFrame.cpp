@@ -97,19 +97,19 @@ Return:        NULL
 
 Others:        NULL
 *********************************************/
-void DisplayFrame::SetOpenCVWindow(CWnd *pWnd,CString csWndName,
-								   int nTarWidth,int nTarHeight)
+void DisplayFrame::SetOpenCVWindow(CWnd *pWnd, CString csWndName, int nTarLeft, int nTarTop,
+	int nTarWidth, int nTarHeight)
 {
 	char *pWndName = csWndName.GetBuffer();
 	cvNamedWindow(pWndName, 0);
 	HWND hWnd = (HWND)cvGetWindowHandle(pWndName);//ÏÔÊ¾¿Ø¼þ
 	HWND hParent = ::GetParent(hWnd);//¸¸´°¿Ú
-	::SetParent(hWnd,pWnd->m_hWnd);
-	::ShowWindow(hParent,SW_HIDE);//Òþ²ØÏÔÊ¾´°¿Ú¿Ø¼þ
-	pWnd->SetWindowPos(NULL, 0, 0, nTarWidth, nTarHeight, 
-						SWP_NOMOVE | SWP_NOZORDER);
+	::SetParent(hWnd, pWnd->m_hWnd);
+	::ShowWindow(hParent, SW_HIDE);//Òþ²ØÏÔÊ¾´°¿Ú¿Ø¼þ
+	pWnd->SetWindowPos(NULL, nTarLeft, nTarTop, nTarWidth, nTarHeight,
+		SWP_NOZORDER);
 	cvResizeWindow(pWndName, nTarWidth, nTarHeight);
-	
+
 }
 
 void DisplayFrame::ShowPictureHolderBMP(IplImage *image, HDC hDC, CRect rec, CClientDC &dc)

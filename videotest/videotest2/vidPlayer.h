@@ -100,9 +100,14 @@ public:
 	vector<CvPoint> TimePosition;
 	vector<int> Time;
 	vector<CvRect> ROI;
+	CRect PlaywindowRect;       //播放窗口原始大小
 	int m_origPara;
 	bool timeshow;
 	void ShowTime();  //显示当前播放进度时间
+	void ShowTime(int m_currentFrameNO,            ///<用于显示播放时间的函数
+		int totalFrameCount,
+		int videoTimeInSecond,
+		CWnd *m_pShowTimeWnd, int flag);
 	void SetUrl(LPCTSTR lpszNewValue);
 //*************************************************************************
 ///@手绘检测部分新增成员

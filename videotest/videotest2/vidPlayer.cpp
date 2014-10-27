@@ -315,20 +315,23 @@ UINT vidPlayer::playProcess()
 ///@brief vidPlayer类的视频播放,线程开启函数
 BOOL vidPlayer::play()
 {
-	if(threadRunOrNot == FALSE)
+	if (threadRunOrNot == FALSE)
 	{
 		threadRunOrNot = TRUE;
-		CRect rec;
-		m_pWnd->GetClientRect(rec);
-		if (rec.Height()*m_size.width / m_size.height <= rec.Width())
+		if (PlaywindowRect.Height()*m_size.width / m_size.height <= PlaywindowRect.Width())
 		{
-			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
-				rec.Height()*m_size.width / m_size.height, rec.Height());
+			int nTar = PlaywindowRect.Width() - PlaywindowRect.Height()*m_size.width / m_size.height;
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName, PlaywindowRect.left + nTar / 2, PlaywindowRect.top,
+				PlaywindowRect.Height()*m_size.width / m_size.height, PlaywindowRect.Height());
 		}
 		else
-			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName,
-			rec.Width(), rec.Width()*m_size.height / m_size.width);
-		m_threadControl = ::AfxBeginThread(RunPlayProcess,this);
+		{
+			int nTar = PlaywindowRect.Height() - PlaywindowRect.Width()*m_size.height / m_size.width;
+			disPlayImage.SetOpenCVWindow(m_pWnd, m_windowName, PlaywindowRect.left, PlaywindowRect.top + nTar / 2,
+				PlaywindowRect.Width(), PlaywindowRect.Width()*m_size.height / m_size.width);
+		}
+
+		m_threadControl = ::AfxBeginThread(RunPlayProcess, this);
 	}
 	m_playState = PLAY_STATE_PLAY;
 
@@ -447,8 +450,33 @@ void vidPlayer::ShowTime()
 	int VedioMinute=m_videoTimeInSecond/60-VedioHour*60;
 	int VedioSecond=m_videoTimeInSecond-VedioHour*3600-VedioMinute*60;
 
-	CurVideoTime.Format(" %d::%d::%d / %d::%d::%d ",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
+	CurVideoTime.Format("%d::%d::%d / %d::%d::%d",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
 	m_pShowTimeWnd->SetWindowText(CurVideoTime);
+}
+
+void vidPlayer::ShowTime(int m_currentFrameNO, int totalFrameCount, 
+							int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
+{
+	CString CurVideoTime;
+	if ( (flag == 1) && (totalFrameCount != 0) )
+	{
+		int CurrentTimeInSecond = (double)m_currentFrameNO / double(totalFrameCount)*videoTimeInSecond;
+		int CurVedioHour = CurrentTimeInSecond / 3600;
+		int CurVedioMinute = CurrentTimeInSecond / 60 - CurVedioHour * 60;
+		int CurVedioSecond = CurrentTimeInSecond - CurVedioHour * 3600 - CurVedioMinute * 60;
+
+		int VedioHour = videoTimeInSecond / 3600;
+		int VedioMinute = videoTimeInSecond / 60 - VedioHour * 60;
+		int VedioSecond = videoTimeInSecond - VedioHour * 3600 - VedioMinute * 60;
+
+		CurVideoTime.Format("%d:%d:%d / %d:%d:%d", CurVedioHour, CurVedioMinute, CurVedioSecond, VedioHour, VedioMinute, VedioSecond);
+		m_pShowTimeWnd->SetWindowText(CurVideoTime);
+	}
+	else if (flag == 0)
+	{
+		CurVideoTime.Format("%d:%d:%d / %d:%d:%d", 0, 0, 0, 0, 0, 0);
+		m_pShowTimeWnd->SetWindowText(CurVideoTime);
+	}
 }
 
 void cvMouseHandler(int eventType,int x,int y,int flags, void *param)

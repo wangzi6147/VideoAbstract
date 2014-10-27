@@ -89,9 +89,12 @@ void PictureAbsSUBDlg::DisplaySumImg()
 			case 0:
 				if (!ifinitDisplay5){
 					CRect rect;
-					GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC)->GetClientRect(&rect);
+					rect.left = 25.0*UIBeautifier.rcDeskRect.Width() / 1214;
+					rect.right = 25.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+					rect.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+					rect.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
 					disPlayImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0",
-						rect.Width(), rect.Height());
+						rect.left, rect.top, rect.Width(), rect.Height());
 					ifinitDisplay5 = true;
 				}
 				if (image != NULL) // Check for invalid input
@@ -177,7 +180,7 @@ BOOL PictureAbsSUBDlg::OnInitDialog()
 
 	GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC)->MoveWindow(25.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760, 506.0*UIBeautifier.rcDeskRect.Width() / 1214, 380.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_STATIC_TAB2_ORI)->MoveWindow(581.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760, 506.0*UIBeautifier.rcDeskRect.Width() / 1214, 380.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_STATIC_TAB2_ORI_TIME)->MoveWindow(691.0*UIBeautifier.rcDeskRect.Width() / 1214, 500.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_STATIC_TAB2_ORI_TIME)->MoveWindow(691.0*UIBeautifier.rcDeskRect.Width() / 1214, 490.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 40.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_TAB2_ORI_SLIDER)->MoveWindow(771.0*UIBeautifier.rcDeskRect.Width() / 1214, 495.0*UIBeautifier.rcDeskRect.Height() / 760, 296.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
 	
 	UIBeautifier.LoadButtonBitmaps(Btn_TAB2_PLAY, IDB_PLAY_U, IDB_PLAY_D,581.0/ 1214, 490.0 / 760, 611.0 / 1214, 520.0 / 760);
@@ -186,12 +189,16 @@ BOOL PictureAbsSUBDlg::OnInitDialog()
 	UIBeautifier.LoadButtonBitmaps(Btn_TAB2_UP, IDB_UP_U, IDB_UP_D, 270.0 / 1214, 40.0 / 760, 330.0 / 1214,80.0 / 760);
 	UIBeautifier.LoadButtonBitmaps(Btn_TAB2_DOWN, IDB_DOWN_U, IDB_DOWN_D, 270.0 / 1214, 500.0 / 760, 330.0 / 1214, 540.0 / 760);
 
+	//初始化播放窗口位置
+	playerori_TAB2.PlaywindowRect.left = 581.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	playerori_TAB2.PlaywindowRect.right = 581.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	playerori_TAB2.PlaywindowRect.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+	playerori_TAB2.PlaywindowRect.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 	//初始化图片展示
 	DisplayFrame initImage;
 	IplImage* temp_image = cvLoadImage(".\\res\\ori-default.png", CV_LOAD_IMAGE_COLOR);
-	CRect rect1;
-	GetDlgItem(IDC_STATIC_TAB2_ORI)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_ORI), "ori_displayWindowtmp",rect1.Width(), rect1.Height());
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_ORI), "ori_displayWindowtmp", playerori_TAB2.PlaywindowRect.left, playerori_TAB2.PlaywindowRect.top, playerori_TAB2.PlaywindowRect.Width(), playerori_TAB2.PlaywindowRect.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("ori_displayWindowtmp", temp_image);
@@ -199,8 +206,13 @@ BOOL PictureAbsSUBDlg::OnInitDialog()
 	}
 
 	temp_image = cvLoadImage(".\\res\\pic-default.png", CV_LOAD_IMAGE_COLOR);
-	GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC)->GetClientRect(&rect1);
-	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0tmp",rect1.Width(), rect1.Height());
+	CRect rect1;
+	25.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760, 506.0*UIBeautifier.rcDeskRect.Width() / 1214, 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+	rect1.left = 25.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	rect1.right = 25.0*UIBeautifier.rcDeskRect.Width() / 1214 + 506.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	rect1.top = 100.0*UIBeautifier.rcDeskRect.Height() / 760;
+	rect1.bottom = 100.0*UIBeautifier.rcDeskRect.Height() / 760 + 380.0*UIBeautifier.rcDeskRect.Height() / 760;
+	initImage.SetOpenCVWindow(GetDlgItem(IDC_STATIC_TAB2_COMBINEPIC), "displayWindow0tmp", rect1.left, rect1.top, rect1.Width(), rect1.Height());
 	if (temp_image != NULL) // Check for invalid input
 	{
 		initImage.ShowPicture("displayWindow0tmp", temp_image);
@@ -290,13 +302,13 @@ void PictureAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 				   CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TAB2_ORI_TIME);
 				   if (playerori_TAB2.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
 				   {
-					   ShowTime(playerori_TAB2.m_currentFrameNO, playerori_TAB2.m_endFrameNO - playerori_TAB2.m_startFrameNO,
+					   playerori_TAB2.ShowTime(playerori_TAB2.m_currentFrameNO, playerori_TAB2.m_endFrameNO - playerori_TAB2.m_startFrameNO,
 						   playerori_TAB2.m_videoTimeInSecond, pWndTimeDis, 1);
 				   }
 				   else                                                            ///<停止状态下，用方式二显示时间
 				   {
 					   SliderCtrl->SetPos(0);
-					   ShowTime(playerori_TAB2.m_currentFrameNO, playerori_TAB2.m_endFrameNO - playerori_TAB2.m_startFrameNO,
+					   playerori_TAB2.ShowTime(playerori_TAB2.m_currentFrameNO, playerori_TAB2.m_endFrameNO - playerori_TAB2.m_startFrameNO,
 						   playerori_TAB2.m_videoTimeInSecond, pWndTimeDis, 0);
 				   }
 			   }
@@ -386,31 +398,6 @@ void PictureAbsSUBDlg::OnTimer(UINT_PTR nIDEvent)
 	default:
 		break;
 	}
-}
-
-void PictureAbsSUBDlg::ShowTime(int m_currentFrameNO, int totalFrameCount, int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
-{
-	CString CurVideoTime;
-	if (flag == 1)
-	{
-		int CurrentTimeInSecond = (double)m_currentFrameNO / double(totalFrameCount)*videoTimeInSecond;
-		int CurVedioHour = CurrentTimeInSecond / 3600;
-		int CurVedioMinute = CurrentTimeInSecond / 60 - CurVedioHour * 60;
-		int CurVedioSecond = CurrentTimeInSecond - CurVedioHour * 3600 - CurVedioMinute * 60;
-
-		int VedioHour = videoTimeInSecond / 3600;
-		int VedioMinute = videoTimeInSecond / 60 - VedioHour * 60;
-		int VedioSecond = videoTimeInSecond - VedioHour * 3600 - VedioMinute * 60;
-
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ", CurVedioHour, CurVedioMinute, CurVedioSecond, VedioHour, VedioMinute, VedioSecond);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-	else if (flag == 0)
-	{
-		CurVideoTime.Format(" %d:%d:%d / %d:%d:%d ", 0, 0, 0, 0, 0, 0);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-
 }
 
 

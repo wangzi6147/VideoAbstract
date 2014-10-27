@@ -141,17 +141,17 @@ BOOL Cvideotest2Dlg::OnInitDialog()
 	BitmapBackGroundStrech=UIBeautifier.CBitmapResize(UIBeautifier.m_BitmapBackGround,UIBeautifier.rcDeskRect.Width(),UIBeautifier.rcDeskRect.Height());
 
 
-	GetDlgItem(IDC_TAB1)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,110.0*UIBeautifier.rcDeskRect.Height()/760,1120.0*UIBeautifier.rcDeskRect.Width()/1214,620.0*UIBeautifier.rcDeskRect.Height()/760);
+	GetDlgItem(IDC_TAB1)->MoveWindow(50.0*UIBeautifier.rcDeskRect.Width()/1214,100.0*UIBeautifier.rcDeskRect.Height()/760,1120.0*UIBeautifier.rcDeskRect.Width()/1214,640.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_BTN_OPEN)->MoveWindow(20.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,60.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_BTN_VIEW)->MoveWindow(150.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,60.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_BTN_ABOUT)->MoveWindow(650.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 	GetDlgItem(IDC_BTN_exit)->MoveWindow(1050.0*UIBeautifier.rcDeskRect.Width()/1214,25.0*UIBeautifier.rcDeskRect.Height()/760,100.0*UIBeautifier.rcDeskRect.Width()/1214,20.0*UIBeautifier.rcDeskRect.Height()/760);
 
-	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_OPEN, IDB_OPEN_U, IDB_OPEN_D, 67.0 / 1214, 37.0 / 760, 98.0 / 1214, 68.0 / 760);
-	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_VIEW, IDB_VIEW_U, IDB_VIEW_D, 157.0 / 1214, 39.0 / 760, 188.0 / 1214, 66.0 / 760);
-	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_SAVE, IDB_SAVE_U, IDB_SAVE_D, 247.0 / 1214, 37.0 / 760, 278.0 / 1214, 68.0 / 760);
-	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_ABOUT, IDB_ABOUT_U, IDB_ABOUT_D,1022.0 / 1214, 37.0 / 760, 1053.0 / 1214, 68.0 / 760);
-	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_EXIT, IDB_EXIT_U, IDB_EXIT_D, 1112.0 / 1214, 37.0 / 760, 1143.0 / 1214, 68.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_OPEN, IDB_OPEN_U, IDB_OPEN_D, 67.0 / 1214, 35.0 / 760, 98.0 / 1214, 74.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_VIEW, IDB_VIEW_U, IDB_VIEW_D, 157.0 / 1214, 35.0 / 760, 188.0 / 1214, 74.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_SAVE, IDB_SAVE_U, IDB_SAVE_D, 247.0 / 1214, 35.0 / 760, 278.0 / 1214, 74.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_ABOUT, IDB_ABOUT_U, IDB_ABOUT_D,1022.0 / 1214, 35.0 / 760, 1053.0 / 1214, 74.0 / 760);
+	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_EXIT, IDB_EXIT_U, IDB_EXIT_D, 1112.0 / 1214, 35.0 / 760, 1143.0 / 1214, 74.0 / 760);
 	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_TITLE, IDB_TITLE, IDB_TITLE, 425.0 / 1214, 5.0 / 760, 805.0 / 1214, 85.0 / 760);
 	
 	// 将“关于...”菜单项添加到系统菜单中。
@@ -453,23 +453,26 @@ void Cvideotest2Dlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		case 0:
 		{
-			if (m_page2.playerori_TAB2.m_playState == PLAY_STATE_PLAY)  ///播放状态下
+			if(m_page1.Tab1_Player1.m_filePath !="")
 			{
-				m_page2.playerori_TAB2.pause();
-			}
-			if (m_page3.ObjectPlayer.m_playState == PLAY_STATE_PLAY)     ///播放状态下
-			{
-				m_page3.ObjectPlayer.pause();
-			}
-			if (m_page1.Tab1_Player1.m_filePath != "")
-			{
+				if (m_page2.playerori_TAB2.m_playState == PLAY_STATE_PLAY)  ///播放状态下
+				{
+					m_page2.playerori_TAB2.pause();
+				}
+				if (m_page3.ObjectPlayer.m_playState == PLAY_STATE_PLAY)     ///播放状态下
+				{
+					m_page3.ObjectPlayer.pause();
+				}
+				//if (m_page1.Tab1_Player1.m_filePath != "")
+				//{
+				//	m_page1.Tab1_Player1.play();
+				//}
+				if (m_page4.player.m_playState == PLAY_STATE_PLAY)
+				{///播放状态下
+					m_page4.player.pause();
+				}
 				m_page1.Tab1_Player1.play();
 			}
-			if (m_page4.player.m_playState == PLAY_STATE_PLAY)
-			{///播放状态下
-				m_page4.player.pause();
-			}
-			m_page2.playerori_TAB2.play();
 			break;
 		}
 		case 1:

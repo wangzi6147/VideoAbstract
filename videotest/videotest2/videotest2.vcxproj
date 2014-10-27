@@ -21,7 +21,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -60,7 +60,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\PublicHeader\Lib;..\PublicHeader\Lib\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SkinPPWTL.lib;libmysql.lib;opencv_core244d.lib;opencv_contrib244d.lib;opencv_photo244d.lib;opencv_videostab244d.lib;opencv_nonfree244d.lib;opencv_highgui244d.lib;opencv_imgproc244d.lib;opencv_objdetect244d.lib;opencv_video244d.lib;opencv_calib3d244d.lib;opencv_features2d244d.lib;opencv_flann244d.lib;opencv_legacy244d.lib;opencv_ts244d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SkinPPWTL.lib;libmysql.lib;opencv_calib3d244d.lib;opencv_core244d.lib;opencv_features2d244d.lib;opencv_flann244d.lib;opencv_highgui244d.lib;opencv_imgproc244d.lib;opencv_legacy244d.lib;opencv_video244d.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

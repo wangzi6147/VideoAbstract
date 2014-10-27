@@ -103,6 +103,7 @@ public:
 	void SaveDatabase(CString objtablename,double *speed,bool *ifContinue);
     Mat* GetBackgroundIMG();
 	VHandleData vHandler;
+	BackgroundSubtractorMOG2 myGaussModel;
 protected:
 	CWinThread *m_threadControl;//进程控制
 	

@@ -30,7 +30,7 @@ using namespace std;
 CDataMySql::CDataMySql(void)
 {
 	const char user[] = "root";         ///<username        
-	const char pswd[] = "123456";        ///<password
+	const char pswd[] = "082127";        ///<password
 	const char host[] = "localhost";    ///<or"127.0.0.1"
 	const char table[] = "mydb";        ///<database
 	unsigned int port = 3306;           ///<server port        

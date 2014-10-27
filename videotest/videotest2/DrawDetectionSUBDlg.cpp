@@ -79,18 +79,18 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	BitmapBackGroundStrech = UIBeautifier.CBitmapResize(UIBeautifier.m_BitmapBackGround, UIBeautifier.rcDeskRect.Width(), UIBeautifier.rcDeskRect.Height());
 
 
-	GetDlgItem(IDC_BTN_START_PROCESS__IN_DRAW_DETECT)->MoveWindow(145.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_BTN_START_PROCESS__IN_DRAW_DETECT)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 105.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_BTN_STOP_PROCESS)->MoveWindow(145.0*UIBeautifier.rcDeskRect.Width() / 1214, 95.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_PROGRESS_IN_DRAW_DETECT)->MoveWindow(135.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760, 270.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_CHECK_LINE_IN_DRAW_DETECT)->MoveWindow(235.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 50.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_BTN_SEARCH_IN_DRAW_DETECT)->MoveWindow(305.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_CHECK_RECT_IN_DRAW_DETECT)->MoveWindow(235.0*UIBeautifier.rcDeskRect.Width() / 1214, 95.0*UIBeautifier.rcDeskRect.Height() / 760, 50.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_BTN_CLEAR_IN_DRAW_DETECT)->MoveWindow(305.0*UIBeautifier.rcDeskRect.Width() / 1214, 95.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_CHECK_LINE_IN_DRAW_DETECT)->MoveWindow(215.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_BTN_SEARCH_IN_DRAW_DETECT)->MoveWindow(305.0*UIBeautifier.rcDeskRect.Width() / 1214, 55.0*UIBeautifier.rcDeskRect.Height() / 760, 130.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_CHECK_RECT_IN_DRAW_DETECT)->MoveWindow(215.0*UIBeautifier.rcDeskRect.Width() / 1214, 95.0*UIBeautifier.rcDeskRect.Height() / 760, 70.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_BTN_CLEAR_IN_DRAW_DETECT)->MoveWindow(305.0*UIBeautifier.rcDeskRect.Width() / 1214, 95.0*UIBeautifier.rcDeskRect.Height() / 760, 130.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_DISPLAY_IN_DRAW_DETECT)->MoveWindow(100.0*UIBeautifier.rcDeskRect.Width() / 1214, 140.0*UIBeautifier.rcDeskRect.Height() / 760, 340.0*UIBeautifier.rcDeskRect.Width() / 1214, 255.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT)->MoveWindow(210.0*UIBeautifier.rcDeskRect.Width() / 1214,410.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT)->MoveWindow(210.0*UIBeautifier.rcDeskRect.Width() / 1214,400.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_SLIDER_IN_DRAW_DETECT)->MoveWindow(300.0*UIBeautifier.rcDeskRect.Width() / 1214, 405.0*UIBeautifier.rcDeskRect.Height() / 760, 140.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_DISPLAY_IN_DRAW_DETECT2)->MoveWindow(540.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760, 513.0*UIBeautifier.rcDeskRect.Width() / 1214, 385.0*UIBeautifier.rcDeskRect.Height() / 760);
-	GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT2)->MoveWindow(650.0*UIBeautifier.rcDeskRect.Width() / 1214, 410.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT2)->MoveWindow(650.0*UIBeautifier.rcDeskRect.Width() / 1214, 400.0*UIBeautifier.rcDeskRect.Height() / 760, 80.0*UIBeautifier.rcDeskRect.Width() / 1214, 30.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_SLIDER_IN_DRAW_DETECT2)->MoveWindow(730.0*UIBeautifier.rcDeskRect.Width() / 1214, 405.0*UIBeautifier.rcDeskRect.Height() / 760, 320.0*UIBeautifier.rcDeskRect.Width() / 1214, 20.0*UIBeautifier.rcDeskRect.Height() / 760);
 
 	GetDlgItem(IDC_PIC_CTRL0_IN_DRAW_DETECT)->MoveWindow(7.0*UIBeautifier.rcDeskRect.Width() / 1214, 440.0*UIBeautifier.rcDeskRect.Height() / 760, 158.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760);
@@ -101,6 +101,14 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	GetDlgItem(IDC_PIC_CTRL5_IN_DRAW_DETECT)->MoveWindow(797.0*UIBeautifier.rcDeskRect.Width() / 1214, 440.0*UIBeautifier.rcDeskRect.Height() / 760, 158.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_PIC_CTRL6_IN_DRAW_DETECT)->MoveWindow(955.0*UIBeautifier.rcDeskRect.Width() / 1214, 440.0*UIBeautifier.rcDeskRect.Height() / 760, 158.0*UIBeautifier.rcDeskRect.Width() / 1214, 100.0*UIBeautifier.rcDeskRect.Height() / 760);
 	GetDlgItem(IDC_DRAW_DETECT_SCROLLBAR)->MoveWindow(7.0*UIBeautifier.rcDeskRect.Width() / 1214, 540.0*UIBeautifier.rcDeskRect.Height() / 760, 1106.0*UIBeautifier.rcDeskRect.Width() / 1214, 25.0*UIBeautifier.rcDeskRect.Height() / 760);
+
+	GetDlgItem(IDC_DRAW_OBJECT1)->MoveWindow(86.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT2)->MoveWindow(244.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT3)->MoveWindow(402.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT4)->MoveWindow(560.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT5)->MoveWindow(718.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT6)->MoveWindow(876.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760, 30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
+	GetDlgItem(IDC_DRAW_OBJECT7)->MoveWindow(1034.0*UIBeautifier.rcDeskRect.Width() / 1214, 565.0*UIBeautifier.rcDeskRect.Height() / 760,30.0*UIBeautifier.rcDeskRect.Width() / 1214, 10.0*UIBeautifier.rcDeskRect.Height() / 760);
 
 	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_DRAW_PLAY, IDB_PLAY_U, IDB_PLAY_D, 100.0 / 1214, 400.0 / 760, 130.0 / 1214, 430.0 / 760);
 	UIBeautifier.LoadButtonBitmaps(Btn_BTN1_DRAW_PAUSE, IDB_PAUSE_U, IDB_PAUSE_D, 140.0 / 1214, 400.0 / 760, 170.0 / 1214, 430.0 / 760);
@@ -115,6 +123,11 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	player.m_endFrameNO = 0;
 	player.m_drawDetectFlag = 0;
 	player.m_IfStartDetect = false;
+	player.PlaywindowRect.left = 100.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	player.PlaywindowRect.right = 100.0*UIBeautifier.rcDeskRect.Width() / 1214 + 340.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	player.PlaywindowRect.top = 140.0*UIBeautifier.rcDeskRect.Height() / 760;
+	player.PlaywindowRect.bottom = 140.0*UIBeautifier.rcDeskRect.Height() / 760 + 255.0*UIBeautifier.rcDeskRect.Height() / 760;
+
 
 	///右播放器初始化
 	oriPlayer.m_filePath = "";
@@ -123,6 +136,10 @@ BOOL DrawDetectionSUBDlg::OnInitDialog()
 	oriPlayer.m_endFrameNO = 0;
 	oriPlayer.m_drawDetectFlag = 0;
 	oriPlayer.m_IfStartDetect = false;
+	oriPlayer.PlaywindowRect.left = 540.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	oriPlayer.PlaywindowRect.right = 540.0*UIBeautifier.rcDeskRect.Width() / 1214 + 513.0*UIBeautifier.rcDeskRect.Width() / 1214;
+	oriPlayer.PlaywindowRect.top = 10.0*UIBeautifier.rcDeskRect.Height() / 760;
+	oriPlayer.PlaywindowRect.bottom = 10.0*UIBeautifier.rcDeskRect.Height() / 760 + 385.0*UIBeautifier.rcDeskRect.Height() / 760;
 
 	///进度条初始化
 	VTrackPro = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS_IN_DRAW_DETECT);
@@ -171,13 +188,13 @@ void DrawDetectionSUBDlg::OnTimer(UINT_PTR nIDEvent)
 		CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT);
 		if (player.m_playState != PLAY_STATE_STOP)                     ///<非停止状态下，用方式一显示时间
 		{
-			ShowTime(player.m_currentFrameNO, player.m_endFrameNO - player.m_startFrameNO,
+			player.ShowTime(player.m_currentFrameNO, player.m_endFrameNO - player.m_startFrameNO,
 				player.m_videoTimeInSecond, pWndTimeDis, 1);
 		}
 		else                                                            ///<停止状态下，用方式二显示时间
 		{
 			SliderCtrl->SetPos(0);
-			ShowTime(player.m_currentFrameNO, player.m_endFrameNO - player.m_startFrameNO,
+			player.ShowTime(player.m_currentFrameNO, player.m_endFrameNO - player.m_startFrameNO,
 				player.m_videoTimeInSecond, pWndTimeDis, 0);
 
 		}
@@ -205,13 +222,13 @@ void DrawDetectionSUBDlg::OnTimer(UINT_PTR nIDEvent)
 			CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT2);
 			if (oriPlayer.m_playState != PLAY_STATE_STOP)
 			{ 
-				ShowTime(oriPlayer.m_currentFrameNO, oriPlayer.m_endFrameNO - oriPlayer.m_startFrameNO, 
+				player.ShowTime(oriPlayer.m_currentFrameNO, oriPlayer.m_endFrameNO - oriPlayer.m_startFrameNO, 
 					oriPlayer.m_videoTimeInSecond, pWndTimeDis, 1);
 			}
 			else
 			{
 				SliderCtrl->SetPos(0);
-				ShowTime(oriPlayer.m_currentFrameNO, oriPlayer.m_endFrameNO - oriPlayer.m_startFrameNO, 
+				player.ShowTime(oriPlayer.m_currentFrameNO, oriPlayer.m_endFrameNO - oriPlayer.m_startFrameNO, 
 					oriPlayer.m_videoTimeInSecond, pWndTimeDis, 0);
 			}
 		}
@@ -220,7 +237,7 @@ void DrawDetectionSUBDlg::OnTimer(UINT_PTR nIDEvent)
 			CSliderCtrl * SliderCtrl=((CSliderCtrl*)GetDlgItem(IDC_SLIDER_IN_DRAW_DETECT2));
 			SliderCtrl->SetPos(oriPlayer.m_currentFrameNO);
 			CWnd *pWndTimeDis = GetDlgItem(IDC_STATIC_TIME_IN_DRAW_DETECT2);
-			ShowTime(oriPlayer.m_currentFrameNO,Video_FrameCount, oriPlayer.m_videoTimeInSecond, pWndTimeDis, 1);
+			oriPlayer.ShowTime(oriPlayer.m_currentFrameNO,Video_FrameCount, oriPlayer.m_videoTimeInSecond, pWndTimeDis, 1);
 
 		}
 	}
@@ -253,34 +270,6 @@ void DrawDetectionSUBDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	}
 }
-
-
-
-void DrawDetectionSUBDlg::ShowTime(int m_currentFrameNO, int totalFrameCount, 
-	int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
-{
-	CString CurVideoTime;
-	if (flag == 1)
-	{	
-		int CurrentTimeInSecond = (double)m_currentFrameNO/double(totalFrameCount)*videoTimeInSecond;
-		int CurVedioHour=CurrentTimeInSecond/3600;
-		int CurVedioMinute=CurrentTimeInSecond/60-CurVedioHour*60;
-		int CurVedioSecond=CurrentTimeInSecond-CurVedioHour*3600-CurVedioMinute*60;
-
-		int VedioHour= videoTimeInSecond/3600;
-		int VedioMinute= videoTimeInSecond/60-VedioHour*60;
-		int VedioSecond= videoTimeInSecond-VedioHour*3600-VedioMinute*60;
-
-		CurVideoTime.Format(" %d::%d::%d / %d::%d::%d ",CurVedioHour,CurVedioMinute,CurVedioSecond,VedioHour,VedioMinute,VedioSecond);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-	else if (flag == 0)
-	{
-		CurVideoTime.Format(" %d::%d::%d / %d::%d::%d ",0,0,0,0,0,0);
-		m_pShowTimeWnd->SetWindowText(CurVideoTime);
-	}
-}
-
 
 void DrawDetectionSUBDlg::OnBnClickedBtnPlayInDrawDetect()
 {
@@ -663,6 +652,7 @@ void DrawDetectionSUBDlg::DisplayPageSumImg()
 		num = objDetectedInfos.size();			//为最后一页，显示剩余的图
 
 	IplImage* image = NULL;
+	CString ObjID;
 	for (int i = 0; i < m_pageSum; i++)
 	{	
 		///显示图片
@@ -676,6 +666,8 @@ void DrawDetectionSUBDlg::DisplayPageSumImg()
 			///在那一帧中画ROI区域标出目标位置
 			CRect rect = objDetectedInfos.at(m_pageNum + i).C_roi;
 			cvRectangle(image,cvPoint(rect.left,rect.top),cvPoint(rect.right,rect.bottom),CV_RGB(200,200,0),5,8,0);
+			ObjID.Format("%d",objDetectedInfos.at(m_pageNum +i).objectID);
+			GetDlgItem(IDC_DRAW_OBJECT1+i)->SetWindowText(ObjID);
 		}
 		else											///若为最后一页，则用closeup.bmp填充
 			image = cvLoadImage("closeup.bmp",CV_LOAD_IMAGE_COLOR);

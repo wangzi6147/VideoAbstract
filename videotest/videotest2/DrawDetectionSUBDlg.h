@@ -20,10 +20,6 @@ public:
 	enum { IDD = IDD_DRAW_DETECT };
 
 	friend class Cvideotest2Dlg;    //友元类
-	void ShowTime(int m_currentFrameNO,            ///<用于显示播放时间的函数
-		int totalFrameCount,
-		int videoTimeInSecond,
-		CWnd *m_pShowTimeWnd, int flag);
 
 	CSliderCtrl m_CSlider_playerCtrl;   ///<原始播放滑动条控件变量
 	CSliderCtrl m_CSlider_oriplayerCtrl;   ///<检测结果窗口二滑动条控件变量    //改动
