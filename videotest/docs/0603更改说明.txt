@@ -1,0 +1,15 @@
+0.将数据库密码改成自己的密码
+
+较0507更改内容：
+1.视频过段无需处理
+  改if (m_nTotalFrameToDo < 20000)
+	{///处理视频总帧数>20000,否则视频果断无需处理
+  为if (m_nTotalFrameToDo < 5000) //这样4min的视频也能处理
+2.更改int CVideo::InitSampleSetting()中初始采样，
+	double ratioH = (double)m_nVideoH/800.0;
+	double ratioW = (double)m_nVideoW/800.0;（原为400）
+  使结果视频在800*800以内。目前选00015_h为测试视频，原视频640*480，结果视频为640*480。
+3.缺胳膊少腿
+  改void CVideo::VideoFGProcessing()中“前景分割”处“//<前景图像二值化”参数60为30
+  cvThreshold(m_pGrayFGMat, m_pGrayFrame, 30,255.0,CV_THRESH_BINARY);///<前景图像二值化
+4.代码整理：去掉CWMPControls控件有关头文件，整理控件无用代码，按钮名

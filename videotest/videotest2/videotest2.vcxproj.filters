@@ -22,6 +22,69 @@
     <None Include="res\videotest2.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="res\welcome.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\background.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\play_u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\pause_u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\pause_d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\play_d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\stop_d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\播放器\stop_u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\PicSum\up_d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\PicSum\up_u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\step1.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\PicSum\down_u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\PicSum\down_d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\about-d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\about-u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\exit-d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\exit-u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\open-d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\open-u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\view-d.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\Main\view-u.bmp">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="videotest2.h">
@@ -60,13 +123,34 @@
     <ClInclude Include="DisplayFrame.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectViewDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ChangeIniFileDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ifRebuildDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonBeautify.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UIbeautify.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WelcomeDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VTrack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoAbsSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawDetectionSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureAbsSUBDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectViewSUBDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -95,9 +179,6 @@
     <ClCompile Include="DisplayFrame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectViewDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ChangeIniFileDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -107,10 +188,63 @@
     <ClCompile Include="ifRebuildDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ButtonBeautify.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UIbeautify.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WelcomeDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VTrack.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoAbsSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawDetectionSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureAbsSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectViewSUBDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="videotest2.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Main\save-d.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\Main\save-u.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\abs-default-b.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\step1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\step2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\step3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\step4.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\default\step5.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\title.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -1,0 +1,15 @@
+添加 播放器时间显示功能方法
+void Cvideotest2Dlg::ShowTime(int m_currentFrameNO, int totalFrameCount, 
+		 int videoTimeInSecond, CWnd *m_pShowTimeWnd, int flag)
+
+加入static text控件
+ontimer中控制时间更新，settimer再加一个定时器
+
+问题：结束帧获取问题
+1.显示时间player1.m_videoTimeInSecond初始化----注意：player。cpp不是最新版本，更新了
+2.slider初始化问题
+	
+	m_CSliderPlayer1Ctrl.SetRange(0, player1.m_endFrameNO);///<滑动条初始化
+	m_CSliderPlayer1Ctrl.SetPos(0);
+
+解决：注意要将控件绑定	DDX_Control(pDX, IDC_SLIDER_IN_VID_VIEW,m_CSliderplayer1Ctrl);

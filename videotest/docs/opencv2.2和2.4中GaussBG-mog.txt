@@ -1,0 +1,125 @@
+实际上是采用了两种不同的算法。是两种不同的检测方法，分别来自于下面两篇文章，详见cvaux.h
+P. KadewTraKuPong and R. Bowden, "An improved adaptive background mixture model for real-time tracking with shadow detection" in Proc. 2nd European Workshp on Advanced Video-Based Surveillance Systems, 2001.
+Liyuan Li, Weimin Huang, Irene Y.H. Gu, and Qi Tian. "Foreground Object Detection from Videos Containing Complex Background" ACM MM2003
+ 
+ 
+个人觉得以上解释错误，测试视频，两种不同的数据类型CvGaussBGModel，CvBGStatModel   效果一样，CvBGStatModel是最基本的一个结构。Opencv中高斯建模的两种建模方法入下：
+ 
+Opencv对前景\背景检测的描述，摘至opecv2.1\cvaux.h
+/* We discriminate between foreground and background pixels
+ * by building and maintaining a model of the background.
+ * Any pixel which does not fit this model is then deemed
+ * to be foreground.
+ *
+ *At present we support two core background models,
+ *one of which has two variations:
+ *
+ *  o CV_BG_MODEL_FGD: latest and greatest algorithm, described in
+ *    
+ *   Foreground Object Detection from Videos Containing Complex Background.
+ *   Liyuan Li, Weimin Huang, Irene Y.H. Gu, and Qi Tian.
+ *   ACM MM2003 9p
+ *
+ *  o CV_BG_MODEL_FGD_SIMPLE:
+ *       A code comment describes this as a simplified version of the above,
+ *      but the code is in fact currently identical
+ *
+ *  o CV_BG_MODEL_MOG: "Mixture of Gaussians", older algorithm, described in
+ *
+ *       Moving target classification and tracking from real-time video.
+ *       A Lipton, H Fujijoshi, R Patil
+ *       Proceedings IEEE Workshop on Application of Computer Vision pp 8-14 1998
+ *
+ *       Learning patterns of activity using real-time tracking
+ *       C Stauffer and W Grimson  August 2000
+ *       IEEE Transactions on Pattern Analysis and Machine Intelligence 22(8):747-757
+ */
+更新cvUpdateBGStatModel()时采用哪种算法更新，主要取决于cvCreateGaussianBGModel或者cvCreateFGDStatModel  建立了那种模型。这两种模型的参数均可调，GaussBGModel （混合\单高斯模型），对应实现文件cvbgfg_gaussmix.cpp，其算法基于   KaewTraKulPong and R. Bowden，An Improved Adaptive Background Mixture Model for Real-time Tracking and Shadow Detection, AVSS 2001； FGDStatModel 对应实现文件cvbgfg_acmmm2003.cpp，其算法基于   Liyuan Li, Weimin Huang, Irene Y.H. Gu, and Qi Tian, Foreground Object Detection from Videos Containing Complex Background, ACM-MM 2003。看论文上效果很好，让人想起去雾的软抠图soft matting。用GaussBGModel模型cvUpdateBGStatModel()函数的第三个参数为学习速率，即icvUpdateGaussianBGModel( IplImage* curr_frame, CvGaussBGModel*  bg_model, double learningRate )  ；用FGDStatModel更新模板使用icvUpdateFGDStatModel( IplImage* curr_frame, CvFGDStatModel*  model, double ) ，第三个参数没有用。
+ 
+网上搜的程序，大多为GaussBGModel模型，使用FGDStatModel模型，用cvCreateFGDStatModel替代cvCreateGaussianBGModel即可。 Opencv2.1采用混合高斯模型无法显示模型所采用的背景解决方法：https://code.ros.org/trac/opencv/ticket/317http://blog.csdn.net/duliang_wu/article/details/7317740 Ps：网上摘录看到有用OpenCV做的混合高斯模型的前景检测方法，有下面这样的参数初始化。 CvGaussBGStatModelParams结构，初始化为params.win_size = CV_BGFG_MOG_WINDOW_SIZE;params.bg_threshold = CV_BGFG_MOG_BACKGROUND_THRESHOLD;params.std_threshold = CV_BGFG_MOG_STD_THRESHOLD;params.weight_init = CV_BGFG_MOG_WEIGHT_INIT;params.variance_init = CV_BGFG_MOG_SIGMA_INIT*CV_BGFG_MOG_SIGMA_INIT;params.minArea = CV_BGFG_MOG_MINAREA;params.n_gauss = CV_BGFG_MOG_NGAUSSIANS; //该值默认为5
+ 
+看到有用OpenCV做的混合高斯模型的前景检测方法，有下面这样的参数初始化： CvGaussBGStatModelParams结构，初始化为params.win_size = CV_BGFG_MOG_WINDOW_SIZE;params.bg_threshold = CV_BGFG_MOG_BACKGROUND_THRESHOLD;params.std_threshold = CV_BGFG_MOG_STD_THRESHOLD;params.weight_init = CV_BGFG_MOG_WEIGHT_INIT;params.variance_init = CV_BGFG_MOG_SIGMA_INIT*CV_BGFG_MOG_SIGMA_INIT;params.minArea = CV_BGFG_MOG_MINAREA;params.n_gauss = CV_BGFG_MOG_NGAUSSIANS;
+ params.win_size   // 初始化阶段的帧数；用户自定义模型学 习率a=1/win_size;
+ params.bg_threshold //和其中一个高斯模型匹配时的阈值
+ params.std_threshold   //是否为背景的的阈值
+ params.weight_init    //高斯分布的初始权值
+ params.variance_init  //高斯分布的初始方差
+ params.minArea  //最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
+ params.n_gauss    //高斯分布函数的个数
+     
+   
+    //新建高斯模型并初始化相关参数
+	m_pGaussParams = new CvGaussBGStatModelParams;
+	m_pGaussParams->win_size      = 300;	// 初始化阶段的帧数；用户自定义模型学 习率a=1/win_size;
+	m_pGaussParams->bg_threshold  = 0.65;	//和其中一个高斯模型匹配时的阈值
+	m_pGaussParams->std_threshold = 3.5;	//是否为背景的的阈值
+	m_pGaussParams->weight_init   = 0.05;	//高斯分布的初始权值
+	m_pGaussParams->variance_init = 30*30;	//高斯分布的初始方差
+	m_pGaussParams->minArea       = 15;	//最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
+	m_pGaussParams->n_gauss       = 3;	//高斯分布函数的个数
+	
+	m_pGaussBGModel     = (CvGaussBGModel*)cvCreateGaussianBGModel(m_pGrayResizeFrame, m_pGaussParams);
+
+	    CvGaussBGModel* bg_model = NULL; 
+
+            CvGaussBGStatModelParams params;  
+            params.win_size = 2000;            // 初始化阶段的帧数；用户自定义模型学 习率a=1/win_size;
+            params.bg_threshold = 0.7;         //和其中一个高斯模型匹配时的阈值  
+            params.weight_init = 0.05;         //高斯分布的初始权值
+            params.variance_init = 30;  	//高斯分布的初始方差
+            params.minArea = 15.f;  		//最小面积，这个参数用来去噪，当检测的目标矩阵区域面积小于这minArea时，就把它当噪声去除
+            params.n_gauss = 5; 		//= K =Number of gaussian in mixture  
+            params.std_threshold = 2.5;  	//是否为背景的的阈值
+          
+            bg_model = (CvGaussBGModel*)cvCreateGaussianBGModel(pFrame,params);     //建立模型
+                  
+            cvSmooth(pFrame,pFrame,CV_GAUSSIAN,3,0,0,0);  
+      
+            cvUpdateBGStatModel(pFrame,(CvBGStatModel*)bg_model,-0.00001);   //更新背景
+            cvCopy(bg_model->foreground ,pFrImg,0);  
+            cvCopy(bg_model->background ,pBkImg,0);  
+   
+            cvErode(pFrImg,pFrImg,0,1);  
+            cvDilate(pFrImg,pFrImg,0,3);  
+
+              
+            cvShowImage("video",pFrame);  
+            cvShowImage("foreground",pFrImg);  
+
+            cvShowImage("foreground",pFrImg); 
+            cvCopy(pFrImg,FirstImg,0); 
+
+            cvReleaseBGStatModel((CvBGStatModel**)&bg_model);  
+
+ 
+
+实现了基于GMM的运动目标检测，同时能够消除运动阴影； （基于文献：Improved adaptive Gausian mixture model for background subtraction）
+
+	cv::VideoCapture capture;
+        capture.open(videoFile);
+
+        cv::BackgroundSubtractorMOG2  mog;
+
+        cv::Mat foreground;
+        cv::Mat background;
+        IplImage bkImage;
+                
+        cv::Mat frame;
+        long frameNo = 0;
+        while (capture.read(frame))
+        {
+
+           	// 运动前景检测，并更新背景
+               mog(frame, foreground, 0.001);       
+
+               // 腐蚀
+               cv::erode(foreground, foreground, cv::Mat());
+
+               // 膨胀
+               cv::dilate(foreground, foreground, cv::Mat());
+
+               mog.getBackgroundImage(background);   // 返回当前背景图像
+
+               cv::imshow("video", foreground);
+               cv::imshow("background", background);
+	}

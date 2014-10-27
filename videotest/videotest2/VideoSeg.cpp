@@ -37,6 +37,11 @@ CVideo::CVideo()
 	m_IfDoneFus       = false;///<视频融合完成标志位置否
 	SegFrame_Count    = 0;    ///<分割视频总帧数置零
 	FusFrame_Count    = 0;    ///<融合视频总帧数置零
+	StepBitmapDefault[0] = 0;
+	StepBitmapDefault[1] = 0;
+	StepBitmapDefault[2] = 0;
+	StepBitmapDefault[3] = 0;
+	StepBitmapDefault[4] = 0;
 
 	m_ProcessingSpeed = 0.0;  ///<处理进度置零
 
@@ -664,7 +669,7 @@ void CVideo::VideoBGProcessing()
 			{///<当前帧号处于该静态段范围，采样处理
 				//if ((int)m_nCurrentFrame % m_nSamplingRate == 1)
 				{
-					m_ProcessingSpeed = 2.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
+					m_ProcessingSpeed = 1.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
 					cvResize(m_pOriFrame, m_pProcessFrame);///<压缩
 					m_FrameMat = m_pProcessFrame; //<类型转换：Iplimage转为Mat
 					//cvRunningAvg(m_pFrameMat, m_pBGMat, 0.03, 0);///<更新移动平均
@@ -732,7 +737,7 @@ void CVideo::VideoFGProcessing()
 			if (!m_pOriFrame)///<获取帧图像失败，退出内层循环
 				break;
 			m_nCurrentFrame = (int)cvGetCaptureProperty(m_pCapture, CV_CAP_PROP_POS_FRAMES);///<获取当前帧号
-			m_ProcessingSpeed = 3.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
+			m_ProcessingSpeed = 2.0+(double)m_nCurrentFrame/(double)m_nTotalFrameToDo;///<计算处理进度
 			if (m_nCurrentFrame < m_VideoFGParam.startFrame)
 				continue;
 			///<当前帧号处于该动态段范围，采样处理
@@ -822,7 +827,7 @@ void CVideo::ParaSegmentation()
 		m_rFGSegThreshold = k_ratio;
 	
 	///检测到运动视频段
-	if (k_ratio >= m_rFGSegThreshold)
+	if (k_ratio >= 0.00005)
 	{
 		m_VideoFGParam.startFrame = m_nCurrentFrame;///<获取动态段起始帧号
 		if (m_VideoFGParam.startFrame/m_nBGUpdateFrames == m_VideoBGParam.BGImgID)
@@ -1173,7 +1178,8 @@ void CVideo::VideoFusionProcessing()
 		mypCombineSegImage.push_back(myTempImage);
 		
 	}
-	///开始视频融合
+	///开始视频融合 
+	FGPara_Count = m_New2OldParaParam.nOldPara;   //371测试
 	while(m_VideoFGParam.nOldPara<FGPara_Count && m_IfContinue)
 	{
 		if (m_nParaFinal[m_VideoFGParam.nOldPara] == -1)
@@ -1191,7 +1197,7 @@ void CVideo::VideoFusionProcessing()
 			m_VideoFGParam.startFrame = m_nFGFinal[m_VideoFGParam.nOldPara];           ///<获取本次融合起始帧号
 			m_VideoFGParam.endFrame = m_VideoFGParam.startFrame + m_nFps*m_nSampleTime;///<获取本次融合结束帧号
 			this->CreateNewFrame();///<创建新视频帧
-			m_ProcessingSpeed = 4.0+(double)(m_VideoFGParam.nOldPara+1)/(double)FGPara_Count;///<计算处理进度
+			m_ProcessingSpeed = 3.0+(double)(m_VideoFGParam.nOldPara+1)/(double)FGPara_Count;///<计算处理进度
 		}
 		cvReleaseImage(&m_pNewFrame);///<释放新视频帧图像空间
 
@@ -1207,11 +1213,11 @@ void CVideo::VideoFusionProcessing()
 				m_VideoFGParam.startFrame = m_nFGFinal[m_VideoFGParam.nOldPara];           ///<获取本次融合起始帧号
 				m_VideoFGParam.endFrame = m_VideoFGParam.startFrame + m_nFps*m_nSampleTime;///<获取本次融合结束帧号
 				this->FusionNewFrame();///<融合新视频帧
-				m_ProcessingSpeed = 4.0+(double)(m_VideoFGParam.nOldPara+1)/(double)FGPara_Count;///<计算处理进度
+				m_ProcessingSpeed = 3.0+(double)(m_VideoFGParam.nOldPara+1)/(double)FGPara_Count;///<计算处理进度
 			}
 		}
 		if (m_FusionParam - m_FusionStart<=1)
-			return;
+			break;
 
 		char m_strName[500];         ///<名称临时变量
 		for (int k=m_FusionStart;k<m_FusionParam && m_IfContinue;k++)

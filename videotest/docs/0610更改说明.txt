@@ -1,0 +1,22 @@
+1. 改opencv2.2版本为opencv2.4.4版本
+
+
+2. 更新了混合高斯模型方法，cvGuassBGModel为cv::BackgroundSubtractorMOG2
+
+1).将PublicHeader下Lib路径下静态库全换成2.4版本，将opencv2和opencv路径下整个文件夹替换（相当于替换头文件），将Debug文件夹下动态链接库(.dll)全部换成2.4版本的
+
+e.g. D:\Program Files\opencv\build\x86\vc10\lib 下到 D:\C++\VA\videotest0610\PublicHeader\Lib
+	
+
+2).将publicheader.h中220替换成242，检查相应位置，是否真的有这样的库文件；
+
+3).更改项目属性的包含目录，库目录，附加依赖项；
+
+4).此时编译可能遇到CvGaussBGModel等结构体找不到定义的情况，这是因为原来2.2版本CvGaussBGModel是定义在background_segm.hpp中，而2.4中则定义在legacy\legacy.hpp中，
+在VideoSeg.h中添加#include "legacy\legacy.hpp"解决；
+
+5).此时运行可能遇到缺少tbb_debug.dll的情况，在\opencv\build\common\tbb\ia32\vc10下找到，拷贝到debug下即可。
+
+
+
+3. 利用相邻帧位置相近物体判定为同一物体，获取原视频分段。

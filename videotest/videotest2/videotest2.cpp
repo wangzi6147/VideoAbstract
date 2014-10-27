@@ -55,7 +55,7 @@ BOOL Cvideotest2App::InitInstance()
 	CWinApp::InitInstance();
 	
 	//Skin++ initializie
-	skinppLoadSkin(_T("..\\SkinPlusplus\\AquaOS.ssk"));
+	//skinppLoadSkin(_T("..\\SkinPlusplus\\Phenom.ssk"));
 
 	AfxEnableControlContainer();
 

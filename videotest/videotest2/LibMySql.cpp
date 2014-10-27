@@ -30,7 +30,7 @@ using namespace std;
 CDataMySql::CDataMySql(void)
 {
 	const char user[] = "root";         ///<username        
-	const char pswd[] = "123456";        ///<password
+	const char pswd[] = "082127";        ///<password
 	const char host[] = "localhost";    ///<or"127.0.0.1"
 	const char table[] = "mydb";        ///<database
 	unsigned int port = 3306;           ///<server port        
@@ -3153,4 +3153,47 @@ bool CDataMySql::GetObjectOriMidFrameFromVideoFgTable(vector<objectInfo> *objDet
 	}
 
 	
+}
+
+bool CDataMySql::GetObjectInfoFromDrawObjectTable(int objectID,CString ObjectTableName,objectInfo* tempInfo)
+{
+	CString m_strSql;
+	MYSQL_RES *m_result;
+	MYSQL_ROW m_sqlRow;
+	m_strSql.Format("select objectID,frameID,nTop,nBottom,nLeft,nRight from %s where objectID=\'%d\'",ObjectTableName,objectID);
+	if(mysql_real_query(&m_mysql,(char*)(LPCTSTR)m_strSql,(UINT)m_strSql.GetLength())!=0)
+	{ 
+		print_error(&m_mysql,"error message");
+		return false;
+	}
+	else
+	{
+		m_result=mysql_store_result(&m_mysql);///<保存查询到的数据到m_result
+		if (m_result)
+		{
+			m_sqlRow=mysql_fetch_row(m_result);///<获得所有结果字符串
+			if(m_sqlRow)
+			{
+				tempInfo->objectID		= atoi(m_sqlRow[0]);
+				tempInfo->firstFrameID  = atoi(m_sqlRow[1]);
+				tempInfo->lastFrameID	= atoi(m_sqlRow[1]);
+				tempInfo->C_roi.top		= atoi(m_sqlRow[2]);
+				tempInfo->C_roi.bottom	= atoi(m_sqlRow[3]);
+				tempInfo->C_roi.left		= atoi(m_sqlRow[4]);
+				tempInfo->C_roi.right		= atoi(m_sqlRow[5]);
+			}
+			while (m_sqlRow)
+			{
+				if (tempInfo->lastFrameID < atoi(m_sqlRow[1]))
+				{
+					tempInfo->lastFrameID = atoi(m_sqlRow[1]);
+				}
+				m_sqlRow=mysql_fetch_row(m_result);
+			}
+		}
+		if(m_result!=NULL) mysql_free_result(m_result);///<释放结果资源
+		return true;
+	}
+
+
 }

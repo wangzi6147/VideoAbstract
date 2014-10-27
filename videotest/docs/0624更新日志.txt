@@ -1,0 +1,11 @@
+0624更新日志 @王梓
+
+更新内容：
+1. 生成摘要后保留所有表。
+2. 实现点击后跳转至段起始帧：
+
+	将int FindOrigFrameFromNewTraceTable(CString newTraceTable,CvRect rect);分为两步：
+
+		int FindOrigParaFromFGTraceTable(CString FGTraceTable, CvRect rect);	///<从FGTrace表中根据ROI信息找到原始视频段号
+		int FindOrigFrameFromVideoFGTable(CString VideoFGTable,int origPara);	///<从videofg表中根据段号找到原始视频帧数
+

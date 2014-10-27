@@ -1,0 +1,15 @@
+0707更新日志 @王梓
+
+更新内容：
+1. 增加CombineSegsTable表，以辅助实现点击合成图像跳转至对应段功能：
+
+	CombineSegsTable里面用到的表的相关函数：
+		
+		bool CreateCombineSegsTable(CString CombineSegsTableName);	///建表
+	
+		bool InsertData2CombineSegsTable(OrigTraceTable traceTab, CString CombineSegsTableName);	///插入数据
+	
+		bool FindROIFromCombineSegsTable(vector <CvRect> *m_ROI, CString tableName);	///获得所有ROI
+
+2. Dlg增加监听，实现点击合成图像跳转至对应段功能
+
