@@ -6,3 +6,8 @@
 *.dll
 *.aps
 *.opensdf
+
+/VideoTestForAndroid/obj/
+/VideoTestForAndroid/bin/
+/VideoTestForAndroid/gen/
+/VideoTestForAndroid/libs/
