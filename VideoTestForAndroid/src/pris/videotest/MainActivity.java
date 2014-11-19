@@ -261,7 +261,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //			}
 //		}
 		if (!isPreview ) {  
-            mCamera = Camera.open();  
+            mCamera = Camera.open(0);  
         }  
         if (mCamera != null && !isPreview) {  
             try {  
@@ -375,7 +375,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	}
 
 	static {
-		System.loadLibrary("VideoTestLib");
+		System.loadLibrary("VideoTest");
 	}
 
 }

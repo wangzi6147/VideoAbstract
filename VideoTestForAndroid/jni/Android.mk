@@ -27,7 +27,7 @@ else
 include $(OPENCV_MK_PATH)
 endif
 
-LOCAL_MODULE    := VideoTestLib
+LOCAL_MODULE    := VideoTest
 LOCAL_SRC_FILES := Detection.cpp
 LOCAL_LDLIBS    += -lm -llog
 
