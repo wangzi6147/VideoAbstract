@@ -28,7 +28,8 @@ include $(OPENCV_MK_PATH)
 endif
 
 LOCAL_MODULE    := VideoTest
-LOCAL_SRC_FILES := Detection.cpp
+LOCAL_SRC_FILES := Detection.cpp\
+vibe.cpp
 LOCAL_LDLIBS    += -lm -llog
 
 include $(BUILD_SHARED_LIBRARY)

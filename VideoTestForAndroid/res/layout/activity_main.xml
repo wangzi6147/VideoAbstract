@@ -17,8 +17,8 @@
     
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="40dip"
-        android:layout_height="40dip"
+        android:layout_width="200dip"
+        android:layout_height="150dip"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"/>
 

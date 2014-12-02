@@ -38,11 +38,11 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_init(JNIEnv *, jclass,
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detect(JNIEnv * env,
 		jclass, jintArray pixels, jint width, jint height) {
 	jint * cPixels;
-	cPixels = env->GetIntArrayElements(pixels,0);
+	cPixels = env->GetIntArrayElements(pixels, 0);
 
 	cv::Mat imgData(height, width, CV_8UC4, (unsigned char*) cPixels);
 
-	IplImage *frame=cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 4);
+	IplImage *frame = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 4);
 	*frame = imgData.operator _IplImage();
 	//imgData.release();
 
@@ -82,4 +82,36 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detect(JNIEnv * env,
 	}
 	env->ReleaseIntArrayElements(pixels, cPixels, 0);
 	return false;
+}
+
+JNIEXPORT jintArray JNICALL Java_pris_videotest_JNIClient_detectWithReturn(
+		JNIEnv * env, jclass, jintArray pixels, jint width, jint height) {
+	jint * cPixels;
+	cPixels = env->GetIntArrayElements(pixels, 0);
+
+	cv::Mat imgData(height, width, CV_8UC4, (unsigned char*) cPixels);
+
+	IplImage *frame = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 4);
+	*frame = imgData.operator _IplImage();
+	//imgData.release();
+
+	cvSmooth(frame, frame, CV_GAUSSIAN, 3, 0, 0);     ///<高斯滤波
+	cv::Mat m_OriFrameMat = frame;
+	//cvReleaseImage(&frame);
+	resize(m_OriFrameMat, m_ResizeFrameMat,
+			cv::Size(m_nVideoResizeW, m_nVideoResizeH), 0, 0, CV_INTER_LINEAR); ///<压缩 640*480 m_pResizeFrame=30*40
+	//m_OriFrameMat.release();
+	cvtColor(m_ResizeFrameMat, m_GrayFrameMat, CV_BGRA2GRAY, 1); ///<灰度化
+	//m_ResizeFrameMat.release();
+	m_pBGSubMOG2.operator()(m_GrayFrameMat, foregroundMat, 0.001);
+	m_GrayFrameMat = foregroundMat;
+
+	int result[m_nVideoResizeH*m_nVideoResizeW];
+	for(int i = 0; i<m_nVideoResizeH*m_nVideoResizeW; i++){
+		result[i] = m_GrayFrameMat.data[i];
+	}
+	env->ReleaseIntArrayElements(pixels, cPixels, 0);
+	jintArray intArray = env->NewIntArray(m_nVideoResizeH*m_nVideoResizeW);
+	env->SetIntArrayRegion(intArray, 0, m_nVideoResizeH*m_nVideoResizeW, result);
+	return intArray;
 }

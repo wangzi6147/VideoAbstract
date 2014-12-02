@@ -25,10 +25,34 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_init
 
 /*
  * Class:     pris_videotest_JNIClient
- * Method:    hello_android
+ * Method:    helloAndroid
  * Signature: ([III)I
  */
 JNIEXPORT jint JNICALL Java_pris_videotest_JNIClient_helloAndroid
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithReturn
+ * Signature: ([III)[I
+ */
+JNIEXPORT jintArray JNICALL Java_pris_videotest_JNIClient_detectWithReturn
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    initVIBE
+ * Signature: ([III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initVIBE
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithVIBE
+ * Signature: ([III)[I
+ */
+JNIEXPORT jintArray JNICALL Java_pris_videotest_JNIClient_detectWithVIBE
   (JNIEnv *, jclass, jintArray, jint, jint);
 
 #ifdef __cplusplus

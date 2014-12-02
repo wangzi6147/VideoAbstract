@@ -1,17 +1,13 @@
 package pris.videotest;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -56,6 +52,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		/* 隐藏状态栏 */
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//屏幕常亮
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		/* 隐藏标题栏 */
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -230,6 +227,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	public boolean ifRefresh = false;
 	private boolean isPreview = false; // 是否在预览中
 	private int i = 0;
+	private Bitmap bitmapForshow;
 
 	/* 自定义class AutoFocusCallback */
 	public final class AutoFocusCallback implements
@@ -349,15 +347,21 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //				System.out.println(i);
 				if (ifInit) {
 					if (JNIClient.init(pixels, width, height))
+					//if(JNIClient.initVIBE(pixels, width, height))
 						ifInit = false;
 				}
-				if (JNIClient.detect(pixels, width, height) && !ifInit) {
-					sendImageIv.setBackgroundColor(Color.RED);
-					System.out.println("有入侵"+i);
-					i++;
-				}else {
-					sendImageIv.setBackgroundColor(Color.BLUE);
-				}
+//				if (JNIClient.detect(pixels, width, height) && !ifInit) {
+//					sendImageIv.setBackgroundColor(Color.RED);
+//					System.out.println("有入侵"+i);
+//					i++;
+//				}else {
+//					sendImageIv.setBackgroundColor(Color.BLUE);
+//				}
+				int[] result = JNIClient.detectWithReturn(pixels, width, height);
+				//int[] result = JNIClient.detectWithVIBE(pixels, width, height);
+				bitmapForshow = Bitmap.createBitmap(result, 40, 30, Config.RGB_565);
+				sendImageIv.setImageBitmap(bitmapForshow);
+				System.out.println("test");
 				// Log.w("wwwwwwwww", bmp.getWidth() + " " + bmp.getHeight());
 				// Log.w("wwwwwwwww",
 				// (bmp.getPixel(100, 100) & 0xff) + "  "
