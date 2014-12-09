@@ -4,11 +4,22 @@
 
 //cv::Mat gray;
 
-JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initWithByte(JNIEnv * env,
-		jclass, jbyteArray pixels, jint width, jint height) {
+bool cv_process_frame(unsigned char * pFrame, int width, int height) {
+	FILE *pFl = fopen("/data/tmp/640x480.yuv", "ab");
+	if (pFl){
+		fwrite(pFrame, 1, 640 * 480 * 3 / 2, pFl), fclose(pFl);
+		return true;
+	}else {
+		return false;
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initWithByte(
+		JNIEnv * env, jclass, jbyteArray pixels, jint width, jint height) {
 	///这里是初始化的步骤
 	jbyte * cPixels;
 	cPixels = env->GetByteArrayElements(pixels, 0);
+	remove("/data/tmp/640x480.yuv");
 	cv::Mat imgData(height, width, CV_8UC1, (unsigned char*) cPixels);
 	imgData.convertTo(imgData, CV_32FC1);
 	CvMat g = imgData;
@@ -16,6 +27,7 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initWithByte(JNIEnv * e
 	env->ReleaseByteArrayElements(pixels, cPixels, 0);
 	return true;
 }
+
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithByte(
 		JNIEnv * env, jclass, jbyteArray pixels, jint width, jint height) {
 	jbyte * cPixels;
@@ -27,6 +39,10 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithByte(
 	imgData.convertTo(imgData, CV_32FC1);
 	CvMat g = imgData;
 	env->ReleaseByteArrayElements(pixels, cPixels, 0);
-	return FrameProcessing(&g);
-	////////这里写内容////////
+	if (FrameProcessing(&g))
+		if(cv_process_frame((unsigned char*) cPixels, width, height))
+			return true;
+
+	return false;
 }
+
