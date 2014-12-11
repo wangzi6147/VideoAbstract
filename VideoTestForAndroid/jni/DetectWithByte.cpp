@@ -40,7 +40,7 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithByte(
 	CvMat g = imgData;
 	env->ReleaseByteArrayElements(pixels, cPixels, 0);
 	if (FrameProcessing(&g))
-		if(cv_process_frame((unsigned char*) cPixels, width, height))
+		//if(cv_process_frame((unsigned char*) cPixels, width, height))
 			return true;
 
 	return false;

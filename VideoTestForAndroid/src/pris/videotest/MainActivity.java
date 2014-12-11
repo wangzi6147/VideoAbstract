@@ -1,6 +1,10 @@
 package pris.videotest;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.content.Context;
@@ -84,15 +88,16 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		});
 
 		sendImageIv = (ImageView) findViewById(R.id.imageView);
-//		sendImageIv.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Intent i = new Intent();
-//				i.setType("image/*");
-//				i.setAction(Intent.ACTION_GET_CONTENT);
-//				startActivityForResult(i, Activity.DEFAULT_KEYS_SHORTCUT);
-//			}
-//		});
+
+		Button socketTestBtn = (Button) findViewById(R.id.socketTestBtn);
+		socketThread = new SocketThread();
+		socketTestBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				new Thread(socketThread).start();
+			}
+		});
 
 	}
 
@@ -230,6 +235,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	private boolean isPreview = false; // 是否在预览中
 	private int i = 0;
 	private Bitmap bitmapForshow;
+	private SocketThread socketThread;
 
 	/* 自定义class AutoFocusCallback */
 	public final class AutoFocusCallback implements
@@ -366,8 +372,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //				if (JNIClient.detectWithShift(pixels, width, height) && !ifInit) {
 				if (JNIClient.detectWithByte(data, width, height) && !ifInit) {
 					sendImageIv.setBackgroundColor(Color.RED);
-					System.out.println(System.currentTimeMillis()-currentTimeMillis);
+					socketThread.write(data);
 					i++;
+					System.out.println(System.currentTimeMillis()-currentTimeMillis);
 				}else {
 					sendImageIv.setBackgroundColor(Color.BLUE);
 				}
