@@ -5,13 +5,17 @@
 
 #define ALPHA 0.03
 #define THRD 10
+#define COUNTTHRD 400
+#define ISCHANGE 1
+#define NOTCHANGE 0
+#define RATIO 2
 
 using namespace cv;
 
 
 CvMat *BKGFrame = NULL;
-
-
+int nFrmNum = 0;
+int FLAG = 0;
 
 
 //int main(void)
@@ -77,6 +81,9 @@ int BinaryCount(CvMat *BinaryFrame)
 
 int FrameProcessing(CvMat *VideoFrame)
 {
+	nFrmNum++;
+	if (nFrmNum % RATIO == 0)
+		return FLAG;
 	//CvMat *binaryFrame = cvCreateMat(VideoFrame->rows, VideoFrame->cols, CV_8UC1);
 	CvMat *binaryFrame = cvCreateMat(VideoFrame->rows, VideoFrame->cols, CV_32FC1);
 
@@ -92,14 +99,26 @@ int FrameProcessing(CvMat *VideoFrame)
 
 	int count = BinaryCount(binaryFrame);
 
-	cvRunningAvg(TempFrame, BKGFrame, 0.03, 0);
+	cvRunningAvg(TempFrame, BKGFrame, ALPHA, 0);
 
 	cvReleaseMat(&binaryFrame);
 	
 	cvReleaseMat(&TempFrame);
 
-	if (count > 100)
-		return 1;
+	if (count > COUNTTHRD)
+		return (FLAG = ISCHANGE);
 	else
-		return 0;
+		return (FLAG = NOTCHANGE);
 }
+
+
+
+
+
+
+
+
+
+
+
+

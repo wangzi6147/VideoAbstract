@@ -172,7 +172,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	/* ÅÄÕÕµÄmethod */
 	private void takePicture() {
 		if (mCamera != null) {
-			mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+			//mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
 		}
 	}
 
@@ -325,7 +325,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				decodeToBitMap(data, camera);
 				ifRefresh = true;
 			}
-
 		}
 	}
 
@@ -354,13 +353,13 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				
 //				int i = JNIClient.helloAndroid(pixels, width, height);
 //				System.out.println(i);
-				if (ifInit) {
-					//if (JNIClient.init(data, width, height))
-//					if (JNIClient.initShift(pixels, width, height))
-					//if(JNIClient.initVIBE(pixels, width, height))
-					if(JNIClient.initWithByte(data, width, height))
-						ifInit = false;
-				}
+//				if (ifInit) {
+//					//if (JNIClient.init(data, width, height))
+////					if (JNIClient.initShift(pixels, width, height))
+//					//if(JNIClient.initVIBE(pixels, width, height))
+//					if(JNIClient.initWithByte(data, width, height))
+//						ifInit = false;
+//				}
 				
 //				if (JNIClient.detect(data, width, height) && !ifInit) {
 //					sendImageIv.setBackgroundColor(Color.RED);
@@ -370,11 +369,12 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //					sendImageIv.setBackgroundColor(Color.BLUE);
 //				}
 //				if (JNIClient.detectWithShift(pixels, width, height) && !ifInit) {
-				if (JNIClient.detectWithByte(data, width, height) && !ifInit) {
-					sendImageIv.setBackgroundColor(Color.RED);
-					socketThread.write(data);
+//				if (JNIClient.detectWithByte(data, width, height) && !ifInit) {
+				if (JNIClient.detectWithDiff(data, width, height)){
+					//socketThread.write(data);
 					i++;
 					System.out.println(System.currentTimeMillis()-currentTimeMillis);
+					sendImageIv.setBackgroundColor(Color.RED);
 				}else {
 					sendImageIv.setBackgroundColor(Color.BLUE);
 				}

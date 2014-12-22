@@ -20,4 +20,6 @@ public class JNIClient {
 	public static native boolean initWithByte(byte[] data, int width, int height);
 
 	public static native boolean detectWithByte(byte[] data, int width, int height);
+
+	public static native boolean detectWithDiff(byte[] data, int width, int height);
 }

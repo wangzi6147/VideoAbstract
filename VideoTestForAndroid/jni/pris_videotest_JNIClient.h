@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     pris_videotest_JNIClient
  * Method:    detect
- * Signature: ([III)Z
+ * Signature: ([BII)Z
  */
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detect
   (JNIEnv *, jclass, jbyteArray, jint, jint);
@@ -18,7 +18,7 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detect
 /*
  * Class:     pris_videotest_JNIClient
  * Method:    init
- * Signature: ([III)Z
+ * Signature: ([BII)Z
  */
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_init
   (JNIEnv *, jclass, jbyteArray, jint, jint);
@@ -85,6 +85,14 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initWithByte
  * Signature: ([BII)Z
  */
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithByte
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithDiff
+ * Signature: ([BII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithDiff
   (JNIEnv *, jclass, jbyteArray, jint, jint);
 
 #ifdef __cplusplus

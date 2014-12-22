@@ -28,8 +28,7 @@ include $(OPENCV_MK_PATH)
 endif
 
 LOCAL_MODULE    := VideoTest
-LOCAL_SRC_FILES := DetectWithByte.cpp\
-segmentation_1208_wf.cpp
+LOCAL_SRC_FILES := DetectWithDiff.cpp
 LOCAL_LDLIBS    += -lm -llog
 
 include $(BUILD_SHARED_LIBRARY)
