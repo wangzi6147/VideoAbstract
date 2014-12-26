@@ -373,10 +373,10 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				if (JNIClient.detectWithDiff(data, width, height)){
 					//socketThread.write(data);
 					i++;
-					System.out.println(System.currentTimeMillis()-currentTimeMillis);
-					sendImageIv.setBackgroundColor(Color.RED);
+					System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:"+i);
+					//sendImageIv.setBackgroundColor(Color.RED);
 				}else {
-					sendImageIv.setBackgroundColor(Color.BLUE);
+					//sendImageIv.setBackgroundColor(Color.BLUE);
 				}
 				//int[] result = JNIClient.detectWithReturn(pixels, width, height);
 				//int[] result = JNIClient.detectWithVIBE(pixels, width, height);
@@ -392,7 +392,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //				bmp.recycle();
 //				pixels =null;
 //				stream.close();
-				System.gc();
+				//System.gc();
 //			}
 		} catch (Exception ex) {
 			Log.e("Sys", "Error:" + ex.getMessage());

@@ -8,8 +8,8 @@
 #include <pris_videotest_JNIClient.h>
 
 int CheckChange(unsigned char * img, int iNx, int iNy) {
-	//enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
-	//enum eChk { eDX=4, eDY=4, eMM=2, eDV=64};
+//	enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
+//	enum eChk { eDX=4, eDY=4, eMM=2, eDV=64};
 	enum eChk {
 		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 256
 	};
