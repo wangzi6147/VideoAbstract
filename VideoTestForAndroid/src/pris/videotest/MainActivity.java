@@ -374,9 +374,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 					//socketThread.write(data);
 					i++;
 					System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:"+i);
-					//sendImageIv.setBackgroundColor(Color.RED);
+					sendImageIv.setBackgroundColor(Color.RED);
 				}else {
-					//sendImageIv.setBackgroundColor(Color.BLUE);
+					sendImageIv.setBackgroundColor(Color.BLUE);
 				}
 				//int[] result = JNIClient.detectWithReturn(pixels, width, height);
 				//int[] result = JNIClient.detectWithVIBE(pixels, width, height);
