@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -62,7 +63,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		/* 隐藏标题栏 */
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		/* 设定屏幕显示为横向 */
-		// this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);// 横屏 
 
 		setContentView(R.layout.activity_main);// ----------------------
 
@@ -98,7 +99,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				new Thread(socketThread).start();
 			}
 		});
-
 	}
 
 	// ///////----------重写SurfaceHolder.Callback接口的方法，

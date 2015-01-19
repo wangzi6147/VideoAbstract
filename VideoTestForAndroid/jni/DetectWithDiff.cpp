@@ -22,7 +22,7 @@ bool cv_process_frame(unsigned char * pFrame, int width, int height) {
  * 输入img为图像data
  * iNx为宽度
  * iNy为高度
- * 返回值为变化的像素个数
+ * 返回值为是否检测到目标，若返回1为检测到目标。
  */
 int CheckChange(unsigned char * img, int iNx, int iNy) {
 //	enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
@@ -72,14 +72,14 @@ JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithDiff(
 	static int ifInit = 1;
 	jbyte * cPixels;
 	cPixels = env->GetByteArrayElements(pixels, 0);
-	if(ifInit){
-		ifInit = 0;
-		remove("/data/tmp/640x480.yuv");
-	}
+//	if(ifInit){
+//		ifInit = 0;
+//		remove("/data/tmp/640x480.yuv");
+//	}
 	int ifChange = CheckChange((unsigned char*)cPixels, width, height);
-	if(ifChange){
-		cv_process_frame((unsigned char*)cPixels, width, height);
-	}
+//	if(ifChange){
+//		cv_process_frame((unsigned char*)cPixels, width, height);
+//	}
 	env->ReleaseByteArrayElements(pixels, cPixels, 0);
 	return ifChange;
 }
