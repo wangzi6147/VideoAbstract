@@ -10,26 +10,90 @@ extern "C" {
 /*
  * Class:     pris_videotest_JNIClient
  * Method:    detect
- * Signature: ([III)Z
+ * Signature: ([BII)Z
  */
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detect
-  (JNIEnv *, jclass, jintArray, jint, jint);
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
 
 /*
  * Class:     pris_videotest_JNIClient
  * Method:    init
- * Signature: ([III)Z
+ * Signature: ([BII)Z
  */
 JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_init
-  (JNIEnv *, jclass, jintArray, jint, jint);
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
 
 /*
  * Class:     pris_videotest_JNIClient
- * Method:    hello_android
+ * Method:    helloAndroid
  * Signature: ([III)I
  */
 JNIEXPORT jint JNICALL Java_pris_videotest_JNIClient_helloAndroid
   (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithReturn
+ * Signature: ([III)[I
+ */
+JNIEXPORT jintArray JNICALL Java_pris_videotest_JNIClient_detectWithReturn
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    initVIBE
+ * Signature: ([III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initVIBE
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithVIBE
+ * Signature: ([III)[I
+ */
+JNIEXPORT jintArray JNICALL Java_pris_videotest_JNIClient_detectWithVIBE
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    initShift
+ * Signature: ([III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initShift
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithShift
+ * Signature: ([III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithShift
+  (JNIEnv *, jclass, jintArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    initWithByte
+ * Signature: ([BII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_initWithByte
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithByte
+ * Signature: ([BII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithByte
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     pris_videotest_JNIClient
+ * Method:    detectWithDiff
+ * Signature: ([BII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_pris_videotest_JNIClient_detectWithDiff
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
 
 #ifdef __cplusplus
 }

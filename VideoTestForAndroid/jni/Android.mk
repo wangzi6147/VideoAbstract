@@ -21,14 +21,14 @@ OPENCV_CAMERA_MODULES:=off
 
 OPENCV_LIB_TYPE:=STATIC
 
-ifeq ("$(wildcard $(OPENCV_MK_PATH))","")
-include E:\OpenCV-2.4.10-android-sdk\sdk\native\jni\OpenCV.mk
-else
-include $(OPENCV_MK_PATH)
-endif
+#ifeq ("$(wildcard $(OPENCV_MK_PATH))","")
+#include D:\wangzi6147\Soft\OpenCV-2.4.10-android-sdk\sdk\native\jni\OpenCV.mk
+#else
+#include $(OPENCV_MK_PATH)
+#endif
 
-LOCAL_MODULE    := VideoTestLib
-LOCAL_SRC_FILES := Detection.cpp
+LOCAL_MODULE    := VideoTest
+LOCAL_SRC_FILES := DetectWithDiff.cpp
 LOCAL_LDLIBS    += -lm -llog
 
 include $(BUILD_SHARED_LIBRARY)

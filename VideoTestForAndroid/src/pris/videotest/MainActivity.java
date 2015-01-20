@@ -1,15 +1,17 @@
 package pris.videotest;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
@@ -56,11 +58,12 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		/* 隐藏状态栏 */
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//屏幕常亮
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		/* 隐藏标题栏 */
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		/* 设定屏幕显示为横向 */
-		// this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);// 横屏 
 
 		setContentView(R.layout.activity_main);// ----------------------
 
@@ -81,20 +84,21 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				// mCamera.autoFocus(mAutoFocusCallback);// 调用mCamera的
 				 //takePicture();
 				ifRefresh = true;
+				ifInit = true;
 			}
 		});
 
 		sendImageIv = (ImageView) findViewById(R.id.imageView);
-//		sendImageIv.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Intent i = new Intent();
-//				i.setType("image/*");
-//				i.setAction(Intent.ACTION_GET_CONTENT);
-//				startActivityForResult(i, Activity.DEFAULT_KEYS_SHORTCUT);
-//			}
-//		});
 
+		Button socketTestBtn = (Button) findViewById(R.id.socketTestBtn);
+		socketThread = new SocketThread();
+		socketTestBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				new Thread(socketThread).start();
+			}
+		});
 	}
 
 	// ///////----------重写SurfaceHolder.Callback接口的方法，
@@ -168,7 +172,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	/* 拍照的method */
 	private void takePicture() {
 		if (mCamera != null) {
-			mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+			//mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
 		}
 	}
 
@@ -230,6 +234,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	public boolean ifRefresh = false;
 	private boolean isPreview = false; // 是否在预览中
 	private int i = 0;
+	private Bitmap bitmapForshow;
+	private SocketThread socketThread;
 
 	/* 自定义class AutoFocusCallback */
 	public final class AutoFocusCallback implements
@@ -261,7 +267,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //			}
 //		}
 		if (!isPreview ) {  
-            mCamera = Camera.open();  
+            mCamera = Camera.open(0);  
         }  
         if (mCamera != null && !isPreview) {  
             try {  
@@ -319,27 +325,27 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				decodeToBitMap(data, camera);
 				ifRefresh = true;
 			}
-
 		}
 	}
 
 	public void decodeToBitMap(byte[] data, Camera _camera) {
 		Size size = mCamera.getParameters().getPreviewSize();
 		try {
-			YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width,
-					size.height, null);
-			// Log.w("wwwwwwwww", size.width + " " + size.height);
-			if (image != null) {
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				image.compressToJpeg(new Rect(0, 0, size.width, size.height),
-						80, stream);
-				Bitmap bmp = BitmapFactory.decodeByteArray(
-						stream.toByteArray(), 0, stream.size());
+			long currentTimeMillis = System.currentTimeMillis();
+//			YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width,
+//					size.height, null);
+//			// Log.w("wwwwwwwww", size.width + " " + size.height);
+//			if (image != null) {
+//				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//				image.compressToJpeg(new Rect(0, 0, size.width, size.height),
+//						80, stream);
+//				Bitmap bmp = BitmapFactory.decodeByteArray(
+//						stream.toByteArray(), 0, stream.size());
 //				sendImageIv.setImageBitmap(bmp);
-				int width = bmp.getWidth();
-				int height = bmp.getHeight();
-				int[] pixels = new int[width * height];
-				bmp.getPixels(pixels, 0, width, 0, 0, width, height);
+				int width = size.width;
+				int height = size.height;
+//				int[] pixels = new int[width * height];
+//				bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 //				System.out.println("red " + Color.red(pixels[0]));
 //				System.out.println("green " + Color.green(pixels[0]));
 //				System.out.println("blue " + Color.blue(pixels[0]));
@@ -347,35 +353,54 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 				
 //				int i = JNIClient.helloAndroid(pixels, width, height);
 //				System.out.println(i);
-				if (ifInit) {
-					if (JNIClient.init(pixels, width, height))
-						ifInit = false;
-				}
-				if (JNIClient.detect(pixels, width, height) && !ifInit) {
-					sendImageIv.setBackgroundColor(Color.RED);
-					System.out.println("有入侵"+i);
+//				if (ifInit) {
+//					//if (JNIClient.init(data, width, height))
+////					if (JNIClient.initShift(pixels, width, height))
+//					//if(JNIClient.initVIBE(pixels, width, height))
+//					if(JNIClient.initWithByte(data, width, height))
+//						ifInit = false;
+//				}
+				
+//				if (JNIClient.detect(data, width, height) && !ifInit) {
+//					sendImageIv.setBackgroundColor(Color.RED);
+//					System.out.println(System.currentTimeMillis()-currentTimeMillis);
+//					i++;
+//				}else {
+//					sendImageIv.setBackgroundColor(Color.BLUE);
+//				}
+//				if (JNIClient.detectWithShift(pixels, width, height) && !ifInit) {
+//				if (JNIClient.detectWithByte(data, width, height) && !ifInit) {
+				if (JNIClient.detectWithDiff(data, width, height)){
+					//socketThread.write(data);
 					i++;
+					System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:"+i);
+					sendImageIv.setBackgroundColor(Color.RED);
 				}else {
 					sendImageIv.setBackgroundColor(Color.BLUE);
 				}
+				//int[] result = JNIClient.detectWithReturn(pixels, width, height);
+				//int[] result = JNIClient.detectWithVIBE(pixels, width, height);
+				//bitmapForshow = Bitmap.createBitmap(result, 40, 30, Config.RGB_565);
+				//sendImageIv.setImageBitmap(bitmapForshow);
+				
 				// Log.w("wwwwwwwww", bmp.getWidth() + " " + bmp.getHeight());
 				// Log.w("wwwwwwwww",
 				// (bmp.getPixel(100, 100) & 0xff) + "  "
 				// + ((bmp.getPixel(100, 100) >> 8) & 0xff) + "  "
 				// + ((bmp.getPixel(100, 100) >> 16) & 0xff));
-				image=null;
-				bmp.recycle();
-				pixels =null;
-				stream.close();
-				System.gc();
-			}
+//				image=null;
+//				bmp.recycle();
+//				pixels =null;
+//				stream.close();
+				//System.gc();
+//			}
 		} catch (Exception ex) {
 			Log.e("Sys", "Error:" + ex.getMessage());
 		}
 	}
 
 	static {
-		System.loadLibrary("VideoTestLib");
+		System.loadLibrary("VideoTest");
 	}
 
 }

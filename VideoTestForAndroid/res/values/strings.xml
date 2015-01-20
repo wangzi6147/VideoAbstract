@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">VideoTest</string>
-    <string name="btn">拍照</string>
+    <string name="btn">开始</string>
+    <string name="socketTestBtnText">测试socket</string>
 
 </resources>
