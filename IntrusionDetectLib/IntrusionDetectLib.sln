@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntrusionDetectLib", "IntrusionDetectLib\IntrusionDetectLib.vcxproj", "{D827561D-2B1C-42A1-8D30-321E1487D290}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestForLib", "TestForLib\TestForLib.vcxproj", "{F1F7227F-7C4C-4584-945B-4256941A8B71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D827561D-2B1C-42A1-8D30-321E1487D290}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D827561D-2B1C-42A1-8D30-321E1487D290}.Debug|Win32.Build.0 = Debug|Win32
+		{D827561D-2B1C-42A1-8D30-321E1487D290}.Release|Win32.ActiveCfg = Release|Win32
+		{D827561D-2B1C-42A1-8D30-321E1487D290}.Release|Win32.Build.0 = Release|Win32
+		{F1F7227F-7C4C-4584-945B-4256941A8B71}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1F7227F-7C4C-4584-945B-4256941A8B71}.Debug|Win32.Build.0 = Debug|Win32
+		{F1F7227F-7C4C-4584-945B-4256941A8B71}.Release|Win32.ActiveCfg = Release|Win32
+		{F1F7227F-7C4C-4584-945B-4256941A8B71}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
