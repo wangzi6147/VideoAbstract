@@ -23,7 +23,9 @@ int IntrusionDetectStart(char const *config, void *tag){
 	return 0;
 }
 
-int IntrusionDetectPushStream(id_stream_t *stream){
+int IntrusionDetectPushStream(id_stream_t *stream, PFNInstrusionDetectCB cb){
+	Mat frame;
+	pro->processStream(stream->buffer, stream->len, pro);
 	return 0;
 }
 

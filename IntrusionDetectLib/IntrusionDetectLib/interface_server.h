@@ -125,12 +125,14 @@ DLL_API int IntrusionDetectStop(
 
 /**
  * @brief 检测过程中的推流操作。为同步操作。此函数要尽可能快的返回
- * @stream 视频流，当前为RTP协议包装的H264格式，算法库应该在函数调用返回前
+ * @param stream 视频流，当前为RTP协议包装的H264格式，算法库应该在函数调用返回前
 		   复制数组中的数据到自己的缓冲区
+ * @param cb 检测到入侵的回调函数
  * @return 返回值0代表成功
  */
 DLL_API int IntrusionDetectPushStream(
-	id_stream_t *stream
+	id_stream_t *stream,
+	PFNInstrusionDetectCB cb
 	);
 
 //************************************

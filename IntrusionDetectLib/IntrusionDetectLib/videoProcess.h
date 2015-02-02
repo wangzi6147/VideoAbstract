@@ -20,6 +20,8 @@ public:
 	DirectionDetect* directionDetect;
 
 	int process(Mat frame);
+	int processStream(unsigned char* buffer, size_t len, videoProcess * pro);
+	int yuv2Mat(unsigned char * buf, int wrap, int width, int height, videoProcess * pro);
 
 private:
 	Mat frame;

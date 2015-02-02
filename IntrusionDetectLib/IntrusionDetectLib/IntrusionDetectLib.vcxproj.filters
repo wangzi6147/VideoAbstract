@@ -30,6 +30,9 @@
     <ClInclude Include="videoProcess.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="264decoder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="areaDetect.cpp">
@@ -45,6 +48,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="videoProcess.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="264decoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,6 +18,7 @@
 /IntrusionDetectLib/Release/
 *.jpg
 *.avi
+*.264
 /IntrusionDetectLib/IntrusionDetectLib/Debug/
 /IntrusionDetectLib/IntrusionDetectLib/Release/
 /IntrusionDetectLib/TestForLib/Debug/
