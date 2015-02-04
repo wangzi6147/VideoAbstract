@@ -6,6 +6,7 @@
 *.dll
 *.aps
 *.opensdf
+*.suo
 
 /VideoTestForAndroid/obj/
 /VideoTestForAndroid/bin/
@@ -19,6 +20,7 @@
 *.jpg
 *.avi
 *.264
+*.yuv
 /IntrusionDetectLib/IntrusionDetectLib/Debug/
 /IntrusionDetectLib/IntrusionDetectLib/Release/
 /IntrusionDetectLib/TestForLib/Debug/

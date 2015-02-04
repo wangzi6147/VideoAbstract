@@ -1,8 +1,7 @@
 #pragma once
-#ifndef  _264_DECODER_H_
-#define  _264_DECODER_H_
 
 #include "videoProcess.h"
+#include "interface_server.h"
 
 #ifdef __cplusplus 
 extern "C" {
@@ -33,11 +32,8 @@ void stop264decoder(videoProcess * pro);
 
 void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize, char *filename, char *recfilename);
 
-int decode(unsigned char * buffer, size_t len, videoProcess * pro);
+int decode(unsigned char * buffer, size_t len, videoProcess * pro, id_image_t * ptr);
 
 #ifdef __cplusplus 
 }
 #endif
-
-
-#endif //  264_DECODER_H

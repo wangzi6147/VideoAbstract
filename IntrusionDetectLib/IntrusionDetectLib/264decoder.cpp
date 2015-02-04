@@ -109,10 +109,9 @@ void init264decoder(){
 		dsputil_init(&s->dsp, c);
 	}
 
-	frame = 0;
 }
 
-int decode(unsigned char * buffer, size_t len, videoProcess * pro)
+int decode(unsigned char * buffer, size_t len, videoProcess * pro, id_image_t * ptr)
 {
 	///* the codec gives us the frame size, in samples */
  //   fin = fopen(filename, "rb");
@@ -133,6 +132,8 @@ int decode(unsigned char * buffer, size_t len, videoProcess * pro)
  //       exit(1);
  //   }
 	//fclose(fout);
+
+	frame = 0;
 	size = len;
     for(;;) {
         //size = fread(inbuf, 1, INBUF_SIZE, fin);
@@ -175,8 +176,29 @@ int decode(unsigned char * buffer, size_t len, videoProcess * pro)
 						 c->width/2, c->height/2, outfilename, outrecfilename);
 						 pgm_save(picture->data[2], picture->linesize[2],
 						 c->width/2, c->height/2, outfilename, outrecfilename);*/
-				pro->yuv2Mat(picture->data[0], picture->linesize[0], c->width, c->height, pro);
-                frame++;
+				if (pro->yuv2Mat(picture->data[0], picture->linesize[0], c->width, c->height)){
+					ptr[frame].type = 1;
+					ptr[frame].height = c->height;
+					ptr[frame].width = c->width;
+					ptr[frame].buf_size = ptr[frame].width*ptr[frame].height /2* 3;
+					ptr[frame].buffer = new unsigned char[ptr[frame].buf_size];
+					for (int i = 0; i < c->height; i++){
+						for (int j = 0; j < c->width; j++){
+							ptr[frame].buffer[i*c->width+j] = picture->data[0][i*picture->linesize[0]+j];
+						}
+					}
+					for (int i = 0; i < c->height/2; i++){
+						for (int j = 0; j < c->width / 2; j++){
+							ptr[frame].buffer[c->height*c->width + i*c->width / 2 + j] = picture->data[1][i*picture->linesize[1] + j];
+						}
+					}
+					for (int i = 0; i < c->height / 2; i++){
+						for (int j = 0; j < c->width / 2; j++){
+							ptr[frame].buffer[c->height*c->width/4*5 + i*c->width / 2 + j] = picture->data[2][i*picture->linesize[2] + j];
+						}
+					}
+					frame++;
+				}
             }
             size -= len;
             inbuf_ptr += len;
@@ -184,37 +206,38 @@ int decode(unsigned char * buffer, size_t len, videoProcess * pro)
     }
    // fclose(fin);
 //	 fclose(fout);
+	return frame;
 }
 
 void stop264decoder(videoProcess * pro){
 
-		/* some codecs, such as MPEG, transmit the I and P frame with a
-		latency of one frame. You must do the following to have a
-		chance to get the last frame of the video */
-	#define NOTFOR264
-	#ifdef NOTFOR264
-	
-		//    len = avcodec_decode_video(c, picture, &got_picture,
-		//                               NULL, 0);
-		len = avcodec_decode_video(c, picture, &got_picture,
-			inbuf_ptr, 0);
-		if (got_picture) {
-			printf("saving last frame %3d\n", frame);
-			fflush(stdout);
-	
-			/* the picture is allocated by the decoder. no need to
-			free it */
-			//    snprintf(buf, sizeof(buf), outfilename, frame);
-			/* pgm_save(picture->data[0], picture->linesize[0],
-			c->width, c->height, outfilename, outrecfilename);
-			pgm_save(picture->data[1], picture->linesize[1],
-			c->width/2, c->height/2, outfilename, outrecfilename);
-			pgm_save(picture->data[2], picture->linesize[2],
-			c->width/2, c->height/2, outfilename, outrecfilename);*/
-			pro->yuv2Mat(picture->data[0], picture->linesize[0], c->width, c->height, pro);
-			frame++;
-		}
-	#endif
+	//	/* some codecs, such as MPEG, transmit the I and P frame with a
+	//	latency of one frame. You must do the following to have a
+	//	chance to get the last frame of the video */
+	//#define NOTFOR264
+	//#ifdef NOTFOR264
+	//
+	//	//    len = avcodec_decode_video(c, picture, &got_picture,
+	//	//                               NULL, 0);
+	//	len = avcodec_decode_video(c, picture, &got_picture,
+	//		inbuf_ptr, 0);
+	//	if (got_picture) {
+	//		printf("saving last frame %3d\n", frame);
+	//		fflush(stdout);
+	//
+	//		/* the picture is allocated by the decoder. no need to
+	//		free it */
+	//		//    snprintf(buf, sizeof(buf), outfilename, frame);
+	//		/* pgm_save(picture->data[0], picture->linesize[0],
+	//		c->width, c->height, outfilename, outrecfilename);
+	//		pgm_save(picture->data[1], picture->linesize[1],
+	//		c->width/2, c->height/2, outfilename, outrecfilename);
+	//		pgm_save(picture->data[2], picture->linesize[2],
+	//		c->width/2, c->height/2, outfilename, outrecfilename);*/
+	//		if(pro->yuv2Mat(picture->data[0], picture->linesize[0], c->width, c->height))
+	//			frame++;
+	//	}
+	//#endif
 
 	avcodec_close(c);
 	av_free(c);

@@ -25,7 +25,11 @@ int IntrusionDetectStart(char const *config, void *tag){
 
 int IntrusionDetectPushStream(id_stream_t *stream, PFNInstrusionDetectCB cb){
 	Mat frame;
-	pro->processStream(stream->buffer, stream->len, pro);
+	id_image_t temps[1 << 8];
+	int count = pro->processStream(stream->buffer, stream->len, temps);
+	cb(temps, count, NULL);
+	for (int i = 0; i < count; i++)
+		delete[] temps[i].buffer;
 	return 0;
 }
 
@@ -48,7 +52,7 @@ int IntrusionDetectOpenFile(const char * filename, PFNInstrusionDetectCB cb){
 		else if (count > 0){
 			cb(temps, count, NULL);
 			for (int j = 0; j < count; j++)
-				delete temps[j].buffer;
+				delete[] temps[j].buffer;
 			count = 0;
 		}
 	}

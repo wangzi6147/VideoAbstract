@@ -188,17 +188,17 @@ int videoProcess::init()
 	frameCount_ = 0;
 	frameCount = 2;
 	init264decoder();
-	namedWindow("Frame");
-	namedWindow("FG Mask MOG 2");
+	//namedWindow("Frame");
+	//namedWindow("FG Mask MOG 2");
 	return 0;
 }
 
-int videoProcess::processStream(unsigned char* buffer, size_t len, videoProcess * pro){
-	decode(buffer, len, pro);
-	return 0;
+int videoProcess::processStream(unsigned char* buffer, size_t len, id_image_t * ptr){
+	int count = decode(buffer, len, this, ptr);
+	return count;
 }
 
-int videoProcess::yuv2Mat(unsigned char * buf, int wrap, int width, int height, videoProcess * pro){
+int videoProcess::yuv2Mat(unsigned char * buf, int wrap, int width, int height){
 	unsigned char * ptr = new unsigned char[width*height];
 	int a = 0, i;
 	for (i = 0; i < height; i++)
@@ -207,9 +207,9 @@ int videoProcess::yuv2Mat(unsigned char * buf, int wrap, int width, int height, 
 		a += width;
 	}
 	Mat frame(height, width, CV_8UC1, ptr);
-	pro->process(frame);
+	int ifIntrusion = this->process(frame);
 	delete[] ptr;
-	return 0;
+	return ifIntrusion;
 }
 
 int videoProcess::process(Mat frame)
@@ -264,11 +264,11 @@ int videoProcess::process(Mat frame)
 	if (preDetect)
 		rectangle(fgMaskMOG2, cv::Point(0, 0), cv::Point(100, 100), cv::Scalar(255, 0, 0), 1);
 
-	imshow("Frame", frame);
-	imshow("FG Mask MOG 2", fgMaskMOG2);
+	//imshow("Frame", frame);
+	//imshow("FG Mask MOG 2", fgMaskMOG2);
 
-	if (cvWaitKey(30) == ' ')
+	/*if (cvWaitKey(30) == ' ')
 	while (cvWaitKey(-1) != ' ')
-		continue;
+	continue;*/
 	return preDetect;
 }

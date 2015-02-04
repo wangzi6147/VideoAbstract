@@ -5,6 +5,7 @@
 #include  "opencv2\video\background_segm.hpp"
 #include "DirectionDetect.h"
 #include "JsonParser.h"
+#include "interface_server.h"
 
 using namespace cv;
 
@@ -20,8 +21,8 @@ public:
 	DirectionDetect* directionDetect;
 
 	int process(Mat frame);
-	int processStream(unsigned char* buffer, size_t len, videoProcess * pro);
-	int yuv2Mat(unsigned char * buf, int wrap, int width, int height, videoProcess * pro);
+	int processStream(unsigned char* buffer, size_t len, id_image_t * ptr);
+	int yuv2Mat(unsigned char * buf, int wrap, int width, int height);
 
 private:
 	Mat frame;
