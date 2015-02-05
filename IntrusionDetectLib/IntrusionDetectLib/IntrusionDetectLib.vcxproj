@@ -46,8 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\wangzi6147\Doc\video project\detect\IntrusionDetectLib\IntrusionDetectLib\jsonlib\include;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv2;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\wangzi6147\Doc\video project\detect\IntrusionDetectLib\IntrusionDetectLib\jsonlib\lib\release;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv2;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\wangzi6147\Soft\opencv2.4.10\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,13 +78,16 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;INTRUSIONDETECTLIB_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>../include/h264;./jsonlib/include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>lib_json.lib;opencv_calib3d2410.lib;opencv_contrib2410.lib;opencv_core2410.lib;opencv_features2d2410.lib;opencv_flann2410.lib;opencv_gpu2410.lib;opencv_highgui2410.lib;opencv_imgproc2410.lib;opencv_legacy2410.lib;opencv_ml2410.lib;opencv_objdetect2410.lib;opencv_ts2410.lib;opencv_video2410.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lib_json.lib;h264.lib;opencv_calib3d2410.lib;opencv_contrib2410.lib;opencv_core2410.lib;opencv_features2d2410.lib;opencv_flann2410.lib;opencv_gpu2410.lib;opencv_highgui2410.lib;opencv_imgproc2410.lib;opencv_legacy2410.lib;opencv_ml2410.lib;opencv_objdetect2410.lib;opencv_ts2410.lib;opencv_video2410.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./jsonlib/lib/release;../lib;</AdditionalLibraryDirectories>
+      <AdditionalOptions>/NODEFAULTLIB:libcmtd.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
