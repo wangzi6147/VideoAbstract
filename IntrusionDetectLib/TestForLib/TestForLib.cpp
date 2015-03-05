@@ -32,6 +32,8 @@ int saveYUV(id_image_t *imgs, size_t imgs_count, void *tag){
 
 int main(){
 
+	//test git
+
 	//JSON格式配置文件，目前只支持定义一个area。
 	//这里的示例direction为down2up,right2left；area为视频左半区域。
 	const char config[] = "{\"version\": \"1\",\"alg-params\": [{\"direction\": [\"down2up\",\"right2left\"],\"target\": [\"person\"],\"areas\": [{\"left\": \"0\",\"top\": \"0\",\"width\": \"320\",\"height\": \"480\"}]}]}";
