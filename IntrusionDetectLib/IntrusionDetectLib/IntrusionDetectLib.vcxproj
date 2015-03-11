@@ -41,8 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv;D:\wangzi6147\Soft\opencv2.4.10\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\wangzi6147\Soft\opencv2.4.10\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Program Files\opencv2.4.10\opencv\sources\include;D:\Program Files\opencv2.4.10\opencv\sources\include\opencv;D:\Program Files\opencv2.4.10\opencv\sources\include\opencv2;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Program Files\opencv2.4.10\opencv\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -57,7 +57,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;INTRUSIONDETECTLIB_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>./jsonlib/include;../include/h264;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./jsonlib/include;../include/h264;D:\Program Files\opencv2.4.10\opencv\build\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>

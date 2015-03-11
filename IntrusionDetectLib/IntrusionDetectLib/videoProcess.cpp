@@ -19,6 +19,7 @@ videoProcess::videoProcess(JsonParser parser){
 	det.rect = detectRect;
 	this->parser = parser;
 	directionDetect=new DirectionDetect();
+	directionDetect->initHistoryData(5);   ///初始化计算角度间隔
 	init();
 }
 
@@ -32,84 +33,7 @@ videoProcess::~videoProcess(){
 		delete pMOG2; 
 }
 
-//void videoProcess::processer(char* videopathname)
-//{
-//	namedWindow("Frame");
-//	namedWindow("FG Mask MOG 2");
-//	pMOG2 = new BackgroundSubtractorMOG2(); 
-//	IplImage* p_Image=new IplImage;
-//	int frameCount_=0;
-//
-//
-//	VideoCapture capture(videopathname);  
-//	if (!capture.isOpened()){
-//		printf("Unable to open video file:%s", videopathname);
-//		waitKey();
-//		return;
-//	}
-//
-//	while (ifcontinue){
-//		if (!capture.read(frame)) {
-//			printf("Unable to read next frame.");
-//			waitKey();
-//			return;
-//		}
-//
-//		pMOG2->operator()(frame, fgMaskMOG2);
-//		pMOG2->getBackgroundImage(BG);
-//
-//		erode(fgMaskMOG2, fgMaskMOG2, Mat());
-//		dilate(fgMaskMOG2, fgMaskMOG2, Mat());
-//
-//
-//		//show the foreground contour
-//		showcontours(fgMaskMOG2);
-//
-//		///标记segID
-//		markseg();
-//
-//		///方向检测		
-//		vector<IntrOb> befOb_;
-//		vector<IntrOb> curOb_;
-//		if (frameCount_ == 0)
-//		{
-//			for (int j = 0; j < befOb.size(); j++)
-//							befOb_.push_back(befOb[j]);
-//			frameCount_++;
-//		}
-//		else if (frameCount_ == frameCount)
-//		{
-//			resultImage = fgMaskMOG2;
-//			if (befOb.size() != 0 && curOb.size() != 0)
-//			{
-//				//double aver_k = directionDetect->computeOrientByTwoFrame(&befOb, &curOb);
-//				*p_Image = fgMaskMOG2;
-//				directionDetect->drawOrient(p_Image, &curOb);
-//				resultImage = p_Image;
-//			}
-//			frameCount_ = 1;
-//		}
-//		else
-//			frameCount_++;
-//		
-//
-//		befOb.clear();
-//		for (int j = 0; j < curOb.size(); j++)
-//			befOb.push_back(curOb[j]);
-//
-//		curOb.clear();
-//		imshow("Frame", frame);
-//		imshow("FG Mask MOG 2", fgMaskMOG2);
-//
-//		if(cvWaitKey(30)=='q')
-//			break;
-//	}
-//
-//	capture.release();
-//
-//	destroyAllWindows(); 
-//	delete p_Image;
-//}
+
 
 bool videoProcess::showcontours(Mat ori_mat)
 {
@@ -123,25 +47,90 @@ bool videoProcess::showcontours(Mat ori_mat)
 
 	CvSeq *mySeq = mycont;
 	bool ifInArea = false;
-	IntrOb trans;
-	int i = 1;
+
+	Vector<Rect> myRect;
+	Vector<Rect> myRect_;
 	for (; mySeq; mySeq = mySeq->h_next)
 	{
-		Rect r;
-		r = ((CvContour*)mySeq)->rect;///<获取当前轮廓外接矩形
-		if (mySeq->total > 6 && (r.height*r.width > 1500))///<轮廓点过少，不做处理
+		Rect r = ((CvContour*)mySeq)->rect;
+		if (r.height*r.width > 1500)///<轮廓点过少，不做处理
+			myRect_.push_back(r);
+	}
+
+	//合并重合框
+
+	for (int i = 0; i<myRect_.size(); i++)
+	{
+		Rect r1 = myRect_[i];
+		for (int j = i + 1; j < myRect_.size(); j++)
 		{
-			trans.detecR = r;
-			trans.segID = i;
-			i++;
-			curOb.push_back(trans); 
-			rectangle(ori_mat, cv::Point(r.x, r.y), cv::Point(r.x + r.width, r.y + r.height), cv::Scalar(255, 0, 0), 1);
-			if (det.detect(r))///区域检测
+			Rect r2 = myRect_[j];
+			int maxx = min(r1.x + r1.width, r2.x + r2.width);
+			int maxy = min(r1.y + r1.height, r2.y + r2.height);
+			int minx = max(r1.x, r2.x);
+			int miny = max(r1.y, r2.y);
+			if (minx < maxx + 10 && miny < maxy + 10)
 			{
-				ifInArea = true;
-				//rectangle(ori_mat, Point(det.rect.x, det.rect.y), Point(det.rect.x + det.rect.width, det.rect.y + det.rect.height), Scalar(255, 0, 0), -1);
-			}	
+				Rect r, r3;
+				r3.x = min(r1.x, r2.x), r3.y = min(r1.y, r2.y), r3.width = max(r1.x + r1.width, r2.x + r2.width) - r3.x, r3.height = max(r1.y + r1.height, r2.y + r2.height) - r3.y;
+				for (int m = i; m < j; m++)
+				{
+					Rect r4 = myRect_[m];
+					int maxx = min(r3.x + r3.width, r4.x + r4.width);
+					int maxy = min(r3.y + r3.height, r4.y + r4.height);
+					int minx = max(r3.x, r4.x);
+					int miny = max(r3.y, r4.y);
+					if (minx < maxx + 10 && miny < maxy + 10)
+					{
+						r.x = min(r3.x, r4.x), r.y = min(r3.y, r4.y), r.width = max(r3.x + r3.width, r4.x + r4.width) - r.x, r.height = max(r3.y + r3.height, r4.y + r4.height) - r.y;
+						myRect_[m].x = 0, myRect_[m].y = 0, myRect_[m].width = 0, myRect_[m].height = 0;
+					}
+					else
+						r = r3;
+				}
+				myRect_[i].x = r.x, myRect_[i].y = r.y, myRect_[i].width = r.width, myRect_[i].height = r.height;
+				r1 = myRect_[i];
+				myRect_[j].x = 0, myRect_[j].y = 0, myRect_[j].width = 0, myRect_[j].height = 0;
+			}
 		}
+	}
+	for (int i = 0; i < myRect_.size(); i++)
+	{
+		if (myRect_[i].width != 0)
+			myRect.push_back(myRect_[i]);
+	}
+
+
+
+	//sift检测原图像
+	Vector<Mat> sift_Mat;
+	Mat ori_mat_ = ori_mat.clone();
+	Mat siftMat;
+	for (int i = 0; i < myRect.size(); i++)
+	{
+		siftMat = ori_mat_(Range(myRect[i].y, myRect[i].y + myRect[i].height), Range(myRect[i].x, myRect[i].x + myRect[i].width));
+		sift_Mat.push_back(siftMat);
+	}
+
+
+
+	IntrOb trans;
+	int segID = 1;
+	for (int i = 0; i<myRect.size(); i++)
+	{
+		Rect r = myRect[i];
+		trans.detecR = r;
+		trans.segID = segID;
+		trans.sift_src = sift_Mat[i];
+		segID++;
+		curOb.push_back(trans);
+		rectangle(ori_mat, cv::Point(r.x, r.y), cv::Point(r.x + r.width, r.y + r.height), cv::Scalar(255, 0, 0), 1);
+		if (det.detect(r))///区域检测
+		{
+			ifInArea = true;
+			//rectangle(ori_mat, Point(det.rect.x, det.rect.y), Point(det.rect.x + det.rect.width, det.rect.y + det.rect.height), Scalar(255, 0, 0), -1);
+		}
+
 	}
 	return ifInArea;
 }
@@ -214,7 +203,7 @@ int videoProcess::yuv2Mat(unsigned char * buf, int wrap, int width, int height){
 
 int videoProcess::process(Mat frame)
 {
-	pMOG2->operator()(frame, fgMaskMOG2);
+	pMOG2->operator()(frame, fgMaskMOG2,-0.0001);
 	pMOG2->getBackgroundImage(BG);
 
 	erode(fgMaskMOG2, fgMaskMOG2, Mat());
@@ -243,7 +232,7 @@ int videoProcess::process(Mat frame)
 		if (befOb.size() != 0 && curOb.size() != 0)
 		{
 			for (int ds = 0; ds < parser.params->direction_size; ds++){
-				ifCorrectDerection = ifCorrectDerection || directionDetect->computeOrientByTwoFrame(&befOb, &curOb, parser.params->direction[ds]);
+				ifCorrectDerection = ifCorrectDerection || directionDetect->computeOrient(&curOb, parser.params->direction[ds]);
 			}
 			directionDetect->drawOrient(fgMaskMOG2, &curOb);
 		}
@@ -264,11 +253,11 @@ int videoProcess::process(Mat frame)
 	if (preDetect)
 		rectangle(fgMaskMOG2, cv::Point(0, 0), cv::Point(100, 100), cv::Scalar(255, 0, 0), 1);
 
-	//imshow("Frame", frame);
-	//imshow("FG Mask MOG 2", fgMaskMOG2);
+	imshow("Frame", frame);
+	imshow("FG Mask MOG 2", fgMaskMOG2);
 
-	/*if (cvWaitKey(30) == ' ')
+	if (cvWaitKey(30) == ' ')
 	while (cvWaitKey(-1) != ' ')
-	continue;*/
+	continue;
 	return preDetect;
 }

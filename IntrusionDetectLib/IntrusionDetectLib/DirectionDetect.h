@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <queue>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <windows.h>
@@ -20,6 +21,7 @@ typedef struct _IntrOb{
 	int module;
 	double orient;     //angle
 	CvPoint center;
+	Mat sift_src;
 }IntrOb;
 
 #define GRADIENT 0x0001
@@ -38,11 +40,18 @@ public:
 	//还需要数据库控制指针等接口
 
 	//下面针对demo,接口参数为相邻两帧数据
-	bool computeOrientByTwoFrame(vector<IntrOb>* befOb,vector<IntrOb>*curOb,int direction);
-	void drawOrient(Mat mat,vector<IntrOb>*curOb);
+	bool computeOrientByTwoFrame(vector<IntrOb>* befOb, vector<IntrOb>*curOb, int direction);
+	void drawOrient(Mat mat, vector<IntrOb>*curOb);
 	int computeModule(CvPoint p1,CvPoint p2);
+
+
+	//2015.3.8
+	bool initHistoryData(int deltaFrame);
+	bool computeOrient(vector<IntrOb>*curOb, int direction);//用隔一定数量的两帧数据计算方向
 
 protected:
 private:
 	int aver_k; //average k of orientation平均斜率
+	int delta;
+	queue<vector<IntrOb>> historyData;
 };
