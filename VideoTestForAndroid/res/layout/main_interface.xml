@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/detectionOpenBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打开自动检测" />
+
+    <Button
+        android:id="@+id/detectionCloseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="关闭自动检测" />
+
+</TableLayout>

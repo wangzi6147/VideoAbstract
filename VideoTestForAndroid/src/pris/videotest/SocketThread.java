@@ -17,9 +17,9 @@ public class SocketThread implements Runnable {
 		try {
 			Socket socket = new Socket("10.103.14.202", 8000);
 			if (socket.isConnected()) {
-				System.out.println("连接成功");
+				System.out.println("杩炴帴鎴愬姛");
 			} else {
-				System.out.println("连接失败");
+				System.out.println("杩炴帴澶辫触");
 			}
 
 			dos = new DataOutputStream(socket.getOutputStream());

@@ -36,15 +36,15 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
-	private Camera mCamera;// Camera¶ÔÏó
-	private Button mButton;// ÓÒ²àÌõ¿ò£¬µã»÷³ö·¢±£´æÍ¼Ïñ£¨ÅÄÕÕ£©µÄÊÂ¼ş
-	private SurfaceView mSurfaceView;// ÏÔÊ¾Í¼ÏñµÄsurfaceView
-	private SurfaceHolder holder;// SurfaceViewµÄ¿ØÖÆÆ÷
-	private AutoFocusCallback mAutoFocusCallback = new AutoFocusCallback();// AutoFocusCallback×Ô¶¯¶Ô½¹µÄ»Øµ÷¶ÔÏó
-	private ImageView sendImageIv;// ·¢ËÍÍ¼Æ¬µÄimageview£¬Î»ÓÚÓÒ²àÌõ¿ò
+	private Camera mCamera;// Cameraå¯¹è±¡
+	private Button mButton;// å³ä¾§æ¡æ¡†ï¼Œç‚¹å‡»å‡ºå‘ä¿å­˜å›¾åƒï¼ˆæ‹ç…§ï¼‰çš„äº‹ä»¶
+	private SurfaceView mSurfaceView;// æ˜¾ç¤ºå›¾åƒçš„surfaceView
+	private SurfaceHolder holder;// SurfaceViewçš„æ§åˆ¶å™¨
+	private AutoFocusCallback mAutoFocusCallback = new AutoFocusCallback();// AutoFocusCallbackè‡ªåŠ¨å¯¹ç„¦çš„å›è°ƒå¯¹è±¡
+	private ImageView sendImageIv;// å‘é€å›¾ç‰‡çš„imageviewï¼Œä½äºå³ä¾§æ¡æ¡†
 
 	private String strCaptureFilePath = Environment
-			.getExternalStorageDirectory() + "/DCIM/Camera/";// ±£´æÍ¼ÏñµÄÂ·¾¶
+			.getExternalStorageDirectory() + "/DCIM/Camera/";// ä¿å­˜å›¾åƒçš„è·¯å¾„
 	private boolean ifInit;
 	private int screenWidth;
 	private int screenHeight;
@@ -53,35 +53,35 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (checkCameraHardware(this)) {
-			Log.e("============", "ÉãÏñÍ·´æÔÚ");// ÑéÖ¤ÉãÏñÍ·ÊÇ·ñ´æÔÚ
+			Log.e("============", "æ‘„åƒå¤´å­˜åœ¨");// éªŒè¯æ‘„åƒå¤´æ˜¯å¦å­˜åœ¨
 		}
-		/* Òş²Ø×´Ì¬À¸ */
+		/* éšè—çŠ¶æ€æ  */
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		//ÆÁÄ»³£ÁÁ
+		//å±å¹•å¸¸äº®
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		/* Òş²Ø±êÌâÀ¸ */
+		/* éšè—æ ‡é¢˜æ  */
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		/* Éè¶¨ÆÁÄ»ÏÔÊ¾ÎªºáÏò */
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);// ºáÆÁ 
+		/* è®¾å®šå±å¹•æ˜¾ç¤ºä¸ºæ¨ªå‘ */
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);// æ¨ªå± 
 
 		setContentView(R.layout.activity_main);// ----------------------
 
         screenWidth = 640;  
         screenHeight = 480; 
-		/* SurfaceHolderÉèÖÃ */
+		/* SurfaceHolderè®¾ç½® */
 		mSurfaceView = (SurfaceView) findViewById(R.id.surface);
 		holder = mSurfaceView.getHolder();
 		holder.addCallback(this);
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		/* ÉèÖÃÅÄÕÕButtonµÄOnClickÊÂ¼ş´¦Àí */
+		/* è®¾ç½®æ‹ç…§Buttonçš„OnClickäº‹ä»¶å¤„ç† */
 
 		mButton = (Button) findViewById(R.id.btn);
 		mButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				/* ×Ô¶¯¶Ô½¹ºóÅÄÕÕ */
-				// mCamera.autoFocus(mAutoFocusCallback);// µ÷ÓÃmCameraµÄ
+				/* è‡ªåŠ¨å¯¹ç„¦åæ‹ç…§ */
+				// mCamera.autoFocus(mAutoFocusCallback);// è°ƒç”¨mCameraçš„
 				 //takePicture();
 				ifRefresh = true;
 				ifInit = true;
@@ -101,8 +101,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		});
 	}
 
-	// ///////----------ÖØĞ´SurfaceHolder.Callback½Ó¿ÚµÄ·½·¨£¬
-	// ÔÚ´´½¨Ãæ°åµÄÊ±ºòµ÷ÓÃµÄ·½·¨
+	// ///////----------é‡å†™SurfaceHolder.Callbackæ¥å£çš„æ–¹æ³•ï¼Œ
+	// åœ¨åˆ›å»ºé¢æ¿çš„æ—¶å€™è°ƒç”¨çš„æ–¹æ³•
 	@Override
 	public void surfaceCreated(SurfaceHolder surfaceholder) {
 
@@ -111,33 +111,33 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 //		try {
 //			mCamera = null;
 //			try {
-//				mCamera = Camera.open(0);// ´ò¿ªÏà»ú£»ÔÚµÍ°æ±¾Àï£¬Ö»ÓĞopen£¨£©·½·¨£»¸ß¼¶°æ±¾¼ÓÈë´Ë·½·¨µÄÒâÒåÊÇ¾ßÓĞ´ò¿ª¶à¸ö
-//				// ÉãÏñ»úµÄÄÜÁ¦£¬ÆäÖĞÊäÈë²ÎÊıÎªÉãÏñ»úµÄ±àºÅ
-//				// ÔÚmanifestÖĞÉè¶¨µÄ×îĞ¡°æ±¾»áÓ°ÏìÕâÀï·½·¨µÄµ÷ÓÃ£¬Èç¹û×îĞ¡°æ±¾Éè¶¨ÓĞÎó£¨°æ±¾¹ıµÍ£©£¬ÔÚideÀï½«²»ÔÊĞíµ÷ÓÃÓĞ²ÎµÄ
-//				// open·½·¨;
-//				// Èç¹ûÄ£ÄâÆ÷°æ±¾½Ï¸ßµÄ»°£¬ÎŞ²ÎµÄopen·½·¨½«»á»ñµÃnullÖµ!ËùÒÔ¾¡Á¿Ê¹ÓÃÍ¨ÓÃ°æ±¾µÄÄ£ÄâÆ÷ºÍAPI£»
+//				mCamera = Camera.open(0);// æ‰“å¼€ç›¸æœºï¼›åœ¨ä½ç‰ˆæœ¬é‡Œï¼Œåªæœ‰openï¼ˆï¼‰æ–¹æ³•ï¼›é«˜çº§ç‰ˆæœ¬åŠ å…¥æ­¤æ–¹æ³•çš„æ„ä¹‰æ˜¯å…·æœ‰æ‰“å¼€å¤šä¸ª
+//				// æ‘„åƒæœºçš„èƒ½åŠ›ï¼Œå…¶ä¸­è¾“å…¥å‚æ•°ä¸ºæ‘„åƒæœºçš„ç¼–å·
+//				// åœ¨manifestä¸­è®¾å®šçš„æœ€å°ç‰ˆæœ¬ä¼šå½±å“è¿™é‡Œæ–¹æ³•çš„è°ƒç”¨ï¼Œå¦‚æœæœ€å°ç‰ˆæœ¬è®¾å®šæœ‰è¯¯ï¼ˆç‰ˆæœ¬è¿‡ä½ï¼‰ï¼Œåœ¨ideé‡Œå°†ä¸å…è®¸è°ƒç”¨æœ‰å‚çš„
+//				// openæ–¹æ³•;
+//				// å¦‚æœæ¨¡æ‹Ÿå™¨ç‰ˆæœ¬è¾ƒé«˜çš„è¯ï¼Œæ— å‚çš„openæ–¹æ³•å°†ä¼šè·å¾—nullå€¼!æ‰€ä»¥å°½é‡ä½¿ç”¨é€šç”¨ç‰ˆæœ¬çš„æ¨¡æ‹Ÿå™¨å’ŒAPIï¼›
 //			} catch (Exception e) {
-//				Log.e("============", "ÉãÏñÍ·±»Õ¼ÓÃ");
+//				Log.e("============", "æ‘„åƒå¤´è¢«å ç”¨");
 //			}
 //			if (mCamera == null) {
-//				Log.e("============", "ÉãÏñ»úÎª¿Õ");
+//				Log.e("============", "æ‘„åƒæœºä¸ºç©º");
 //				System.exit(0);
 //			}
-//			mCamera.setPreviewDisplay(holder);// ÉèÖÃÏÔÊ¾Ãæ°å¿ØÖÆÆ÷
-//			priviewCallBack pre = new priviewCallBack();// ½¨Á¢Ô¤ÀÀ»Øµ÷¶ÔÏó
-//			mCamera.setPreviewCallback(pre); // ÉèÖÃÔ¤ÀÀ»Øµ÷¶ÔÏó
+//			mCamera.setPreviewDisplay(holder);// è®¾ç½®æ˜¾ç¤ºé¢æ¿æ§åˆ¶å™¨
+//			priviewCallBack pre = new priviewCallBack();// å»ºç«‹é¢„è§ˆå›è°ƒå¯¹è±¡
+//			mCamera.setPreviewCallback(pre); // è®¾ç½®é¢„è§ˆå›è°ƒå¯¹è±¡
 //			// mCamera.getParameters().setPreviewFormat(ImageFormat.JPEG);
-//			mCamera.startPreview();// ¿ªÊ¼Ô¤ÀÀ£¬Õâ²½²Ù×÷ºÜÖØÒª
+//			mCamera.startPreview();// å¼€å§‹é¢„è§ˆï¼Œè¿™æ­¥æ“ä½œå¾ˆé‡è¦
 //		} catch (IOException exception) {
 //			mCamera.release();
 //			mCamera = null;
 //		}
 
-		// ²»Ìí¼ÓÏÔÊ¾Ãæ°åµÄ´úÂë£º
+		// ä¸æ·»åŠ æ˜¾ç¤ºé¢æ¿çš„ä»£ç ï¼š
 		/*
-		 * ´ò¿ªÏà»ú£¬ mCamera = null; try { mCamera = Camera.open(0); } catch
-		 * (Exception e) { Log.e("============", "ÉãÏñÍ·±»Õ¼ÓÃ"); } if (mCamera ==
-		 * null) { Log.e("============", "·µ»Ø½á¹ûÎª¿Õ"); System.exit(0); } //
+		 * æ‰“å¼€ç›¸æœºï¼Œ mCamera = null; try { mCamera = Camera.open(0); } catch
+		 * (Exception e) { Log.e("============", "æ‘„åƒå¤´è¢«å ç”¨"); } if (mCamera ==
+		 * null) { Log.e("============", "è¿”å›ç»“æœä¸ºç©º"); System.exit(0); } //
 		 * mCamera.setPreviewDisplay(holder); priviewCallBack pre = new
 		 * priviewCallBack(); mCamera.setPreviewCallback(pre); Log.w("wwwwwwww",
 		 * mCamera.getParameters().getPreviewFormat() + "");
@@ -145,21 +145,21 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		 */
 	}
 
-	// ÔÚÃæ°å¸Ä±äµÄÊ±ºòµ÷ÓÃµÄ·½·¨
+	// åœ¨é¢æ¿æ”¹å˜çš„æ—¶å€™è°ƒç”¨çš„æ–¹æ³•
 	@Override
 	public void surfaceChanged(SurfaceHolder surfaceholder, int format, int w,
 			int h) {
-		/* Ïà»ú³õÊ¼»¯ */
+		/* ç›¸æœºåˆå§‹åŒ– */
 //		initCamera();
 	}
 
-	// Ïú»ÙÃæ°åÊ±µÄ·½·¨
+	// é”€æ¯é¢æ¿æ—¶çš„æ–¹æ³•
 	@Override
 	public void surfaceDestroyed(SurfaceHolder surfaceholder) {
 //		stopCamera();
 //		mCamera.release();
 //		mCamera = null;
-		 // Èç¹ûcamera²»Îªnull ,ÊÍ·ÅÉãÏñÍ·  
+		 // å¦‚æœcameraä¸ä¸ºnull ,é‡Šæ”¾æ‘„åƒå¤´  
         if (mCamera != null) {  
             if (isPreview)  
                 mCamera.stopPreview();  
@@ -169,7 +169,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         System.exit(0); 
 	}
 
-	/* ÅÄÕÕµÄmethod */
+	/* æ‹ç…§çš„method */
 	private void takePicture() {
 		if (mCamera != null) {
 			//mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
@@ -178,52 +178,52 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
 	private ShutterCallback shutterCallback = new ShutterCallback() {
 		public void onShutter() {
-			/* °´ÏÂ¿ìÃÅË²¼ä»áµ÷ÓÃÕâÀïµÄ³ÌĞò */
+			/* æŒ‰ä¸‹å¿«é—¨ç¬é—´ä¼šè°ƒç”¨è¿™é‡Œçš„ç¨‹åº */
 		}
 	};
 
 	private PictureCallback rawCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] _data, Camera _camera) {
-			/* Òª´¦Àíraw data?Ğ´?·ñ */
+			/* è¦å¤„ç†raw data?å†™?å¦ */
 		}
 	};
 
-	// ÔÚtakepictureÖĞµ÷ÓÃµÄ»Øµ÷·½·¨Ö®Ò»£¬½ÓÊÕjpeg¸ñÊ½µÄÍ¼Ïñ
+	// åœ¨takepictureä¸­è°ƒç”¨çš„å›è°ƒæ–¹æ³•ä¹‹ä¸€ï¼Œæ¥æ”¶jpegæ ¼å¼çš„å›¾åƒ
 	private PictureCallback jpegCallback = new PictureCallback() {
 		public void onPictureTaken(byte[] _data, Camera _camera) {
 
 			
 			 if (Environment.getExternalStorageState().equals(
-			 Environment.MEDIA_MOUNTED)) // ÅĞ¶ÏSD¿¨ÊÇ·ñ´æÔÚ£¬²¢ÇÒ¿ÉÒÔ¿ÉÒÔ¶ÁĞ´ 
+			 Environment.MEDIA_MOUNTED)) // åˆ¤æ–­SDå¡æ˜¯å¦å­˜åœ¨ï¼Œå¹¶ä¸”å¯ä»¥å¯ä»¥è¯»å†™ 
 				 {
-				 System.out.println("sd¿¨´æÔÚÇÒ¿É¶ÁĞ´");
+				 System.out.println("sdå¡å­˜åœ¨ä¸”å¯è¯»å†™");
 			  } else { 
-				  System.out.println("sd¿¨´íÎó");
+				  System.out.println("sdå¡é”™è¯¯");
 			  }
 			 
 			// Log.w("============", _data[55] + "");
 
 			try {
-				/* È¡µÃÏàÆ¬ */
+				/* å–å¾—ç›¸ç‰‡ */
 				Bitmap bm = BitmapFactory.decodeByteArray(_data, 0,
 						_data.length);
 				sendImageIv.setImageBitmap(bm);
-//				/* ´´½¨ÎÄ¼ş */
+//				/* åˆ›å»ºæ–‡ä»¶ */
 //				File myCaptureFile = new File(strCaptureFilePath, "1.jpg");
 //				BufferedOutputStream bos = new BufferedOutputStream(
 //						new FileOutputStream(myCaptureFile));
-//				/* ²ÉÓÃÑ¹Ëõ×ªµµ·½·¨ */
+//				/* é‡‡ç”¨å‹ç¼©è½¬æ¡£æ–¹æ³• */
 //				bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 //
-//				/* µ÷ÓÃflush()·½·¨£¬¸üĞÂBufferStream */
+//				/* è°ƒç”¨flush()æ–¹æ³•ï¼Œæ›´æ–°BufferStream */
 //				bos.flush();
 //
-//				/* ½áÊøOutputStream */
+//				/* ç»“æŸOutputStream */
 //				bos.close();
 
-				/* ÈÃÏàÆ¬ÏÔÊ¾3ÃëºóÛÚÖØÉèÏà»ú */
+				/* è®©ç›¸ç‰‡æ˜¾ç¤º3ç§’ååœ³é‡è®¾ç›¸æœº */
 				// Thread.sleep(2000);
-				/* ÖØĞÂÉè¶¨Camera */
+				/* é‡æ–°è®¾å®šCamera */
 				stopCamera();
 				initCamera();
 			} catch (Exception e) {
@@ -232,55 +232,55 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		}
 	};
 	public boolean ifRefresh = false;
-	private boolean isPreview = false; // ÊÇ·ñÔÚÔ¤ÀÀÖĞ
+	private boolean isPreview = false; // æ˜¯å¦åœ¨é¢„è§ˆä¸­
 	private int i = 0;
 	private Bitmap bitmapForshow;
 	private SocketThread socketThread;
 
-	/* ×Ô¶¨Òåclass AutoFocusCallback */
+	/* è‡ªå®šä¹‰class AutoFocusCallback */
 	public final class AutoFocusCallback implements
 			android.hardware.Camera.AutoFocusCallback {
 		public void onAutoFocus(boolean focused, Camera camera) {
 
-			/* ¶Ôµ½½¹µãÅÄÕÕ */
+			/* å¯¹åˆ°ç„¦ç‚¹æ‹ç…§ */
 			if (focused) {
 //				takePicture();
 			}
 		}
 	};
 
-	/* Ïà»ú³õÊ¼»¯µÄmethod */
+	/* ç›¸æœºåˆå§‹åŒ–çš„method */
 	private void initCamera() {
 //		if (mCamera != null) {
 //			try {
 //				Camera.Parameters parameters = mCamera.getParameters();
 //				/*
-//				 * Éè¶¨ÏàÆ¬´óĞ¡Îª1024*768£¬ ¸ñÊ½ÎªJPG
+//				 * è®¾å®šç›¸ç‰‡å¤§å°ä¸º1024*768ï¼Œ æ ¼å¼ä¸ºJPG
 //				 */
 //				// parameters.setPictureFormat(PixelFormat.JPEG);
 //				parameters.setPictureSize(1024, 768);
 //				mCamera.setParameters(parameters);
-//				/* ´ò¿ªÔ¤ÀÀ»­Ãæ */
+//				/* æ‰“å¼€é¢„è§ˆç”»é¢ */
 //				mCamera.startPreview();
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
 //		}
 		if (!isPreview ) {  
-            mCamera = Camera.open(0);  
+            mCamera = Camera.open();  
         }  
         if (mCamera != null && !isPreview) {  
             try {  
                 Camera.Parameters parameters = mCamera.getParameters();  
-                parameters.setPreviewSize(screenWidth, screenHeight); // ÉèÖÃÔ¤ÀÀÕÕÆ¬µÄ´óĞ¡  
-                parameters.setPreviewFpsRange(20, 30); // Ã¿ÃëÏÔÊ¾20~30Ö¡  
-                parameters.setPictureFormat(ImageFormat.NV21); // ÉèÖÃÍ¼Æ¬¸ñÊ½  
-                parameters.setPictureSize(screenWidth, screenHeight); // ÉèÖÃÕÕÆ¬µÄ´óĞ¡  
-                // camera.setParameters(parameters); // android2.3.3ÒÔºó²»ĞèÒª´ËĞĞ´úÂë  
-                mCamera.setPreviewDisplay(holder); // Í¨¹ıSurfaceViewÏÔÊ¾È¡¾°»­Ãæ  
-                mCamera.setPreviewCallback(new priviewCallBack()); // ÉèÖÃ»Øµ÷µÄÀà  
-                mCamera.startPreview(); // ¿ªÊ¼Ô¤ÀÀ  
-                mCamera.autoFocus(null); // ×Ô¶¯¶Ô½¹  
+                parameters.setPreviewSize(screenWidth, screenHeight); // è®¾ç½®é¢„è§ˆç…§ç‰‡çš„å¤§å°  
+                parameters.setPreviewFpsRange(20, 30); // æ¯ç§’æ˜¾ç¤º20~30å¸§  
+                parameters.setPictureFormat(ImageFormat.NV21); // è®¾ç½®å›¾ç‰‡æ ¼å¼  
+                parameters.setPictureSize(screenWidth, screenHeight); // è®¾ç½®ç…§ç‰‡çš„å¤§å°  
+                // camera.setParameters(parameters); // android2.3.3ä»¥åä¸éœ€è¦æ­¤è¡Œä»£ç   
+                mCamera.setPreviewDisplay(holder); // é€šè¿‡SurfaceViewæ˜¾ç¤ºå–æ™¯ç”»é¢  
+                mCamera.setPreviewCallback(new priviewCallBack()); // è®¾ç½®å›è°ƒçš„ç±»  
+                mCamera.startPreview(); // å¼€å§‹é¢„è§ˆ  
+                mCamera.autoFocus(null); // è‡ªåŠ¨å¯¹ç„¦  
             } catch (Exception e) {  
                 e.printStackTrace();  
             }  
@@ -288,11 +288,11 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         } 
 	}
 
-	/* Í£Ö¹Ïà»úµÄmethod */
+	/* åœæ­¢ç›¸æœºçš„method */
 	private void stopCamera() {
 		if (mCamera != null) {
 			try {
-				/* Í£Ö¹Ô¤ÀÀ */
+				/* åœæ­¢é¢„è§ˆ */
 				mCamera.stopPreview();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -300,26 +300,26 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
 		}
 	}
 
-	// ¼ì²âÉãÏñÍ·ÊÇ·ñ´æÔÚµÄË½ÓĞ·½·¨
+	// æ£€æµ‹æ‘„åƒå¤´æ˜¯å¦å­˜åœ¨çš„ç§æœ‰æ–¹æ³•
 	private boolean checkCameraHardware(Context context) {
 		if (context.getPackageManager().hasSystemFeature(
 				PackageManager.FEATURE_CAMERA)) {
-			// ÉãÏñÍ·´æÔÚ
+			// æ‘„åƒå¤´å­˜åœ¨
 			return true;
 		} else {
-			// ÉãÏñÍ·²»´æÔÚ
+			// æ‘„åƒå¤´ä¸å­˜åœ¨
 			return false;
 		}
 	}
 
-	// Ã¿´Îcam²É¼¯µ½ĞÂÍ¼ÏñÊ±µ÷ÓÃµÄ»Øµ÷·½·¨£¬Ç°ÌáÊÇ±ØĞë¿ªÆôÔ¤ÀÀ
+	// æ¯æ¬¡camé‡‡é›†åˆ°æ–°å›¾åƒæ—¶è°ƒç”¨çš„å›è°ƒæ–¹æ³•ï¼Œå‰ææ˜¯å¿…é¡»å¼€å¯é¢„è§ˆ
 	class priviewCallBack implements Camera.PreviewCallback {
 
 		@Override
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			// TODO Auto-generated method stub
 			// Log.w("wwwwwwwww", data[5] + "");
-			// Log.w("Ö§³Ö¸ñÊ½", mCamera.getParameters().getPreviewFormat()+"");
+			// Log.w("æ”¯æŒæ ¼å¼", mCamera.getParameters().getPreviewFormat()+"");
 			if (ifRefresh) {
 				ifRefresh = false;
 				decodeToBitMap(data, camera);
