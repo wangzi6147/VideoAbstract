@@ -1,4 +1,7 @@
 package pris.videotest;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
@@ -13,20 +16,24 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.SurfaceView;
 
 @SuppressLint("NewApi") public class AutoDetectionServer extends Service {
 
-
+	private String strCaptureFilePath = Environment.getExternalStorageDirectory() + "/tmp/housekeeping/";// 保存图像的路径
 	protected Context mContext;
 	private Camera mCamera;
 	private int screenWidth = 640;  
 	private int screenHeight = 480; 
+	private int count = 0;
 	//private DetectionProcess MyDetection=new DetectionProcess();
 	
 	
@@ -163,7 +170,7 @@ import android.view.SurfaceView;
 		  ;
 		  for (int camIdx = 0, cameraCount = Camera.getNumberOfCameras(); camIdx < cameraCount; camIdx++) {
 		   Camera.getCameraInfo(camIdx, cameraInfo);
-		   if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+		   if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
 		    try {
 		     cam = Camera.open(camIdx);
 		    } catch (RuntimeException e) {
@@ -200,9 +207,23 @@ import android.view.SurfaceView;
 
 					if (JNIClient.detectWithDiff(data, width, height)){
 						//socketThread.write(data);
-						//i++;
+						count++;
 						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
-						
+						if(count%5==0){
+							System.out.println("save");
+							YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
+							/* 创建文件 */
+							File myCaptureFile = new File(strCaptureFilePath, System.currentTimeMillis()+".jpg");
+							BufferedOutputStream bos = new BufferedOutputStream(
+									new FileOutputStream(myCaptureFile));
+							/* 采用压缩转档方法 */
+							image.compressToJpeg(new Rect(0, 0, width, height), 50, bos);
+							/* 调用flush()方法，更新BufferStream */
+							bos.flush();
+							/* 结束OutputStream */
+							bos.close();
+							count = 0;
+						}
 					}else {
 						//System.out.println("ABC");
 					}

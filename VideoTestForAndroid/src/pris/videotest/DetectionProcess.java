@@ -1,6 +1,9 @@
 package pris.videotest;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import pris.videotest.MainActivity.AutoFocusCallback;
 import pris.videotest.MainActivity.priviewCallBack;
@@ -11,7 +14,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -150,8 +155,11 @@ public class DetectionProcess implements Camera.ShutterCallback{
 //				e.printStackTrace();
 //			}
 //		}
-		if (!isPreview ) {  
-            mCamera = Camera.open();  
+		if (!isPreview ) {
+			if(Camera.getNumberOfCameras()>1)
+				mCamera = Camera.open(1);  
+			else
+				mCamera = Camera.open(0);
         }  
         if (mCamera != null && !isPreview) {  
             try {  
@@ -246,6 +254,17 @@ public class DetectionProcess implements Camera.ShutterCallback{
 					//socketThread.write(data);
 					i++;
 					System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:"+i);
+					YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
+					/* 创建文件 */
+					File myCaptureFile = new File(strCaptureFilePath, System.currentTimeMillis()+".jpg");
+					BufferedOutputStream bos = new BufferedOutputStream(
+							new FileOutputStream(myCaptureFile));
+					/* 采用压缩转档方法 */
+					image.compressToJpeg(new Rect(0, 0, width, height), 50, bos);
+					/* 调用flush()方法，更新BufferStream */
+					bos.flush();
+					/* 结束OutputStream */
+					bos.close();
 					//sendImageIv.setBackgroundColor(Color.RED);
 				}else {
 					//sendImageIv.setBackgroundColor(Color.BLUE);
