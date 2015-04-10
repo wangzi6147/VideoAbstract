@@ -3,8 +3,10 @@ package pris.videotest;
 import com.google.gson.Gson;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -21,7 +23,7 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 	
 	private Info MainInfo;
 	
-	//protected Context mContext;
+	protected Context mContext;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,55 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 		serviceIntent=new Intent(this,AutoDetectionServer.class);
 		startService(serviceIntent);
 		
+		bindBroadcast();
 //		Gson gson = new Gson();
 //		String json = gson.toJson(MainInfo);
-}
-
+	}
+	private void bindBroadcast() {
+		// TODO Auto-generated method stub
+		//LogUtil.d("bindBroadcast()");
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);//设置属性
+		filter.addAction(Constants.HK_AUTO_DETRCT_WARN);
+		this.registerReceiver(mReceiver, filter);
+	}
+	
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			mContext = context;
+			String action = intent.getAction();
+			if(Constants.HK_OPEN_AUTO_DETRCT_ACK.equals(action))
+			{
+				String status = intent.getStringExtra("open_status");//获取打开/关闭状态
+				String result = intent.getStringExtra("result");
+				if("1".equals(status))//打开自动侦测功能
+				{
+					System.out.println("receive_open_ack");
+					if("1".equals(result))
+					{
+						//得到service的开启ACK，并且打开成功
+					}
+				}
+				else if("0".equals(status))
+				{
+					System.out.println("receive_close_ack");
+					if("1".equals(result))
+					{
+						//得到service的关闭ACK，并且关闭成功
+					}
+				}
+			}
+			if(Constants.HK_AUTO_DETRCT_WARN.equals(action))
+			{
+				System.out.println("receive_warning_massage");
+			}
+		}
+	};
+	
+	
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {

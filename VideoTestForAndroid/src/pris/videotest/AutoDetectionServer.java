@@ -106,17 +106,18 @@ import android.view.SurfaceView;
 	                // camera.setParameters(parameters); // android2.3.3以后不需要此行代码   
 	                mCamera.setPreviewCallback(new priviewCallBack()); // 设置回调的类  
 	                mCamera.startPreview(); // 开始预览  
+	                isPreview=true;
 	                mCamera.autoFocus(null); // 自动对焦  
 	                ifRefresh=true;
 					//===============================
 					//打开成功返回结果
 					//LogUtil.d("打开自动侦测功能成功 ");
-					Intent result = new Intent();
-					result.setAction(Constants.START_AUTO_DETECT_SERVICE);
-					result.putExtra("open_status", "1");
-					result.putExtra("result", "1");//result=1表示成功，result=0表示失败
+					Intent detectionOpenCommandACK = new Intent();
+					detectionOpenCommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
+					detectionOpenCommandACK.putExtra("open_status", "1");
+					detectionOpenCommandACK.putExtra("result", "1");//result=1表示成功，result=0表示失败
 					//LogUtil.d("返回广播给Interface Manager，open_status =1,result = 1");
-					mContext.sendBroadcast(result);
+					sendBroadcast(detectionOpenCommandACK);
 				}
 				else if("0".equals(status))
 				{
@@ -124,18 +125,27 @@ import android.view.SurfaceView;
 					//==========================
 					//此处进行关闭自动侦测功能
 					System.out.println("close");
+					//mCamera.cancelAutoFocus();
+					if (mCamera != null)  
+	                {
+	                    if (isPreview)
+	                    {
+//		                    mCamera.stopPreview();  
+		                    mCamera.release();  
+		                    mCamera = null;
+	                    }
+	                }  
+					ifRefresh=false;
+//					stopCamera();
 					//===============================
 					//关闭成功返回结果
 					//LogUtil.d("关闭自动侦测功能成功");
-					Intent result = new Intent();
-					result.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
-					result.putExtra("open_status", "0");
-					
-					
-					
-					result.putExtra("result", "1");//result=1表示成功，result=0表示失败
+					Intent detectionClosecommandACK = new Intent();
+					detectionClosecommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
+					detectionClosecommandACK.putExtra("open_status", "0");
+					detectionClosecommandACK.putExtra("result", "1");//result=1表示成功，result=0表示失败
 					//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
-					mContext.sendBroadcast(result);
+					sendBroadcast(detectionClosecommandACK);
 				}
 			}
 			
@@ -163,6 +173,15 @@ import android.view.SurfaceView;
 		super.onDestroy();
 		System.out.println("service_destory");
 	}
+//	private void stopCamera() {
+//		if (mCamera != null) {
+//			try {
+//				mCamera.stopPreview();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	 private Camera openFacingBackCamera() {
 		  Camera cam = null;
@@ -223,6 +242,12 @@ import android.view.SurfaceView;
 							/* 结束OutputStream */
 							bos.close();
 							count = 0;
+							
+							Intent detectedWarn = new Intent();
+							detectedWarn.setAction(Constants.HK_AUTO_DETRCT_WARN);
+							detectedWarn.putExtra("type ","picture");
+							//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
+							sendBroadcast(detectedWarn);
 						}
 					}else {
 						//System.out.println("ABC");
