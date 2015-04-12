@@ -3,6 +3,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 import pris.videotest.MainActivity.priviewCallBack;
@@ -28,12 +30,16 @@ import android.view.SurfaceView;
 
 @SuppressLint("NewApi") public class AutoDetectionServer extends Service {
 
-	private String strCaptureFilePath = Environment.getExternalStorageDirectory() + "/tmp/housekeeping/";// 保存图像的路径
+	private String strCaptureFilePath = Environment.getExternalStorageDirectory() + "/tmp/HouseKeeping/";// 保存图像的路径
+	private File houseKeepingFile = new File(strCaptureFilePath);
 	protected Context mContext;
 	private Camera mCamera;
 	private int screenWidth = 640;  
 	private int screenHeight = 480; 
 	private int count = 0;
+	private int imageCount=0;
+	String dateStr = null;
+	String timeStr = null;
 	//private DetectionProcess MyDetection=new DetectionProcess();
 	
 	
@@ -52,6 +58,9 @@ import android.view.SurfaceView;
 		super.onCreate();
 		//LogUtil.d("自动侦测Auto Detection Server 启动");
 		bindBroadcast();
+		if (!houseKeepingFile.exists()) {
+			houseKeepingFile.mkdirs();
+		}
 		
 		System.out.println("service_create");
 	}
@@ -80,35 +89,36 @@ import android.view.SurfaceView;
 				//LogUtil.d("open_status = "+status);
 				if("1".equals(status))//打开自动侦测功能
 				{
-					//==========================
-					//此处进行打开自动侦测操作
-					System.out.println("open");
-					mCamera = openFacingBackCamera();
-					System.out.println("open successfully");
-					surfaceTexture = new SurfaceTexture(10);
-					try {
-						mCamera.setPreviewTexture(surfaceTexture);
-					} catch (IOException e) {
-						// TODO 自动生成的 catch 块
-						e.printStackTrace();
+					if(mCamera==null){
+						//==========================
+						//此处进行打开自动侦测操作
+						System.out.println("open");
+						mCamera = openFacingBackCamera();
+						System.out.println("open successfully");
+						surfaceTexture = new SurfaceTexture(10);
+						try {
+							mCamera.setPreviewTexture(surfaceTexture);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+//						SurfaceView dummy = new SurfaceView(getBaseContext());
+//						try {
+//							mCamera.setPreviewDisplay(dummy.getHolder());
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+						Camera.Parameters parameters = mCamera.getParameters();  
+		                parameters.setPreviewSize(screenWidth, screenHeight); // 设置预览照片的大小  
+		                parameters.setPreviewFpsRange(20, 30); // 每秒显示20~30帧  
+		                parameters.setPictureFormat(ImageFormat.NV21); // 设置图片格式  
+		                parameters.setPictureSize(screenWidth, screenHeight); // 设置照片的大小  
+		                // camera.setParameters(parameters); // android2.3.3以后不需要此行代码   
+		                mCamera.setPreviewCallback(new priviewCallBack()); // 设置回调的类  
+		                mCamera.startPreview(); // 开始预览  
+		                isPreview=true;
+		                mCamera.autoFocus(null); // 自动对焦  
+		                ifRefresh=true;
 					}
-//					SurfaceView dummy = new SurfaceView(getBaseContext());
-//					try {
-//						mCamera.setPreviewDisplay(dummy.getHolder());
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-					Camera.Parameters parameters = mCamera.getParameters();  
-	                parameters.setPreviewSize(screenWidth, screenHeight); // 设置预览照片的大小  
-	                parameters.setPreviewFpsRange(20, 30); // 每秒显示20~30帧  
-	                parameters.setPictureFormat(ImageFormat.NV21); // 设置图片格式  
-	                parameters.setPictureSize(screenWidth, screenHeight); // 设置照片的大小  
-	                // camera.setParameters(parameters); // android2.3.3以后不需要此行代码   
-	                mCamera.setPreviewCallback(new priviewCallBack()); // 设置回调的类  
-	                mCamera.startPreview(); // 开始预览  
-	                isPreview=true;
-	                mCamera.autoFocus(null); // 自动对焦  
-	                ifRefresh=true;
 					//===============================
 					//打开成功返回结果
 					//LogUtil.d("打开自动侦测功能成功 ");
@@ -126,33 +136,40 @@ import android.view.SurfaceView;
 					//此处进行关闭自动侦测功能
 					System.out.println("close");
 					//mCamera.cancelAutoFocus();
-					if (mCamera != null)  
-	                {
-	                    if (isPreview)
-	                    {
-//		                    mCamera.stopPreview();  
-		                    mCamera.release();  
-		                    mCamera = null;
-	                    }
-	                }  
-					ifRefresh=false;
-//					stopCamera();
-					//===============================
-					//关闭成功返回结果
-					//LogUtil.d("关闭自动侦测功能成功");
-					Intent detectionClosecommandACK = new Intent();
-					detectionClosecommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
-					detectionClosecommandACK.putExtra("open_status", "0");
-					detectionClosecommandACK.putExtra("result", "1");//result=1表示成功，result=0表示失败
-					//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
-					sendBroadcast(detectionClosecommandACK);
+					try{
+						if (mCamera != null)  
+		                {
+		                    if (isPreview)
+		                    {
+			                    mCamera.stopPreview();
+			                    mCamera.setPreviewCallback(null);
+			                    mCamera.release();  
+			                    mCamera = null;
+		                    }
+		                }  
+						ifRefresh=false;
+						//===============================
+						//关闭成功返回结果
+						//LogUtil.d("关闭自动侦测功能成功");
+						Intent detectionClosecommandACK = new Intent();
+						detectionClosecommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
+						detectionClosecommandACK.putExtra("open_status", "0");
+						detectionClosecommandACK.putExtra("result", "1");//result=1表示成功，result=0表示失败
+						//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
+						sendBroadcast(detectionClosecommandACK);
+					}
+					catch(Exception e) {
+						Intent detectionClosecommandACK = new Intent();
+						detectionClosecommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
+						detectionClosecommandACK.putExtra("open_status", "0");
+						detectionClosecommandACK.putExtra("result", "0");//result=1表示成功，result=0表示失败
+						//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
+						sendBroadcast(detectionClosecommandACK);
+					}
 				}
+
 			}
-			
-			
-
 		}
-
 	};
 	
 	/**
@@ -163,7 +180,8 @@ import android.view.SurfaceView;
 		//LogUtil.d("自动侦测发现侦测");
 		Intent intent = new Intent();
 		intent.setAction(Constants.HK_AUTO_DETRCT_WARN);
-		//HouseKeepingApplication.getContext().sendBroadcast(intent);这里
+		intent.putExtra("type ","picture");
+		sendBroadcast(intent);
 	}
 
 	@Override
@@ -183,23 +201,27 @@ import android.view.SurfaceView;
 //		}
 //	}
 	
-	 private Camera openFacingBackCamera() {
-		  Camera cam = null;
-		  Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-		  ;
-		  for (int camIdx = 0, cameraCount = Camera.getNumberOfCameras(); camIdx < cameraCount; camIdx++) {
-		   Camera.getCameraInfo(camIdx, cameraInfo);
-		   if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-		    try {
-		     cam = Camera.open(camIdx);
-		    } catch (RuntimeException e) {
-		     e.printStackTrace();
-		    }
-		   }
-		  }
-
-		  return cam;
-		 }
+	private Camera openFacingBackCamera() {
+		Camera cam = null;
+		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+		for (int camIdx = 0, cameraCount = Camera.getNumberOfCameras(); camIdx < cameraCount; camIdx++) {
+			Camera.getCameraInfo(camIdx, cameraInfo);
+			if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				try {
+					cam = Camera.open(camIdx);
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					Intent detectionOpenCommandACK = new Intent();
+					detectionOpenCommandACK.setAction(Constants.HK_OPEN_AUTO_DETRCT_ACK);
+					detectionOpenCommandACK.putExtra("open_status", "1");
+					detectionOpenCommandACK.putExtra("result", "0");//result=1表示成功，result=0表示失败
+					//LogUtil.d("返回广播给Interface Manager，open_status =1,result = 1");
+					sendBroadcast(detectionOpenCommandACK);
+				}
+			}
+		}
+		return cam;
+	 }
 
 		class priviewCallBack implements Camera.PreviewCallback {
 
@@ -226,13 +248,35 @@ import android.view.SurfaceView;
 
 					if (JNIClient.detectWithDiff(data, width, height)){
 						//socketThread.write(data);
-						count++;
 						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
+						
+						
+						if(count%25==0){
+							SendWarnMsg();
+							
+							SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd/HH_mm_ss");
+							Date curDate = new Date(System.currentTimeMillis());//获取当前时间     
+							String str = dateFormatter.format(curDate);
+							String strs[] = str.split("/");
+							dateStr = strCaptureFilePath+strs[0]+'/';
+							timeStr = strs[1];
+							
+							File dateFile=new File(dateStr);
+							
+							if (!dateFile.exists()) {
+								dateFile.mkdirs();
+							}
+							imageCount=0;
+						}
 						if(count%5==0){
 							System.out.println("save");
 							YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
 							/* 创建文件 */
-							File myCaptureFile = new File(strCaptureFilePath, System.currentTimeMillis()+".jpg");
+							
+							
+							
+							File myCaptureFile = new File(dateStr,timeStr+"_"+imageCount+".jpg");
+							imageCount+=1;
 							BufferedOutputStream bos = new BufferedOutputStream(
 									new FileOutputStream(myCaptureFile));
 							/* 采用压缩转档方法 */
@@ -241,16 +285,14 @@ import android.view.SurfaceView;
 							bos.flush();
 							/* 结束OutputStream */
 							bos.close();
-							count = 0;
-							
-							Intent detectedWarn = new Intent();
-							detectedWarn.setAction(Constants.HK_AUTO_DETRCT_WARN);
-							detectedWarn.putExtra("type ","picture");
-							//LogUtil.d("返回广播给Interface Manager，open_status =0,result = 1");
-							sendBroadcast(detectedWarn);
+//							count = 0;
 						}
+						count++;
 					}else {
 						//System.out.println("ABC");
+						if(count!=0){
+							count = 0;
+						}
 					}
 
 			} catch (Exception ex) {
