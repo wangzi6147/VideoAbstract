@@ -8,6 +8,7 @@ import java.util.Date;
 
 
 import pris.videotest.MainActivity.priviewCallBack;
+import pris.videotest.file.FileManager;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.app.Service;
@@ -61,6 +62,8 @@ import android.view.SurfaceView;
 		if (!houseKeepingFile.exists()) {
 			houseKeepingFile.mkdirs();
 		}
+		fileManager = new FileManager();
+		fileManager.initLog(strCaptureFilePath);
 		
 		System.out.println("service_create");
 	}
@@ -171,6 +174,7 @@ import android.view.SurfaceView;
 			}
 		}
 	};
+	private FileManager fileManager;
 	
 	/**
 	 * 发送侦测异常消息
@@ -272,10 +276,8 @@ import android.view.SurfaceView;
 							System.out.println("save");
 							YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
 							/* 创建文件 */
-							
-							
-							
-							File myCaptureFile = new File(dateStr,timeStr+"_"+imageCount+".jpg");
+							String fileStr = dateStr+timeStr+"_"+imageCount+".jpg";
+							File myCaptureFile = new File(fileStr);
 							imageCount+=1;
 							BufferedOutputStream bos = new BufferedOutputStream(
 									new FileOutputStream(myCaptureFile));
@@ -286,6 +288,7 @@ import android.view.SurfaceView;
 							/* 结束OutputStream */
 							bos.close();
 //							count = 0;
+							fileManager.updateLog(fileStr);
 						}
 						count++;
 					}else {

@@ -12,6 +12,7 @@
 /VideoTestForAndroid/bin/
 /VideoTestForAndroid/gen/
 /VideoTestForAndroid/libs/
+/VideoTestForAndroid/project.properties
 *.project
 *.cproject
 
