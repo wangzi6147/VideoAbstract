@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-import pris.videotest.MainActivity.priviewCallBack;
 import pris.videotest.file.FileManager;
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -28,6 +27,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi") public class AutoDetectionServer extends Service {
 
@@ -64,7 +64,7 @@ import android.view.SurfaceView;
 			houseKeepingFile.mkdirs();
 		}
 		fileManager = new FileManager();
-		
+        Toast.makeText(this, "service start", Toast.LENGTH_LONG).show();
 		System.out.println("service_create");
 	}
 	private void bindBroadcast() {
@@ -106,12 +106,6 @@ import android.view.SurfaceView;
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-//						SurfaceView dummy = new SurfaceView(getBaseContext());
-//						try {
-//							mCamera.setPreviewDisplay(dummy.getHolder());
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
 						Camera.Parameters parameters = mCamera.getParameters();  
 		                parameters.setPreviewSize(screenWidth, screenHeight); // 设置预览照片的大小  
 		                parameters.setPreviewFpsRange(20, 30); // 每秒显示20~30帧  
@@ -197,15 +191,6 @@ import android.view.SurfaceView;
 		super.onDestroy();
 		System.out.println("service_destory");
 	}
-//	private void stopCamera() {
-//		if (mCamera != null) {
-//			try {
-//				mCamera.stopPreview();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 	
 	private Camera openFacingBackCamera() {
 		Camera cam = null;
@@ -257,7 +242,6 @@ import android.view.SurfaceView;
 						return;
 					}
 					if (JNIClient.detectWithDiff(data, width, height)){
-						//socketThread.write(data);
 						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
 						
 						

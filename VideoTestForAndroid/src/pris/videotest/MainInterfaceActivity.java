@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 import android.view.View.OnClickListener;
 
 public class MainInterfaceActivity extends Activity implements OnClickListener{
@@ -20,8 +21,6 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 	private Button detectionCloseBtn;
 	
 	private Intent serviceIntent;
-	
-	private Info MainInfo;
 	
 	protected Context mContext;
 	
@@ -48,6 +47,7 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 
 		serviceIntent=new Intent(this,AutoDetectionServer.class);
 		startService(serviceIntent);
+        Toast.makeText(this, "service start by activity", Toast.LENGTH_LONG).show();
 		
 		bindBroadcast();
 //		Gson gson = new Gson();
@@ -125,5 +125,6 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 	protected void onDestroy() {
 		super.onDestroy();
 		stopService(serviceIntent);
+		this.unregisterReceiver(mReceiver);
 	}
 }
