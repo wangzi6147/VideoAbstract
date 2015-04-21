@@ -48,6 +48,7 @@ import android.view.SurfaceView;
 	private boolean isPreview = false; // 是否在预览中
 	private int i = 0;
 	private Bitmap bitmapForshow;
+	protected int openCount = 0;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -63,7 +64,6 @@ import android.view.SurfaceView;
 			houseKeepingFile.mkdirs();
 		}
 		fileManager = new FileManager();
-		fileManager.initLog(strCaptureFilePath);
 		
 		System.out.println("service_create");
 	}
@@ -93,6 +93,8 @@ import android.view.SurfaceView;
 				if("1".equals(status))//打开自动侦测功能
 				{
 					if(mCamera==null){
+						fileManager.initLog(strCaptureFilePath);
+						openCount  = 0;
 						//==========================
 						//此处进行打开自动侦测操作
 						System.out.println("open");
@@ -249,7 +251,11 @@ import android.view.SurfaceView;
 				long currentTimeMillis = System.currentTimeMillis();
 					int width = size.width;
 					int height = size.height;
-
+					openCount++;
+					if(openCount<100){
+						System.out.println(openCount);
+						return;
+					}
 					if (JNIClient.detectWithDiff(data, width, height)){
 						//socketThread.write(data);
 						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
@@ -282,7 +288,7 @@ import android.view.SurfaceView;
 							BufferedOutputStream bos = new BufferedOutputStream(
 									new FileOutputStream(myCaptureFile));
 							/* 采用压缩转档方法 */
-							image.compressToJpeg(new Rect(0, 0, width, height), 50, bos);
+							image.compressToJpeg(new Rect(0, 0, width, height), 100, bos);
 							/* 调用flush()方法，更新BufferStream */
 							bos.flush();
 							/* 结束OutputStream */
