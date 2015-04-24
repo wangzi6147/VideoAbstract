@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.google.gson.Gson;
+
 
 import pris.videotest.file.FileManager;
 import android.annotation.SuppressLint;
@@ -37,7 +39,7 @@ import android.widget.Toast;
 	private Camera mCamera;
 	private int screenWidth = 640;  
 	private int screenHeight = 480; 
-	private int count = 0;
+	//private int count = 0;
 	private int imageCount=0;
 	String dateStr = null;
 	String timeStr = null;
@@ -48,7 +50,11 @@ import android.widget.Toast;
 	private boolean isPreview = false; // 是否在预览中
 	private int i = 0;
 	private Bitmap bitmapForshow;
-	protected int openCount = 0;
+	
+	long thisTurnStartTimeMillis=0;
+	long thisBroadCastStartTimeMillis=0;
+	boolean checkSendWarning=false;
+	long startTimeMillis = 0;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -89,12 +95,16 @@ import android.widget.Toast;
 			if(Constants.HK_OPEN_AUTO_DETRCT.equals(action))//处理属性设置
 			{
 				String status = intent.getStringExtra("open_status");//获取打开/关闭状态
+				String extendedInfo = intent.getStringExtra("extendedInfo");
+				Gson gson = new Gson();
+				Info info = gson.fromJson(extendedInfo, Info.class);
+				System.out.println("lalala"+info.getBoxThreshold());
 				//LogUtil.d("open_status = "+status);
 				if("1".equals(status))//打开自动侦测功能
 				{
 					if(mCamera==null){
 						fileManager.initLog(strCaptureFilePath);
-						openCount  = 0;
+						startTimeMillis = System.currentTimeMillis();
 						//==========================
 						//此处进行打开自动侦测操作
 						System.out.println("open");
@@ -236,17 +246,23 @@ import android.widget.Toast;
 				long currentTimeMillis = System.currentTimeMillis();
 					int width = size.width;
 					int height = size.height;
-					openCount++;
-					if(openCount<100){
-						System.out.println(openCount);
+					if((currentTimeMillis-startTimeMillis)/1000<5){
 						return;
 					}
+					
+					if((System.currentTimeMillis()-thisBroadCastStartTimeMillis)/1000>10){
+						checkSendWarning=true;
+					}
+						
+					
 					if (JNIClient.detectWithDiff(data, width, height)){
-						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
+//						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
 						
-						
-						if(count%25==0){
+						//long temp11=(System.currentTimeMillis()-thisTurnStartTimeMillis)/1000;
+						if(checkSendWarning){
+							thisBroadCastStartTimeMillis = System.currentTimeMillis();
 							SendWarnMsg();
+							checkSendWarning=false;
 							
 							SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd/HH_mm_ss");
 							Date curDate = new Date(System.currentTimeMillis());//获取当前时间     
@@ -262,8 +278,9 @@ import android.widget.Toast;
 							}
 							imageCount=0;
 						}
-						if(count%5==0){
-							System.out.println("save");
+						if((System.currentTimeMillis()-thisTurnStartTimeMillis)/1000>=1){
+							thisTurnStartTimeMillis=System.currentTimeMillis();
+							System.out.println("save"+imageCount);
 							YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
 							/* 创建文件 */
 							String fileStr = dateStr+timeStr+"_"+imageCount+".jpg";
@@ -279,13 +296,14 @@ import android.widget.Toast;
 							bos.close();
 //							count = 0;
 							fileManager.updateLog(fileStr);
+							
 						}
-						count++;
+						//count++;
 					}else {
-						//System.out.println("ABC");
-						if(count!=0){
-							count = 0;
-						}
+//						//System.out.println("ABC");
+//						if(count!=0){
+//							count = 0;
+//						}
 					}
 
 			} catch (Exception ex) {

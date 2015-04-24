@@ -19,18 +19,18 @@ bool cv_process_frame(unsigned char * pFrame, int width, int height) {
 }
 
 /*
- * ÊäÈëimgÎªÍ¼Ïñdata
- * iNxÎª¿í¶È
- * iNyÎª¸ß¶È
- * ·µ»ØÖµÎªÊÇ·ñ¼ì²âµ½Ä¿±ê£¬Èô·µ»Ø1Îª¼ì²âµ½Ä¿±ê¡£
+ * ï¿½ï¿½ï¿½ï¿½imgÎªÍ¼ï¿½ï¿½data
+ * iNxÎªï¿½ï¿½ï¿½
+ * iNyÎªï¿½ß¶ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ÖµÎªï¿½Ç·ï¿½ï¿½âµ½Ä¿ï¿½ê£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1Îªï¿½ï¿½âµ½Ä¿ï¿½ê¡£
  */
 int CheckChange(unsigned char * img, int iNx, int iNy) {
 //	enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
 //	enum eChk { eDX=4, eDY=4, eMM=2, eDV=64};
 	enum eChk {
-		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 256
+		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 512
 	};
-	static int count = 20, aY[1 << 15][2] = { 0 }, iIni = 1, iArr = 0; //(1<<15)=32768   640x480/4/4=307200/4/4=19200
+	static int aY[1 << 15][2] = { 0 }, iIni = 1, iArr = 0,iMax=iNx*iNy*0.0002; //(1<<15)=32768   640x480/4/4=307200/4/4=19200
 	int iM = 0, iY, iX, iI, iJ, iK, iXet = 0, iV0, iV1, iV2, iVv = 0;
 	unsigned char *p0 = img, *p1 = p0, *p2, *p3;
 
@@ -54,13 +54,9 @@ int CheckChange(unsigned char * img, int iNx, int iNy) {
 	if (iIni)
 		iIni = 0;
 	iArr = !iArr;
-	iXet = 16 < iVv;
+	iXet = iMax < iVv;
 
-	if(iVv>iNx*iNy*0.0002){
-		count = 0;
-		return 1;
-	}else if(count<20){
-		count++;
+	if(iXet){
 		return 1;
 	}else {
 		return 0;
