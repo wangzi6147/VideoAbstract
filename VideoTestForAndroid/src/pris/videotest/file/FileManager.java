@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import android.content.Context;
 import android.os.Environment;
 
 public class FileManager {
