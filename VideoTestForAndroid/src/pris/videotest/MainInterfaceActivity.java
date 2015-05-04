@@ -93,6 +93,7 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 			if(Constants.HK_AUTO_DETRCT_WARN.equals(action))
 			{
 				System.out.println("receive_warning_massage");
+				System.out.println(intent.getStringExtra("imgs"));
 			}
 		}
 	};

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.google.gson.Gson;
@@ -51,10 +52,12 @@ import android.widget.Toast;
 	private int i = 0;
 	private Bitmap bitmapForshow;
 	
-	long thisTurnStartTimeMillis=0;
-	long thisBroadCastStartTimeMillis=0;
-	boolean checkSendWarning=false;
-	long startTimeMillis = 0;
+	private long thisTurnStartTimeMillis=0;//控制在检测到目标时，一秒钟保存一次图片
+	private long thisBroadCastStartTimeMillis=0;//五分钟为一个广播段，记录广播段开始的时间
+	private long thisBroadCastDetectTimeMillis=0;//一秒钟判断一次是否需要发广播
+	private boolean checkSendWarning=false;//五分钟更新一次标志位
+	private long startTimeMillis = 0;//前5秒不检测
+	private ArrayList<ImageInfo> ImagesInfo;//存该广播段内前五张图片信息
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -188,9 +191,11 @@ import android.widget.Toast;
 	public void SendWarnMsg()
 	{
 		//LogUtil.d("自动侦测发现侦测");
+		Gson imagesGson = new Gson();
 		Intent intent = new Intent();
 		intent.setAction(Constants.HK_AUTO_DETRCT_WARN);
 		intent.putExtra("type ","picture");
+		intent.putExtra("imgs",imagesGson.toJson(ImagesInfo));
 		sendBroadcast(intent);
 	}
 
@@ -246,12 +251,18 @@ import android.widget.Toast;
 				long currentTimeMillis = System.currentTimeMillis();
 					int width = size.width;
 					int height = size.height;
-					if((currentTimeMillis-startTimeMillis)/1000<5){
+					if((currentTimeMillis-startTimeMillis)/1000<=5){//跳过前5秒
 						return;
 					}
 					
-					if((System.currentTimeMillis()-thisBroadCastStartTimeMillis)/1000>10){
+					if((currentTimeMillis-thisBroadCastStartTimeMillis)/1000>=300){//5分钟为一个广播段(300秒)
 						checkSendWarning=true;
+					}
+					if((currentTimeMillis-thisBroadCastDetectTimeMillis)>=1000){//隔1秒判断一次是否发广播
+						thisBroadCastDetectTimeMillis=currentTimeMillis;
+						if((currentTimeMillis-thisBroadCastStartTimeMillis)/1000==5 && checkSendWarning==false){
+							SendWarnMsg();
+						}
 					}
 						
 					
@@ -259,35 +270,45 @@ import android.widget.Toast;
 //						System.out.println("time:"+(System.currentTimeMillis()-currentTimeMillis)+" num:");
 						
 						//long temp11=(System.currentTimeMillis()-thisTurnStartTimeMillis)/1000;
-						if(checkSendWarning){
-							thisBroadCastStartTimeMillis = System.currentTimeMillis();
-							SendWarnMsg();
+						if(checkSendWarning){//更新参数
+							thisBroadCastStartTimeMillis = currentTimeMillis;
 							checkSendWarning=false;
 							
 							SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd/HH_mm_ss");
-							Date curDate = new Date(System.currentTimeMillis());//获取当前时间     
+							Date curDate = new Date(currentTimeMillis);//获取当前时间     
 							String str = dateFormatter.format(curDate);
 							String strs[] = str.split("/");
 							dateStr = strCaptureFilePath+strs[0]+'/';
 							timeStr = strs[1];
 							
 							File dateFile=new File(dateStr);
+							ImagesInfo=new ArrayList<ImageInfo>();
 							
 							if (!dateFile.exists()) {
 								dateFile.mkdirs();
 							}
 							imageCount=0;
 						}
-						if((System.currentTimeMillis()-thisTurnStartTimeMillis)/1000>=1){
-							thisTurnStartTimeMillis=System.currentTimeMillis();
+						if((currentTimeMillis-thisTurnStartTimeMillis)>=1000){//运动段内，每隔1秒进一次，保存图片
+							thisTurnStartTimeMillis=currentTimeMillis;
 							System.out.println("save"+imageCount);
 							YuvImage image = new YuvImage(data,ImageFormat.NV21,width,height,null); 
 							/* 创建文件 */
 							String fileStr = dateStr+timeStr+"_"+imageCount+".jpg";
 							File myCaptureFile = new File(fileStr);
-							imageCount+=1;
 							BufferedOutputStream bos = new BufferedOutputStream(
 									new FileOutputStream(myCaptureFile));
+							
+							SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd/HH_mm_ss");
+							Date curDate = new Date(currentTimeMillis);//获取当前时间     
+							String str = dateFormatter.format(curDate);
+							String strs[] = str.split("/");
+							String imageTimeStr = strs[1];
+							
+							if ((currentTimeMillis-thisBroadCastStartTimeMillis)/1000<5) {//保存前5张图片信息
+								ImagesInfo.add(new ImageInfo(timeStr+"_"+imageCount+".jpg",imageTimeStr));
+							}
+							imageCount+=1;
 							/* 采用压缩转档方法 */
 							image.compressToJpeg(new Rect(0, 0, width, height), 100, bos);
 							/* 调用flush()方法，更新BufferStream */
