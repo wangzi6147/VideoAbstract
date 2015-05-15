@@ -38,8 +38,8 @@ import android.widget.Toast;
 	private File houseKeepingFile = new File(strCaptureFilePath);
 	protected Context mContext;
 	private Camera mCamera;
-	private int screenWidth = 300;  
-	private int screenHeight = 200; 
+	private int screenWidth = 320;  
+	private int screenHeight = 240; 
 	//private int count = 0;
 	private int imageCount=0;
 	String dateStr = null;
@@ -98,10 +98,10 @@ import android.widget.Toast;
 			if(Constants.HK_OPEN_AUTO_DETRCT.equals(action))//处理属性设置
 			{
 				String status = intent.getStringExtra("open_status");//获取打开/关闭状态
-				String extendedInfo = intent.getStringExtra("extendedInfo");
-				Gson gson = new Gson();
-				Info info = gson.fromJson(extendedInfo, Info.class);
-				System.out.println("lalala"+info.getBoxThreshold());
+//				String extendedInfo = intent.getStringExtra("extendedInfo");
+//				Gson gson = new Gson();
+//				Info info = gson.fromJson(extendedInfo, Info.class);
+//				System.out.println("lalala"+info.getBoxThreshold());
 				//LogUtil.d("open_status = "+status);
 				if("1".equals(status))//打开自动侦测功能
 				{
