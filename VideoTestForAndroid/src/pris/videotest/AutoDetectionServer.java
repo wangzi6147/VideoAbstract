@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.gson.Gson;
 
@@ -36,8 +38,8 @@ import android.widget.Toast;
 	private File houseKeepingFile = new File(strCaptureFilePath);
 	protected Context mContext;
 	private Camera mCamera;
-	private int screenWidth = 640;  
-	private int screenHeight = 480; 
+	private int screenWidth = 300;  
+	private int screenHeight = 200; 
 	//private int count = 0;
 	private int imageCount=0;
 	String dateStr = null;
@@ -118,11 +120,27 @@ import android.widget.Toast;
 							e.printStackTrace();
 						}
 						Camera.Parameters parameters = mCamera.getParameters();  
+						// 选择合适的预览尺寸
+						List<Camera.Size> sizeList = parameters
+								.getSupportedPreviewSizes();
+						// 如果sizeList只有一个我们也没有必要做什么了，因为就他一个别无选择
+						if (sizeList.size() > 1) {
+							Iterator<Camera.Size> itor = sizeList.iterator();
+							while (itor.hasNext()) {
+								Camera.Size cur = itor.next();
+								if (cur.width >= screenWidth
+										&& cur.height >= screenHeight) {
+									screenWidth = cur.width;
+									screenHeight = cur.height;
+									break;
+								}
+							}
+						}
 		                parameters.setPreviewSize(screenWidth, screenHeight); // 设置预览照片的大小  
 		                parameters.setPreviewFpsRange(20, 30); // 每秒显示20~30帧  
-		                parameters.setPictureFormat(ImageFormat.NV21); // 设置图片格式  
+		                //parameters.setPictureFormat(ImageFormat.NV21); // 设置图片格式  
 		                parameters.setPictureSize(screenWidth, screenHeight); // 设置照片的大小  
-		                // camera.setParameters(parameters); // android2.3.3以后不需要此行代码   
+		                mCamera.setParameters(parameters); 
 		                mCamera.setPreviewCallback(new priviewCallBack()); // 设置回调的类  
 		                mCamera.startPreview(); // 开始预览  
 		                isPreview=true;
@@ -259,6 +277,23 @@ import android.widget.Toast;
 					if((currentTimeMillis-thisBroadCastDetectTimeMillis)>=1000){//隔1秒判断一次是否发广播
 						thisBroadCastDetectTimeMillis=currentTimeMillis;
 						if((currentTimeMillis-thisBroadCastStartTimeMillis)/1000==5 && checkSendWarning==false){
+							int curSize = ImagesInfo.size();
+							//如果不足5张 重复添加最后一张
+							if(curSize<5){
+								ImageInfo imageInfo = ImagesInfo.get(curSize-1);
+								String lastTimeStr = imageInfo.getPic_time();
+								String lastNameStr = imageInfo.getPic_name();
+								String strs[] = lastTimeStr.split("_");
+								String timeHHStr = strs[0];
+								String timeMMStr = strs[1];
+								int timeSSInt = Integer.parseInt(strs[2]);
+								for(int i = ImagesInfo.size();i<5;i++){
+									timeSSInt = timeSSInt+1;
+									String curTimeStr = timeHHStr+"_"+timeMMStr+"_"+timeSSInt;
+									ImageInfo newInfo = new ImageInfo(lastNameStr, curTimeStr);
+									ImagesInfo.add(newInfo);
+								}
+							}
 							SendWarnMsg();
 						}
 					}
