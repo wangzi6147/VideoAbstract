@@ -28,6 +28,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.StatFs;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.Toast;
@@ -38,8 +39,8 @@ import android.widget.Toast;
 	private File houseKeepingFile = new File(strCaptureFilePath);
 	protected Context mContext;
 	private Camera mCamera;
-	private int screenWidth = 320;  
-	private int screenHeight = 240; 
+	private int screenWidth = 640;  
+	private int screenHeight = 360; 
 	//private int count = 0;
 	private int imageCount=0;
 	String dateStr = null;
@@ -343,7 +344,10 @@ import android.widget.Toast;
 							}
 							imageCount+=1;
 							/* 采用压缩转档方法 */
-							image.compressToJpeg(new Rect(0, 0, width, height), 100, bos);
+							if(getSDRemain()>data.length){
+								//640*360
+								image.compressToJpeg(new Rect(0, 60, width, height-60), 100, bos);
+							}
 							/* 调用flush()方法，更新BufferStream */
 							bos.flush();
 							/* 结束OutputStream */
@@ -363,6 +367,13 @@ import android.widget.Toast;
 			} catch (Exception ex) {
 				Log.e("Sys", "Error:" + ex.getMessage());
 			}
+		}
+		private long getSDRemain() {
+			String sdcard = Environment.getExternalStorageDirectory().getPath();
+			StatFs statFs = new StatFs(sdcard);
+			long blockSize = statFs.getBlockSize();
+			long blocks = statFs.getAvailableBlocks();
+			return blockSize*blocks;
 		}
 		static {
 			System.loadLibrary("VideoTest");

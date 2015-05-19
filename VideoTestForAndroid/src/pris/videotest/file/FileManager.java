@@ -17,7 +17,7 @@ public class FileManager {
 	private String latestStr = "Latest:\n";
 	private int totalSize;
 	private String strLogFile;
-	private int maxSize = 100*1024*1024;// 200M
+	private int maxSize = 100*1024*1024;// 100M
 	private String strCaptureFilePath = Environment
 			.getExternalStorageDirectory() + "/tmp/HouseKeeping/";// 保存图像的路径
 
