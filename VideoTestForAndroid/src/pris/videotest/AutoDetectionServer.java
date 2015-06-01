@@ -40,7 +40,7 @@ import android.widget.Toast;
 	protected Context mContext;
 	private Camera mCamera;
 	private int screenWidth = 640;  
-	private int screenHeight = 360; 
+	private int screenHeight = 480; 
 	//private int count = 0;
 	private int imageCount=0;
 	String dateStr = null;
@@ -53,6 +53,8 @@ import android.widget.Toast;
 	private int i = 0;
 	private Bitmap bitmapForshow;
 	
+	private int imageQuality=100;
+	private int broadcastFrequency=300;//默认一个广播段300秒，即5分钟
 	private long thisTurnStartTimeMillis=0;//控制在检测到目标时，一秒钟保存一次图片
 	private long thisBroadCastStartTimeMillis=0;//五分钟为一个广播段，记录广播段开始的时间
 	private long thisBroadCastDetectTimeMillis=0;//一秒钟判断一次是否需要发广播
@@ -99,9 +101,19 @@ import android.widget.Toast;
 			if(Constants.HK_OPEN_AUTO_DETRCT.equals(action))//处理属性设置
 			{
 				String status = intent.getStringExtra("open_status");//获取打开/关闭状态
-//				String extendedInfo = intent.getStringExtra("extendedInfo");
-//				Gson gson = new Gson();
-//				Info info = gson.fromJson(extendedInfo, Info.class);
+				String extendedInfo = intent.getStringExtra("extendedInfo");
+				if(extendedInfo!=null){
+					Gson gson = new Gson();
+					Info info = gson.fromJson(extendedInfo, Info.class);
+					
+					screenWidth=info.getScreenWidth();
+					screenHeight=info.getScreenHeight();
+					fileManager.setMaxSize(info.getStoreMax());
+					broadcastFrequency=info.getBroadcastFrequency();
+					imageQuality=info.getImageQuality();
+				}
+
+				
 //				System.out.println("lalala"+info.getBoxThreshold());
 				//LogUtil.d("open_status = "+status);
 				if("1".equals(status))//打开自动侦测功能
@@ -272,7 +284,7 @@ import android.widget.Toast;
 						return;
 					}
 					
-					if((currentTimeMillis-thisBroadCastStartTimeMillis)/1000>=300){//5分钟为一个广播段(300秒)
+					if((currentTimeMillis-thisBroadCastStartTimeMillis)/1000>=broadcastFrequency){//5分钟为一个广播段(300秒)
 						checkSendWarning=true;
 					}
 					if((currentTimeMillis-thisBroadCastDetectTimeMillis)>=1000){//隔1秒判断一次是否发广播
@@ -346,7 +358,7 @@ import android.widget.Toast;
 							/* 采用压缩转档方法 */
 							if(getSDRemain()>data.length){
 								//640*360
-								image.compressToJpeg(new Rect(0, 60, width, height-60), 100, bos);
+								image.compressToJpeg(new Rect(0, 60, width, height-60), imageQuality, bos);
 							}
 							/* 调用flush()方法，更新BufferStream */
 							bos.flush();

@@ -18,6 +18,14 @@ public class FileManager {
 	private int totalSize;
 	private String strLogFile;
 	private int maxSize = 100*1024*1024;// 100M
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize*1024*1024;
+	}
+
 	private String strCaptureFilePath = Environment
 			.getExternalStorageDirectory() + "/tmp/HouseKeeping/";// 保存图像的路径
 

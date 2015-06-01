@@ -108,7 +108,7 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 			Intent detectionOpenCommand = new Intent();
 			Gson openGson = new Gson();
 			Info openInfo = new Info();
-			openInfo.setBoxThreshold(0.00025f);
+			//openInfo.setBroadcastFrequency(300);
 			String openJson= openGson.toJson(openInfo);
 			detectionOpenCommand.setAction(Constants.HK_OPEN_AUTO_DETRCT);
 			detectionOpenCommand.putExtra("open_status", "1");
@@ -119,12 +119,12 @@ public class MainInterfaceActivity extends Activity implements OnClickListener{
 		case R.id.detectionCloseBtn:
 			Intent detectionClosecommand = new Intent();
 			Gson closeGson = new Gson();
-			Info closeInfo = new Info();
-			closeInfo.setBoxThreshold(0.0003f);
-			String closejson = closeGson.toJson(closeInfo);
+//			Info closeInfo = new Info();
+//			closeInfo.setBoxThreshold(0.0003f);
+//			String closejson = closeGson.toJson(closeInfo);
 			detectionClosecommand.setAction(Constants.HK_OPEN_AUTO_DETRCT);
 			detectionClosecommand.putExtra("open_status", "0");
-			detectionClosecommand.putExtra("extendedInfo", closejson);
+//			detectionClosecommand.putExtra("extendedInfo", closejson);
 			sendBroadcast(detectionClosecommand);
 			break;
 			

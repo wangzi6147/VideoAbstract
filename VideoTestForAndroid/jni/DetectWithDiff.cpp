@@ -28,12 +28,12 @@ int CheckChange(unsigned char * img, int iNx, int iNy) {
 //	enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
 //	enum eChk { eDX=4, eDY=4, eMM=2, eDV=64};
 	enum eChk {
-		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 512
+		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 512//每个格子中的差值求和大于512，则判断格子是活跃的
 	};
 	static int aY[1 << 15][2] = { 0 }, iIni = 1, iArr = 0,iMax=0;//iNx*iNy*0.0002; //(1<<15)=32768   640x480/4/4=307200/4/4=19200
 	int iM = 0, iY, iX, iI, iJ, iK, iXet = 0, iV0, iV1, iV2, iVv = 0;
 	unsigned char *p0 = img, *p1 = p0, *p2, *p3;
-	if(0==iMax) iMax=iNx*iNy*0.0002;
+	if(0==iMax) iMax=iNx*iNy*0.0002;//超过iMax个格子活跃则判断为有运动物体
 	for (iY = 0; iY < iNy; iY += eDY, p0 += iNx << eMM, p1 = p0)
 		for (iX = 0; iX < iNx; iX += eDX, p1 += eDX, iM++) {
 			p2 = p1;

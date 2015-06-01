@@ -2,14 +2,31 @@ package pris.videotest;
 
 public class Info {
 
-	private int boxSize;//格子大小，3代表8，长宽可以不一样
-	private int singleBoxThreshold;//单个格子判断为活跃的阈值
-	private float boxThreshold;//判断有运动物体的格子阈值
-	private int storeMax;//存储上限
-	private int storeInterCount;//存储频率
-	private int imageQuality;//图片质量
+	private int screenWidth=640;//图片宽度 
+	private int screenHeight=480;//图片高度
+	private int storeMax=100;//存储上限，默认100M
+	private int broadcastFrequency=300;//广播频率，默认5分钟
+	private int imageQuality=100;//图片质量0-100，100为无损
+	
+	//这三个参数与检测的灵敏度有关
+	private int boxSize=3;//格子大小，3代表8，长宽可以不一样
+	private int singleBoxThreshold=512;//单个格子判断为活跃的阈值
+	private float boxThreshold=((float)screenWidth*(float)screenHeight*(float)0.0002);//判断有运动物体的格子阈值
+	
 	public int getBoxSize() {
 		return boxSize;
+	}
+	public int getScreenWidth() {
+		return screenWidth;
+	}
+	public void setScreenWidth(int screenWidth) {
+		this.screenWidth = screenWidth;
+	}
+	public int getScreenHeight() {
+		return screenHeight;
+	}
+	public void setScreenHeight(int screenHeight) {
+		this.screenHeight = screenHeight;
 	}
 	public void setBoxSize(int boxSize) {
 		this.boxSize = boxSize;
@@ -32,11 +49,11 @@ public class Info {
 	public void setStoreMax(int storeMax) {
 		this.storeMax = storeMax;
 	}
-	public int getStoreInterCount() {
-		return storeInterCount;
+	public int getBroadcastFrequency() {
+		return broadcastFrequency;
 	}
-	public void setStoreInterCount(int storeInterCount) {
-		this.storeInterCount = storeInterCount;
+	public void setBroadcastFrequency(int broadcastFrequency) {
+		this.broadcastFrequency = broadcastFrequency;
 	}
 	public int getImageQuality() {
 		return imageQuality;
