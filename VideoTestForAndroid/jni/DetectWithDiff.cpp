@@ -7,6 +7,7 @@
 
 #include <pris_videotest_JNIClient.h>
 #include <stdio.h>
+#include <cmath>
 
 bool cv_process_frame(unsigned char * pFrame, int width, int height) {
 	FILE *pFl = fopen("/data/tmp/640x480.yuv", "ab");
@@ -27,9 +28,14 @@ bool cv_process_frame(unsigned char * pFrame, int width, int height) {
 int CheckChange(unsigned char * img, int iNx, int iNy) {
 //	enum eChk { eDX=8, eDY=8, eMM=3, eDV=256};
 //	enum eChk { eDX=4, eDY=4, eMM=2, eDV=64};
-	enum eChk {
-		eMM = 3, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 512//每个格子中的差值求和大于512，则判断格子是活跃的
-	};
+//	enum eChk {
+//		eMM = boxSize, eDX = (1 << eMM), eDY = (1 << eMM), eDV = 8*pow((double)2, (double)eMM)//每个格子中的差值求和大于512，则判断格子是活跃的
+//	};
+	int eMM = 3;
+	int eDX = (1 << eMM);
+	int eDY = (1 << eMM);
+	int eDV = 16*(1 << eMM)*(1<<eMM);
+
 	static int aY[1 << 15][2] = { 0 }, iIni = 1, iArr = 0,iMax=0;//iNx*iNy*0.0002; //(1<<15)=32768   640x480/4/4=307200/4/4=19200
 	int iM = 0, iY, iX, iI, iJ, iK, iXet = 0, iV0, iV1, iV2, iVv = 0;
 	unsigned char *p0 = img, *p1 = p0, *p2, *p3;

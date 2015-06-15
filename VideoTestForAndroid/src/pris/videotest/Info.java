@@ -10,7 +10,7 @@ public class Info {
 	
 	//这三个参数与检测的灵敏度有关
 	private int boxSize=3;//格子大小，3代表8，长宽可以不一样
-	private int singleBoxThreshold=512;//单个格子判断为活跃的阈值
+	private int singleBoxThreshold=(int)(8*Math.pow((double)2, (double)boxSize));//单个格子判断为活跃的阈值
 	private float boxThreshold=((float)screenWidth*(float)screenHeight*(float)0.0002);//判断有运动物体的格子阈值
 	
 	public int getBoxSize() {

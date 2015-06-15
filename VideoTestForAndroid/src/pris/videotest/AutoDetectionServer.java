@@ -42,6 +42,7 @@ import android.widget.Toast;
 	private int screenWidth = 640;  
 	private int screenHeight = 480; 
 	//private int count = 0;
+	private int boxsize=3;
 	private int imageCount=0;
 	String dateStr = null;
 	String timeStr = null;
@@ -111,6 +112,7 @@ import android.widget.Toast;
 					fileManager.setMaxSize(info.getStoreMax());
 					broadcastFrequency=info.getBroadcastFrequency();
 					imageQuality=info.getImageQuality();
+					boxsize=info.getBoxSize();
 				}
 
 				
@@ -281,6 +283,7 @@ import android.widget.Toast;
 					int width = size.width;
 					int height = size.height;
 					if((currentTimeMillis-startTimeMillis)/1000<=5){//跳过前5秒
+						checkSendWarning=true;
 						return;
 					}
 					
