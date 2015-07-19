@@ -6,10 +6,22 @@
 *.dll
 *.aps
 *.opensdf
+*.suo
 
 /VideoTestForAndroid/obj/
 /VideoTestForAndroid/bin/
 /VideoTestForAndroid/gen/
-/VideoTestForAndroid/libs/
+/VideoTestForAndroid/project.properties
 *.project
 *.cproject
+
+/IntrusionDetectLib/Debug/
+/IntrusionDetectLib/Release/
+*.jpg
+*.avi
+*.264
+*.yuv
+/IntrusionDetectLib/IntrusionDetectLib/Debug/
+/IntrusionDetectLib/IntrusionDetectLib/Release/
+/IntrusionDetectLib/TestForLib/Debug/
+/IntrusionDetectLib/TestForLib/Release/
